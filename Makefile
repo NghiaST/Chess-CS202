@@ -11,7 +11,7 @@ SFMLINCDIR = SFML-2.5.1/include
 SFMLLIBDIR = SFML-2.5.1/lib
 IMAGEDIR = ${DATDIR}/img
 ICON = $(OBJDIR)/resource.res
-LIST = main
+LIST = main Chess Color
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
 SOURCES = $(LIST:%=$(SOURCEDIR)/%.cpp)
@@ -45,7 +45,7 @@ ${OBJDIR}/%.res: ${OTHERDIR}/%.rc
 ${OBJDIR}/%.o: ${SOURCEDIR}/%.cpp
 	${HIDE} echo compile $*.o
 	${HIDE} ${CXX} -I ${SFMLINCDIR} -I ${HEADERDIR} -c $< -o $@
--include $(patsubst ${SOURCEDIR}/%.cpp,${HEADERDIR}/%.hpp,$(wildcard ${SOURCEDIR}/*.cpp))
+# -include $(patsubst ${SOURCEDIR}/%.cpp,${HEADERDIR}/%.hpp,$(wildcard ${SOURCEDIR}/*.cpp))
 
 clean:
 ifeq (${OBJDEL},)
