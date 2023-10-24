@@ -4,19 +4,19 @@ BINDIR = bin
 DATDIR = dat
 OBJDIR = obj
 SRCDIR = src
-SFMLDIR = D:/SFML-2.5.1
 SOURCEDIR = $(SRCDIR)/source
 HEADERDIR = $(SRCDIR)/header
 OTHERDIR = $(SRCDIR)/other
-INCLUDEDIR = $(SFMLDIR)/include
+SFMLINCDIR = SFML-2.5.1/include
+SFMLLIBDIR = SFML-2.5.1/lib
 IMAGEDIR = ${DATDIR}/img
 ICON = $(OBJDIR)/resource.res
 LIST = main
-FLAGS = $(SFMLDIR)/lib -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
+FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
 SOURCES = $(LIST:%=$(SOURCEDIR)/%.cpp)
 OBJS = $(SOURCES:$(SOURCEDIR)/%.cpp=$(OBJDIR)/%.o)
-OBJDELS = $(wildcard $(OBJDIR)/*.o)
+OBJDEL = $(wildcard $(OBJDIR)/*.*)
 DEPS = $(OBJS:(OBJDIR)/%.o=(OBJDIR)/%.d)
 
 VERBOSE = FALSE
@@ -44,7 +44,7 @@ ${OBJDIR}/%.res: ${OTHERDIR}/%.rc
 
 ${OBJDIR}/%.o: ${SOURCEDIR}/%.cpp
 	${HIDE} echo compile $*.o
-	${HIDE} ${CXX} -I ${INCLUDEDIR} -I ${HEADERDIR} -c $< -o $@ -L ${SOURCEDIR}
+	${HIDE} ${CXX} -I ${SFMLINCDIR} -I ${HEADERDIR} -c $< -o $@
 -include $(patsubst ${SOURCEDIR}/%.cpp,${HEADERDIR}/%.hpp,$(wildcard ${SOURCEDIR}/*.cpp))
 
 clean:
@@ -53,6 +53,7 @@ ifeq (${OBJDEL},)
 else
 	${HIDE} echo delete files
 	${HIDE} del obj\*.o
+	${HIDE} del obj\*.res
 endif
 
 run:
@@ -60,3 +61,5 @@ run:
 	${HIDE} ${NAME}.exe
 
 rebuild: clean all
+debug:
+	./$(BINDIR)/$(NAME)
