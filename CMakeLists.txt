@@ -18,7 +18,7 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 file(GLOB_RECURSE SOURCES ${SOURCEDIR}/main.cpp)
-file(GLOB_RECURSE HEADERS ${HEADERDIR}/main.h)
+file(GLOB_RECURSE HEADERS ${HEADERDIR}/main.hpp)
 file(GLOB_RECURSE RESOURCES ${OTHERDIR}/resource.rc)
 
 include_directories(${HEADERDIR} ${SFMLDIR})
