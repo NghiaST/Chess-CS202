@@ -4,9 +4,7 @@
 #include <bits/stdc++.h>
 #include <SFML/Graphics.hpp>
 
-// struct Piece;
-// struct Board;
-// struct Pawn;
+// struct PieceBoard;
 
 struct Chess {
 private:

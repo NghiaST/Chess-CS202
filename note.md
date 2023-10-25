@@ -21,11 +21,12 @@ struct Chess;
         bool isStart;
         int gameStatus; // 0: playing, 1: white win, 2: black win, 3: draw
 
-        struct Piece();
++*      struct Piece();
             int position;
             int color;
             bool isAlive;
             int mousestatus; // 0: none, 1: pointed, 2: selected, 3: hold, 4: unpressed
+            // int colorID;
 
             int ifMoveLegal();
             int ifCheck();
@@ -37,10 +38,12 @@ struct Chess;
             struct Knight();
             struct Bishop();
             struct Pawn();
-        struct Board();
-            struct Square();
-            struct Row();
-            struct Column();
++*      struct Board();
+            vector<vector<Piece>> piece(8, vector<Piece>(8));
+            ifMoveLegal();
+            MakeMove(int, int, int, int); //x, y -> x', y'
+            int gameStatus;
+            int colorID;
         struct Player(); // Human / computer
             int isHuman;
             int color;

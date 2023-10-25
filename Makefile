@@ -11,7 +11,7 @@ SFMLINCDIR = SFML-2.5.1/include
 SFMLLIBDIR = SFML-2.5.1/lib
 IMAGEDIR = ${DATDIR}/img
 ICON = $(OBJDIR)/resource.res
-LIST = main Chess Color Theme GameSettings Settings
+LIST = main Chess Color Theme GameSettings Settings Board Piece
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
 SOURCES = $(LIST:%=$(SOURCEDIR)/%.cpp)
@@ -63,3 +63,5 @@ run:
 rebuild: clean all
 debug:
 	./$(BINDIR)/$(NAME)
+
+test: $(OBJDIR)/PieceBoard.o

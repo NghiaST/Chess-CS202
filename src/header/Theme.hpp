@@ -7,6 +7,20 @@ const std::string ColorName[10] = {"Color_00.png", "Color_01.png", "Color_02.png
 const std::string FontName[10] = {"Font_00.ttf", "Font_01.ttf", "Font_02.ttf", "Font_03.ttf", "Font_04.ttf", "Font_05.ttf", "Font_06.ttf", "Font_07.ttf", "Font_08.ttf", "Font_09.ttf"};
 const int FontSize[10] = {8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
 
+struct ThemeFileLinks {
+public:
+    std::string BackgroundLink;
+    std::string PieceLink;
+    std::string BoardLink;
+    std::string ColorLink;
+    std::string FontLink;
+    int FontSize;
+
+public:
+    ThemeFileLinks(std::string BackgroundLink, std::string PieceLink, std::string BoardLink, std::string ColorLink, std::string FontLink, int FontSize);
+};
+
+
 struct Theme {
 public:
     int BackgroundIndex;
