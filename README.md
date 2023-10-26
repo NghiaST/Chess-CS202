@@ -1,30 +1,33 @@
+Note:
+- '+': complete good
+- '*': complete apart
+- '-': complete a few
+- ' ': haven't done
+- '?': unknown
+
 struct Chess;
-*   list of constant color
 +   struct ColorItem, ColorItemMulti;
 +   struct Theme;
-*   struct Settings;
-+       struct Theme; // define some available Themes
-            ** theme for piece
-            ** theme for board
-            * theme for background
-            * theme for text
-            * theme for button
+*?  struct Settings;
++       struct Theme;
++           * theme for piece
++           * theme for board
++           * theme for background
++           * theme for text
++           * theme for button
 -           * theme for analysis ????
-+       struct GameSettings;
++?       struct GameSettings;
             int turn;
             int time;
             int mode;
             int difficulty;
 -       struct PlayerSettings; ?????
             int name;
-    struct Chess;
+-   struct Chess;
         bool isStart;
         int gameStatus; // 0: playing, 1: white win, 2: black win, 3: draw
 
-+*      struct Piece();
-            int position;
-            int color;
-            bool isAlive;
++*-      struct Piece();
             int mousestatus; // 0: none, 1: pointed, 2: selected, 3: hold, 4: unpressed
             // int colorID;
 

@@ -1,17 +1,20 @@
 NAME = Chess
 CXX = g++
+ASSETDIR = asset
 BINDIR = bin
 DATDIR = dat
 OBJDIR = obj
 SRCDIR = src
+IMAGEDIR = $(ASSETDIR)/image
+SOUNDDIR = $(ASSETDIR)/sound
+FONTDIR = $(ASSETDIR)/font
 SOURCEDIR = $(SRCDIR)/source
 HEADERDIR = $(SRCDIR)/header
 OTHERDIR = $(SRCDIR)/other
 SFMLINCDIR = SFML-2.5.1/include
 SFMLLIBDIR = SFML-2.5.1/lib
-IMAGEDIR = ${DATDIR}/img
 ICON = $(OBJDIR)/resource.res
-LIST = main Chess Color Theme GameSettings Settings Board Piece
+LIST = main Board Chess Color GameSettings Graphic Piece PieceBoard Settings Theme
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
 SOURCES = $(LIST:%=$(SOURCEDIR)/%.cpp)
@@ -64,4 +67,4 @@ rebuild: clean all
 debug:
 	./$(BINDIR)/$(NAME)
 
-test: $(OBJDIR)/PieceBoard.o
+test: $(OBJDIR)/Board.o

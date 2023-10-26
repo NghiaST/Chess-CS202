@@ -5,7 +5,7 @@
 #include "include.hpp"
 #include "Graphic.hpp"
 
-struct Board : public Graphic {
+class Board : public Graphic {
 private:
     sf::Texture texture;
     std::vector<sf::Texture> textureList;

@@ -1,7 +1,7 @@
 #ifndef __GameSettings_hpp__
 #define __GameSettings_hpp__
 
-struct GameSettings {
+class GameSettings {
 private:
     int firstturn;
     int time;

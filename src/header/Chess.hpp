@@ -1,19 +1,18 @@
 #ifndef __Chess_hpp__
 #define __Chess_hpp__
 
-#include <bits/stdc++.h>
 #include <SFML/Graphics.hpp>
+#include "include.hpp"
+#include "Theme.hpp"
+#include "PieceBoard.hpp"
 
-// struct PieceBoard;
-
-struct Chess {
+class Chess {
 private:
     sf::RenderWindow window;
     sf::Event event;
-    sf::Texture texture;
     sf::Sprite sprite;
-    sf::Font font;
-    sf::Color myColor;
+    Theme* theme;
+    
     void CreateGraphicsBoard();
     
 public:

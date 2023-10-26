@@ -3,8 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include "include.hpp"
 
-struct Theme;
-struct Graphic {
+class Theme;
+class Graphic {
 protected:
     // sf::RenderWindow* window;
     // const Theme* theme;

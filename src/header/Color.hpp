@@ -46,5 +46,28 @@ const sf::Color DarkCyanColor(14, 131, 136);
 const sf::Color LightRedColor(255, 148, 148);
 const sf::Color TeaRoseColor(255, 209, 209);
 const sf::Color BrightPinkColor(238, 75, 106);
+const sf::Color TransparentColor(0, 0, 0, 0);
+
+const ColorItem ColorItemNoButton = ColorItem(TransparentColor, BlackColor, TransparentColor);
+const ColorItem ColorItemDefault = ColorItem(WhiteColor, BlackColor, BlackColor);
+const ColorItem ColorItemRed = ColorItem(RedColor, WhiteColor, BlackColor);
+const ColorItem ColorItemGreen = ColorItem(GreenColor, WhiteColor, BlackColor);
+const ColorItem ColorItemBlue = ColorItem(BlueColor, WhiteColor, BlackColor);
+const ColorItem ColorItemBlack = ColorItem(BlackColor, WhiteColor, BlackColor);
+const ColorItem ColorItemWhite = ColorItem(WhiteColor, BlackColor, BlackColor);
+const ColorItem ColorItemOrange = ColorItem(OrangeColor, WhiteColor, BlackColor);
+const ColorItem ColorItemYellow = ColorItem(YellowColor, WhiteColor, BlackColor);
+const ColorItem ColorItemLightGreen = ColorItem(LightGreenColor, WhiteColor, BlackColor);
+const ColorItem ColorItemLightYellow = ColorItem(LightYellowColor, WhiteColor, BlackColor);
+const ColorItem ColorItemLavenderBush = ColorItem(LavenderBushColor, BlackColor, BlackColor);
+
+const ColorItemMulti ColorItemMultiNoButton = ColorItemMulti(std::vector<ColorItem>{ColorItemNoButton, ColorItemNoButton, ColorItemNoButton, ColorItemNoButton});
+const ColorItemMulti ColorItemMultiDefault = ColorItemMulti(std::vector<ColorItem>{ColorItemDefault, ColorItemGreen, ColorItemYellow, ColorItemLavenderBush});
+const ColorItemMulti ColorItemMultiRed = ColorItemMulti(std::vector<ColorItem>{ColorItemRed, ColorItemRed, ColorItemRed, ColorItemRed});
+const ColorItemMulti ColorItemMultiGreen = ColorItemMulti(std::vector<ColorItem>{ColorItemGreen, ColorItemGreen, ColorItemGreen, ColorItemGreen});
+const ColorItemMulti ColorItemMultiBlue = ColorItemMulti(std::vector<ColorItem>{ColorItemBlue, ColorItemBlue, ColorItemBlue, ColorItemBlue});
+const ColorItemMulti ColorItemMultiBlack = ColorItemMulti(std::vector<ColorItem>{ColorItemBlack, ColorItemBlack, ColorItemBlack, ColorItemBlack});
+const ColorItemMulti ColorItemMultiWhite = ColorItemMulti(std::vector<ColorItem>{ColorItemWhite, ColorItemWhite, ColorItemWhite, ColorItemWhite});
+const ColorItemMulti ColorItemMultiOrange = ColorItemMulti(std::vector<ColorItem>{ColorItemOrange, ColorItemOrange, ColorItemOrange, ColorItemOrange});
 
 #endif

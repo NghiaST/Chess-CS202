@@ -7,7 +7,7 @@
 #include "Board.hpp"
 #include <vector>
 
-struct PieceBoard : public Graphic {
+class PieceBoard : public Graphic {
 private:
     std::vector<Piece*> pieceList;
     int gameStatus; // 0: none, 1: newgame, 2: ongoing, 3: endgame

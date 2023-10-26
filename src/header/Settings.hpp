@@ -6,17 +6,17 @@
 #include "GameSettings.hpp"
 #include "Theme.hpp"
 
-struct Settings {
+class Settings {
 private:
-    Theme theme;
-    GameSettings gameSettings;
+    Theme* theme;
+    GameSettings* gameSettings;
 public:
     Settings();
     ~Settings();
-    void setTheme(Theme theme);
-    void setGameSettings(GameSettings gameSettings);
-    Theme getTheme() const;
-    GameSettings getGameSettings() const;
+    void setTheme(const Theme theme);
+    void setGameSettings(const GameSettings gameSettings);
+    const Theme* getTheme() const;
+    const GameSettings* getGameSettings() const;
 };
 
 #endif

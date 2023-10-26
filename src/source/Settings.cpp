@@ -1,23 +1,25 @@
 #include "Settings.hpp"
 
 Settings::Settings() {
+    this->theme = new Theme();
+    this->gameSettings = new GameSettings();
 }
 
 Settings::~Settings() {
 }
 
-void Settings::setTheme(Theme theme) {
-    this->theme = theme;
+void Settings::setTheme(const Theme theme) {
+    *this->theme = theme;
 }
 
-void Settings::setGameSettings(GameSettings gameSettings) {
-    this->gameSettings = gameSettings;
+void Settings::setGameSettings(const GameSettings gameSettings) {
+    *this->gameSettings = gameSettings;
 }
 
-Theme Settings::getTheme() const {
+const Theme* Settings::getTheme() const {
     return this->theme;
 }
 
-GameSettings Settings::getGameSettings() const {
+const GameSettings* Settings::getGameSettings() const {
     return this->gameSettings;
 }
