@@ -5,17 +5,18 @@
 #include <SFML/Graphics.hpp>
 #include "GameSettings.hpp"
 #include "Theme.hpp"
+#include "FrontEnd.hpp"
 
 class Settings {
 private:
-    Theme* theme;
+    ThemeIndex themeIndex;
     GameSettings* gameSettings;
 public:
     Settings();
     ~Settings();
-    void setTheme(const Theme theme);
+    void setThemeIndex(const ThemeIndex themeIndex);
     void setGameSettings(const GameSettings gameSettings);
-    const Theme* getTheme() const;
+    const ThemeIndex getThemeIndex() const;
     const GameSettings* getGameSettings() const;
 };
 

@@ -2,14 +2,16 @@
 #define __PieceBoard_hpp__
 
 #include <SFML/Graphics.hpp>
-#include "include.hpp"
+#include "Include.hpp"
 #include "Piece.hpp"
 #include "Board.hpp"
+#include "FrontEnd.hpp"
 #include <vector>
 
 class PieceBoard : public Graphic {
 private:
     std::vector<Piece*> pieceList;
+    Board* board;
     int gameStatus; // 0: none, 1: newgame, 2: ongoing, 3: endgame
     CHESS::COLOR turn; // 8: white, 16: black
     CHESS::COLOR winner;
@@ -20,16 +22,18 @@ public:
     const Piece* getPiece(int position) const;
     const Piece* getPiece(int posx, int posy) const;
 
-    int ifMoveLegal(int, int) const;
-    int ifMoveLegal(int, int, int, int) const;
-    
-    void MakeMove(int, int);
-    void MakeMove(int, int, int, int); //x, y -> x', y'
+    int ifMoveLegal(int startpos, int endpos) const;
+    int ifMoveLegal(int startx, int starty, int endx, int endy) const;
+
+    void MakeMove(int startpos, int endpos);
+    void MakeMove(int startx, int starty, int endx, int endy); //x, y -> x', y'
+
+    void NewGame();
 
 public:
-    void update();
-    void preparePrint(const Theme* theme) override;  //x
-    void print(sf::RenderWindow* window) override;   //x
+    void update(FrontEnd* frontEnd);
+    void preparePrint(const Theme* theme);
+    void print(sf::RenderWindow* window);
 };
 
 #endif

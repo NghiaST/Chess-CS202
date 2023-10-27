@@ -2,21 +2,22 @@
 #define __Board_hpp__
 
 #include <SFML/Graphics.hpp>
-#include "include.hpp"
+#include "Include.hpp"
 #include "Graphic.hpp"
+#include "Theme.hpp"
 
 class Board : public Graphic {
 private:
-    sf::Texture texture;
     std::vector<sf::Texture> textureList;
+    std::vector<sf::Sprite> spriteSquareList; 
 
 public:
     Board();
     ~Board();
 
 public: // front-end
-    void preparePrint(const Theme* theme) override;  //x
-    void print(sf::RenderWindow* window) override;   //x
+    void preparePrint(const Theme* theme) override;
+    void print(sf::RenderWindow* window) override;
 };
 
 #endif

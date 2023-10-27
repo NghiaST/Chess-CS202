@@ -1,13 +1,13 @@
 #ifndef __Piece_hpp_
 #define __Piece_hpp_
 #include <SFML/Graphics.hpp>
-#include "include.hpp"
+#include "Include.hpp"
 #include "Graphic.hpp"
 
 class Piece;
 class PieceBoard;
 
-class Piece : public Graphic {
+class Piece : public Graphic {  /// a1 -> a2 -> ... -> b1 -> ...
 private:
     int position; // 0 -> 63
     int posx, posy; // 0 -> 7
@@ -16,6 +16,9 @@ private:
     PIECE::TYPE pieceType;
     int status; // 0: none, 1: alive, 2: dead, 3: viewed
     MOUSE::STATUS mousestatus; // 0: none, 1: pointed, 2: selected, 3: hold, 4: unpressed
+
+private:
+    sf::Sprite sprite;
 
 public:
     Piece(int position, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int status = 0);
@@ -26,6 +29,7 @@ public:
     const PIECE::TYPE& getPieceType() const;
     const CHESS::COLOR& getPieceColor() const;
     const int& getPieceData() const;
+    std::vector<int> getPossibleMoves(const PieceBoard* board) const; //x
     void setPieceType(int pieceType);
     void setPieceColor(int pieceColor);
     void setPieceData(int pieceData);
@@ -33,8 +37,8 @@ public:
     void setPosition(int position);
 
 public: // front-end
-    void preparePrint(const Theme* theme) override;  //x
-    void print(sf::RenderWindow* window) override;   //x
+    void preparePrint(const Theme* theme) override;
+    void print(sf::RenderWindow* window) override;
 };
 
 #endif

@@ -2,18 +2,15 @@
 #define __Chess_hpp__
 
 #include <SFML/Graphics.hpp>
-#include "include.hpp"
+#include "Include.hpp"
 #include "Theme.hpp"
 #include "PieceBoard.hpp"
+#include "FrontEnd.hpp"
 
 class Chess {
 private:
-    sf::RenderWindow window;
-    sf::Event event;
-    sf::Sprite sprite;
-    Theme* theme;
-    
-    void CreateGraphicsBoard();
+    FrontEnd* frontEnd;
+    PieceBoard* pieceBoard;
     
 public:
     Chess();

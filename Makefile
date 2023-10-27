@@ -14,7 +14,7 @@ OTHERDIR = $(SRCDIR)/other
 SFMLINCDIR = SFML-2.5.1/include
 SFMLLIBDIR = SFML-2.5.1/lib
 ICON = $(OBJDIR)/resource.res
-LIST = main Board Chess Color GameSettings Graphic Piece PieceBoard Settings Theme
+LIST = main Board Chess Color FrontEnd GameSettings Graphic Include Piece PieceBoard Settings Theme
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
 SOURCES = $(LIST:%=$(SOURCEDIR)/%.cpp)

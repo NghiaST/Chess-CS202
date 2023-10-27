@@ -5,24 +5,29 @@
 Piece::Piece(int position, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int status)
 {
     this->position = position;
-    this->posx = position % 8;
-    this->posy = position / 8;
+    this->posx = position / 8;
+    this->posy = position % 8;
     this->pieceColor = pieceColor;
     this->pieceType = pieceType;
     this->pieceData = pieceColor | pieceType;
     this->status = status;
     this->mousestatus = MOUSE::NONE;
+
+    // front-end
+    this->windowPosition = INTERFACE::POSBOARD;
 }
 
 Piece::Piece(int position, int pieceData, int status)
 {
     this->position = position;
-    this->posx = position % 8;
-    this->posy = position / 8;
+    this->posx = position / 8;
+    this->posy = position % 8;
     this->pieceColor = (CHESS::COLOR)(pieceData & CHESS::BLACKWHITE);
     this->pieceType = (PIECE::TYPE)(pieceData & 7);
+    this->pieceData = pieceData;
     this->status = status;
     this->mousestatus = MOUSE::NONE;
+    this->windowPosition = INTERFACE::POSBOARD;
 }
 
 Piece::~Piece()
@@ -36,8 +41,8 @@ int Piece::ifMoveLegal(const PieceBoard* board, int position) const
     if (position < 0 || position > 63) {
         return ILLEGAL;
     }
-    int posx = position % 8;
-    int posy = position / 8;
+    int posx = position / 8;
+    int posy = position % 8;
     int diffx = posx - this->posx;
     int diffy = posy - this->posy;
     if (pieceType == PIECE::NONE) {
@@ -180,4 +185,24 @@ void Piece::setPiece(int pieceColor, int pieceType) {
 }
 void Piece::setPosition(int position) {
     this->position = position;
+    this->posx = position / 8;
+    this->posy = position % 8;
+}
+
+void Piece::preparePrint(const Theme* theme) {
+    double size_board = INTERFACE::SIZEBOARD;
+    const sf::Texture& texture = theme->getPieceTexture(pieceData);
+    sf::Vector2u size = texture.getSize();
+    if (size == sf::Vector2u(0, 0)) return;
+
+    int printPosx = windowPosition.x + posx * size_board;
+    int printPosy = windowPosition.y + (7 - posy) * size_board;
+    
+    sprite.setTexture(texture);
+    sprite.setScale(size_board / size.x, size_board / size.y);
+    sprite.setPosition(printPosx, printPosy);
+}
+
+void Piece::print(sf::RenderWindow* window) {
+    window->draw(sprite);
 }

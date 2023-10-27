@@ -1,23 +1,23 @@
 #include "Settings.hpp"
 
-Settings::Settings() {
-    this->theme = new Theme();
+Settings::Settings() : themeIndex(ThemeData::ThemeIndexDefault)
+{
     this->gameSettings = new GameSettings();
 }
 
 Settings::~Settings() {
 }
 
-void Settings::setTheme(const Theme theme) {
-    *this->theme = theme;
+void Settings::setThemeIndex(const ThemeIndex themeIndex) {
+    this->themeIndex.setThemeIndex(themeIndex);
 }
 
 void Settings::setGameSettings(const GameSettings gameSettings) {
     *this->gameSettings = gameSettings;
 }
 
-const Theme* Settings::getTheme() const {
-    return this->theme;
+const ThemeIndex Settings::getThemeIndex() const {
+    return this->themeIndex;
 }
 
 const GameSettings* Settings::getGameSettings() const {

@@ -1,20 +1,12 @@
+#ifndef __Theme_hpp__
+#define __Theme_hpp__
+
 #include <SFML/Graphics.hpp>
 #include <cstring>
-#include "include.hpp"
+#include "Include.hpp"
 #include "Color.hpp"
 
-const std::string BackgroundDirectory = "asset/image/";
-const std::string PieceDirectory = "asset/image/";
-const std::string BoardDirectory = "asset/image/";
-const std::string FontDirectory = "asset/font/";
-
-const std::string BackgroundName[] = {"Background_00.png", "Background_01.png", "Background_02.png", "Background_03.png", "Background_04.png", "Background_05.png", "Background_06.png", "Background_07.png", "Background_08.png", "Background_09.png"};
-const std::string PieceName[] = {"Piece_00", "Piece_01", "Piece_02", "Piece_03", "Piece_04", "Piece_05", "Piece_06", "Piece_07", "Piece_08", "Piece_09"};
-const std::string BoardName[] = {"Board_00.png", "Board_01.png", "Board_02.png", "Board_03.png", "Board_04.png", "Board_05.png", "Board_06.png", "Board_07.png", "Board_08.png", "Board_09.png"};
-const std::string FontName[] = {"Font_00.ttf", "Font_01.ttf", "Font_02.ttf", "Font_03.ttf", "Font_04.ttf", "Font_05.ttf", "Font_06.ttf", "Font_07.ttf", "Font_08.ttf", "Font_09.ttf"};
-const int FontSize[] = {8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
-
-struct ThemeIndex {
+class ThemeIndex {
 public:
     int BackgroundIndex;
     int PieceIndex;
@@ -29,25 +21,12 @@ public:
     void setThemeIndex(const ThemeIndex themeIndex);
 };
 
-ThemeIndex themeIndex[] = {
-    ThemeIndex(0, 0, 0, 0, 0),
-    ThemeIndex(1, 1, 1, 1, 1),
-    ThemeIndex(2, 2, 2, 2, 2),
-    ThemeIndex(3, 3, 3, 3, 3),
-    ThemeIndex(4, 4, 4, 4, 4),
-    ThemeIndex(5, 5, 5, 5, 5),
-    ThemeIndex(6, 6, 6, 6, 6),
-    ThemeIndex(7, 7, 7, 7, 7),
-    ThemeIndex(8, 8, 8, 8, 8),
-    ThemeIndex(9, 9, 9, 9, 9)
-};
-
 class ThemePiece {
 private:
-    std::vector<sf::Texture> PieceTexture;
+    std::vector<std::unique_ptr<sf::Texture>> PieceTexture;
 public:
-    ThemePiece() {}
-    ~ThemePiece() {}
+    ThemePiece();
+    ~ThemePiece();
     void buildTexture(std::string PieceName);
     const sf::Texture& getTexture(int pieceData) const;
 };
@@ -59,18 +38,46 @@ private:
     std::string BoardName;
     std::string FontName;
 private:
-    sf::Texture BackgroundTexture;
-    ThemePiece PieceTextureList;
-    sf::Texture BoardTexture;
-    ColorItemMulti ColorButton;
-    ColorItemMulti ColorText;
+    std::unique_ptr<sf::Texture> BackgroundTexture;
+    ThemePiece* PieceTextureList;
+    std::unique_ptr<sf::Texture> BoardTexture;
+    ColorItemMulti* ColorButton;
+    ColorItemMulti* ColorText;
     sf::Font FontText;
     int FontSize;
 
 public: // default
 
 public:
-    Theme(const ThemeIndex themeIndex = themeIndex[0]);
+    Theme();
     ~Theme();
     void setTheme(const ThemeIndex themeIndex);
+    void setTheme(const int themeIndex);
+    const sf::Texture& getBackgroundTexture() const;
+    const sf::Texture& getPieceTexture(int pieceData) const;
+    const sf::Texture& getBoardTexture() const;
+    const ColorItemMulti* getButtonColor() const;
+    const ColorItemMulti* getTextColor() const;
+    const sf::Font getFont() const;
+    const int getFontSize() const;
 };
+
+struct ThemeData {
+    static const std::string BackgroundDirectory;
+    static const std::string PieceDirectory;
+    static const std::string BoardDirectory;
+    static const std::string FontDirectory;
+
+    static const std::vector<std::string> BackgroundNameList;
+    static const std::vector<std::string> PieceNameList;
+    static const std::vector<std::string> BoardNameList;
+    static const std::vector<std::string> FontNameList;
+
+    static const std::vector<int> FontSizeList;
+    static const int ThemeCount;
+
+    static const ThemeIndex ThemeIndexDefault;
+    static const std::vector<ThemeIndex> themeIndexList;
+};
+
+#endif
