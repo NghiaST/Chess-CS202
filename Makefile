@@ -8,21 +8,28 @@ SRCDIR = src
 IMAGEDIR = $(ASSETDIR)/image
 SOUNDDIR = $(ASSETDIR)/sound
 FONTDIR = $(ASSETDIR)/font
-SOURCEDIR = $(SRCDIR)/source
-HEADERDIR = $(SRCDIR)/header
-OTHERDIR = $(SRCDIR)/other
+OTHERDIR = $(SRCDIR)/Other
 SFMLINCDIR = SFML-2.5.1/include
 SFMLLIBDIR = SFML-2.5.1/lib
-ICON = $(OBJDIR)/resource.res
-LIST = main Board Chess Color FrontEnd GameSettings Graphic Include Piece PieceBoard Settings Theme
+ICON = $(OBJDIR)/Other/resource.res
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
-SOURCES = $(LIST:%=$(SOURCEDIR)/%.cpp)
-OBJS = $(SOURCES:$(SOURCEDIR)/%.cpp=$(OBJDIR)/%.o)
-OBJDEL = $(wildcard $(OBJDIR)/*.*)
-DEPS = $(OBJS:(OBJDIR)/%.o=(OBJDIR)/%.d)
+FILE_ORIGIN = main Graphic Chess
+FILE_BOARDSCREEN = Board Piece PieceBoard
+FILE_DATACONTROL = Color FrontEnd GameSettings Include Settings Theme
+FILE = $(FILE_ORIGIN) $(FILE_BOARDSCREEN:%=BoardScreen/%) $(FILE_DATACONTROL:%=DataControl/%)
+FILE_O = $(FILE_ORIGIN:%=%.o) $(FILE_BOARDSCREEN:%=BoardScreen/%.o) $(FILE_DATACONTROL:%=DataControl/%.o)
+FILE_CPP = $(FILE_ORIGIN:%=/%.cpp) $(FILE_BOARDSCREEN:%=BoardScreen/%.cpp) $(FILE_DATACONTROL:%=DataControl/%.cpp)
 
-VERBOSE = FALSE
+SOURCES = $(FILE_CPP:%=$(SRCDIR)/%)
+OBJS = $(FILE_O:%=$(OBJDIR)/%)
+OBJDEL = $(wildcard $(OBJDIR)/*)
+DEPS = $(OBJS:$(OBJDIR)/%.o=$(OBJDIR)/%.d)
+FFF = $(ICON:$(OBJDIR)/%.res=$(SRCDIR)/%.rc)
+
+FILENAME = $(notdir $(wildcard src/*))
+
+VERBOSE = TRUE
 ifeq (${VERBOSE}, TRUE)
 	HIDE = 
 else
@@ -37,26 +44,46 @@ ifeq ($(wildcard $(OBJDIR)),)
 	${HIDE} mkdir ${OBJDIR}
 endif
 
+ifeq ($(wildcard $(OBJDIR)\BoardScreen),)
+	${HIDE} echo create folder "${OBJDIR}\BoardScreen"
+	${HIDE} mkdir $(OBJDIR)\BoardScreen
+endif
+
+ifeq ($(wildcard $(OBJDIR)\DataControl),)
+	${HIDE} echo create folder "${OBJDIR}\DataControl"
+	${HIDE} mkdir $(OBJDIR)\DataControl
+endif
+
+ifeq ($(wildcard $(OBJDIR)\Other),)
+	${HIDE} echo create folder "${OBJDIR}\Other"
+	${HIDE} mkdir $(OBJDIR)\Other
+endif
+
 build: ${OBJS} ${ICON}
 	${HIDE} echo linking .o file to -*_*- ${NAME}.exe
 	${HIDE} ${CXX} $^ -o ${NAME}.exe -L ${FLAGS}
 
-${OBJDIR}/%.res: ${OTHERDIR}/%.rc
+${OBJDIR}/Other/%.res: ${SRCDIR}/Other/%.rc
 	${HIDE} echo compile $*.res
 	${HIDE} windres $< -I ${IMAGEDIR} -O coff -o $@
 
-${OBJDIR}/%.o: ${SOURCEDIR}/%.cpp
-	${HIDE} echo compile $*.o
-	${HIDE} ${CXX} -I ${SFMLINCDIR} -I ${HEADERDIR} -c $< -o $@
-# -include $(patsubst ${SOURCEDIR}/%.cpp,${HEADERDIR}/%.hpp,$(wildcard ${SOURCEDIR}/*.cpp))
+# *.o: *.cpp
+# 	echo asdsfgh
+# 	${HIDE} echo compile $*.o
+# 	${HIDE} ${CXX} -I ${SFMLINCDIR} -c $< -o $@
+
+${OBJDIR}/%.o: ${SRCDIR}/%.cpp
+	${HIDE} echo compile $(notdir $*.o)
+	${HIDE} ${CXX} -I ${SFMLINCDIR} -c $< -o $@
 
 clean:
 ifeq (${OBJDEL},)
 	${HIDE} echo delete nothing
 else
-	${HIDE} echo delete files
-	${HIDE} del obj\*.o
-	${HIDE} del obj\*.res
+	${HIDE} echo delete obj folder
+	${HIDE} del /Q obj\*
+	${HIDE} for /D %%i in (obj\*) do (rmdir /S /Q "%%i")
+	${HIDE} rmdir obj
 endif
 
 run:
@@ -68,3 +95,7 @@ debug:
 	./$(BINDIR)/$(NAME)
 
 test: $(OBJDIR)/Board.o
+
+neww:
+	echo $(FFF)
+	echo $(ICON)
