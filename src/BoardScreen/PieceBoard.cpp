@@ -11,6 +11,8 @@ PieceBoard::PieceBoard() {
     turn = CHESS::NONE;
     winner = CHESS::NONE;
 
+    boardPosition = Point(20, 20);
+    boardSize = Point(60, 60);
     NewGame();
 }
 
@@ -67,19 +69,70 @@ void PieceBoard::NewGame() {
         pieceID[i * 8 + 6] = PIECE::PAWN + CHESS::BLACK;
     }
 
+    // setup piece
     for(int i = 0; i < 64; i++) {
         pieceList[i]->setPieceData(pieceID[i]);
     }
+
+    // setup game status
     gameStatus = 1;
     turn = CHESS::WHITE;
     winner = CHESS::NONE;
+
+    // setup render
+    board->setRenderPosition(boardPosition);
+    board->setRenderSize(boardSize * 8);
+    for(int i = 0; i < 64; i++) {
+        pieceList[i]->setRenderPosition(boardPosition);
+        pieceList[i]->setRenderSize(boardSize);
+    }
 }
 
-void PieceBoard::handleEvent(Event* event) {
-    if (event->getKeyboardKey() == Event::PRESSED) {
-        
+void PieceBoard::handleEvent(const sf::Event& event, const Point mousePos, double eventClock) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            if (gameStatus == NEWGAME || gameStatus == ONGOING) {
+                    printf("e");
+                if (board->isMouseOn(mousePos)) {
+                    printf(" e2");
+                    Point coordChess;
+                    coordChess.x = (int) (mousePos.x - boardPosition.x) / (int)boardSize.x;
+                    coordChess.y = 7 - (int) (mousePos.y - boardPosition.y) / (int)boardSize.y;
+                    int position = coordChess.x * 8 + coordChess.y;
+                    printf("HHH %d\n", position);
+                    if (!isPieceSelected) {
+                        if (getPiece(position)->getPieceData() != PIECE::NONE) {
+                            isPieceSelected = true;
+                            selectedPiecePos = position;
+                            possiblePosList = pieceList[position]->getPossibleMove(this);
+                        }
+                    }
+                    else {
+                        if (selectedPiecePos == position) {
+                            isPieceSelected = false;
+                            possiblePosList.clear();
+                        }
+                        else /// when click other pos
+                        if (board->getStateCell(position) == Board::POSSIBLE || board->getStateCell(position) == Board::POSSIBLE_CAPTURE) {
+                            prePosition = selectedPiecePos;
+                            curPosition = position;
+                            isPieceSelected = false;
+                            selectedPiecePos = 0;
+                            MakeMove(prePosition, curPosition);
+                        }
+                    }
+                }
+            }
+        }
     }
-    return;
+    for(int i = 0; i < 64; i++) board->setStateCell(i, Board::COMMON);
+    if (isPieceSelected) {
+        board->setStateCell(selectedPiecePos, Board::SELECTED);
+        for(int u : possiblePosList) 
+            board->setStateCell(u, Board::POSSIBLE);
+    }
+
+    // add: check, checkmate
 }
 
 void PieceBoard::update() {

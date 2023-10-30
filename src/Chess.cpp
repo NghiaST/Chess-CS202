@@ -1,21 +1,20 @@
 #include "Chess.hpp"
 
 Chess::Chess() {
-    event = new Event();
     pieceBoard = new PieceBoard();
+    clock.restart();
 
     windowSize = Point(1000, 650);
-    windowPosition = sf::Vector2i(200, 10);
+    renderPosition = sf::Vector2i(200, 10);
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8.0;
     mWindow.create(sf::VideoMode(windowSize.x, windowSize.y), "ChessLion", sf::Style::Default, settings);
     mWindow.setFramerateLimit(60);
-    mWindow.setPosition(windowPosition);
+    mWindow.setPosition(renderPosition);
 }
 
 Chess::~Chess() {
-    delete event;
     delete pieceBoard;
 }
 
@@ -29,12 +28,14 @@ void Chess::run() {
 
 void Chess::processEvents() {
     sf::Event sfEvent;
+    Point mousePos = sf::Mouse::getPosition(mWindow);
+    pieceBoard->handleEvent(sfEvent, mousePos, clock.getElapsedTime().asSeconds());
+    clock.restart();
     while (mWindow.pollEvent(sfEvent)) {
         if (sfEvent.type == sf::Event::Closed) {
             mWindow.close();
         }
-        event->processEvents(sfEvent);
-        pieceBoard->handleEvent(event);
+        pieceBoard->handleEvent(sfEvent, mousePos, 0);
     }
 }
 

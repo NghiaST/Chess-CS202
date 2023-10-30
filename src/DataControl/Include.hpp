@@ -1,5 +1,6 @@
 #ifndef __Include_hpp__
 #define __Include_hpp__
+#include <SFML/Graphics.hpp>
 
 class PIECE;
 class CHESS;
@@ -30,6 +31,13 @@ public:
 struct Point {
     double x, y;
     Point(double x = 0, double y = 0);
+    Point(const sf::Vector2i& vector) : x(vector.x), y(vector.y) {}
+    Point(const sf::Vector2u& vector) : x(vector.x), y(vector.y) {}
+    Point(const sf::Vector2f& vector) : x(vector.x), y(vector.y) {}
+    Point operator + (const Point& p) const { return Point(x + p.x, y + p.y); }
+    Point operator - (const Point& p) const { return Point(x - p.x, y - p.y); }
+    Point operator * (const double& k) const { return Point(x * k, y * k); }
+    Point operator / (const double& k) const { return Point(x / k, y / k); }
 };
 
 #endif

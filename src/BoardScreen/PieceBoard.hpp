@@ -5,12 +5,20 @@
 #include "../DataControl/Include.hpp"
 #include "Piece.hpp"
 #include "Board.hpp"
-#include "../DataControl/Event.hpp"
 #include <vector>
 
 class PieceBoard {
 private:
     Theme* theme;
+    // list const position: board, analysis
+    Point boardPosition;
+    Point boardSize;
+    enum GAMESTATUS {
+        NONE = 0,
+        NEWGAME = 1,
+        ONGOING = 2,
+        ENDGAME = 3
+    };
 private:
     std::vector<Piece*> pieceList;
     Board* board;
@@ -20,9 +28,10 @@ private:
 
     bool isPieceSelected;
     int selectedPiecePos;
-
-    bool isPieceMoving;
-    int movingPiecePos;
+    std::vector<int> possiblePosList; // all position is prepared to move
+    /// may add history of game
+    int prePosition;
+    int curPosition;
 
 public:
     PieceBoard();
@@ -39,7 +48,7 @@ public:
     void NewGame();
 
 public:
-    void handleEvent(Event* event);
+    void handleEvent(const sf::Event& event, const Point mousePos, double eventClock);
     void update();
     void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default);
 };

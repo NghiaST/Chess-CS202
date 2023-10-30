@@ -7,6 +7,15 @@
 #include "../DataControl/Theme.hpp"
 
 class Board : public Graphic {
+public:
+    enum STATUS {
+        COMMON = 0,
+        SELECTED = 1,
+        POSSIBLE = 2,
+        POSSIBLE_CAPTURE = 3,
+        CHECK = 4,
+        CHECKMATE = 5
+    };
 private:
     std::vector<sf::Sprite> spriteSquareList;
     // stateBoard[i] = 0: common, 1: selected, 2: possible move, 3: possible capture, 4: check, 5: checkmate
@@ -18,6 +27,7 @@ public:
     ~Board();
     void setStateBoard(const std::vector<int>& stateBoard);
     void setStateCell(int index, int state);
+    int getStateCell(int index);
 
 public: // front-end
     void update(const Theme* theme) override;

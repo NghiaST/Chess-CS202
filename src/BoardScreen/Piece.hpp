@@ -25,15 +25,15 @@ public:
     Piece(int position, int pieceData, int status = 0);
     ~Piece();
     int ifMoveLegal(const PieceBoard* board, int position) const;    //x en passant
-    int ifCheck() const;    //x
+    std::vector<int> getPossibleMove(const PieceBoard* board) const;
     const PIECE::TYPE& getPieceType() const;
     const CHESS::COLOR& getPieceColor() const;
     const int& getPieceData() const;
-    std::vector<int> getPossibleMoves(const PieceBoard* board) const; //x
     void setPieceType(int pieceType);
     void setPieceColor(int pieceColor);
     void setPieceData(int pieceData);
     void setPiece(int pieceColor, int pieceType);
+    void setMouseStatus(int mousestatus);
     void setPosition(int position);
 
 public: // front-end

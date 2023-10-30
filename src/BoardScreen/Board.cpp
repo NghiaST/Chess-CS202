@@ -3,7 +3,6 @@
 Board::Board() 
   : Graphic(true, 100, INTERFACE::POSBOARD)
 {
-    sizeBoard = INTERFACE::SIZEBOARD;
     stateBoard.resize(64);
     for(int i = 0; i < 64; i++) {
         stateBoard[i] = i % 6;
@@ -21,7 +20,13 @@ void Board::setStateCell(int index, int state) {
     this->stateBoard[index] = state;
 }
 
+int Board::getStateCell(int index)
+{
+    return this->stateBoard[index];
+}
+
 void Board::update(const Theme* theme) {
+    double sizeBoard = renderSize.x / 8;
     spriteSquareList.clear();
     const sf::Texture& boardTexture = theme->getBoardTexture();
     const sf::Texture& boardSelectedTexture = theme->getBoardSelectedTexture();
@@ -41,8 +46,8 @@ void Board::update(const Theme* theme) {
         int index = i * 8 + j;
         int color = (i+j) % 2;
         
-        int printPosx = windowPosition.x + i * sizeBoard;
-        int printPosy = windowPosition.y + (7 - j) * sizeBoard;
+        int printPosx = renderPosition.x + i * sizeBoard;
+        int printPosy = renderPosition.y + (7 - j) * sizeBoard;
 
         // add board, common
         {
