@@ -37,8 +37,8 @@ public:
     void setPosition(int position);
 
 public: // front-end
-    void preparePrint(const Theme* theme) override;
-    void print(sf::RenderWindow* window) override;
+    void update(const Theme* theme) override;
+    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) override;
 };
 
 #endif

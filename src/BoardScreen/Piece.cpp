@@ -187,7 +187,7 @@ void Piece::setPosition(int position) {
     this->posy = position % 8;
 }
 
-void Piece::preparePrint(const Theme* theme) {
+void Piece::update(const Theme* theme) {
     double size_board = INTERFACE::SIZEBOARD;
     const sf::Texture& texture = theme->getPieceTexture(pieceData);
     sf::Vector2u size = texture.getSize();
@@ -201,6 +201,7 @@ void Piece::preparePrint(const Theme* theme) {
     sprite.setPosition(printPosx, printPosy);
 }
 
-void Piece::print(sf::RenderWindow* window) {
-    window->draw(sprite);
+void Piece::render(sf::RenderTarget& target, sf::RenderStates state)
+{
+    target.draw(sprite);
 }

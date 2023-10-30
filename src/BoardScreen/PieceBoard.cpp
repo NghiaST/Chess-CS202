@@ -1,6 +1,7 @@
 #include "PieceBoard.hpp"
 
 PieceBoard::PieceBoard() {
+    theme = new Theme();
     pieceList.assign(64, nullptr);
     for(auto it = pieceList.begin(); it != pieceList.end(); ++it) {
         *it = new Piece(std::distance(pieceList.begin(), it), PIECE::NONE);
@@ -74,24 +75,28 @@ void PieceBoard::NewGame() {
     winner = CHESS::NONE;
 }
 
-void PieceBoard::update(FrontEnd* frontEnd) {
+void PieceBoard::handleEvent(Event* event) {
+    if (event->getKeyboardKey() == Event::PRESSED) {
+        
+    }
     return;
 }
 
-void PieceBoard::preparePrint(const Theme* theme) {
-    board->preparePrint(theme);
+void PieceBoard::update() {
+    board->update(theme);
     for(int i = 0; i < 64; i++) {
         if (pieceList[i]->getPieceData() != PIECE::NONE) {
-            pieceList[i]->preparePrint(theme);
+            pieceList[i]->update(theme);
         }
     }
 }
 
-void PieceBoard::print(sf::RenderWindow* window) {
-    board->print(window);
+void PieceBoard::render(sf::RenderTarget& target, sf::RenderStates state)
+{
+    board->render(target);
     for(int i = 0; i < 64; i++) {
         if (pieceList[i]->getPieceData() != PIECE::NONE) {
-            pieceList[i]->print(window);
+            pieceList[i]->render(target);
         }
     }
 }

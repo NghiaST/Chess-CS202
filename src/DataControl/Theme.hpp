@@ -40,13 +40,19 @@ private:
 private:
     std::unique_ptr<sf::Texture> BackgroundTexture;
     ThemePiece* PieceTextureList;
+
+    // board texture list
     std::unique_ptr<sf::Texture> BoardTexture;
+    std::unique_ptr<sf::Texture> BoardSelectedTexture;
+    std::unique_ptr<sf::Texture> BoardMoveTexture;
+    std::unique_ptr<sf::Texture> BoardCaptureTexture;
+    std::unique_ptr<sf::Texture> BoardCheckTexture;
+    std::unique_ptr<sf::Texture> BoardCheckMateTexture;
+    
     ColorItemMulti* ColorButton;
     ColorItemMulti* ColorText;
     sf::Font FontText;
     int FontSize;
-
-public: // default
 
 public:
     Theme();
@@ -55,11 +61,21 @@ public:
     void setTheme(const int themeIndex);
     const sf::Texture& getBackgroundTexture() const;
     const sf::Texture& getPieceTexture(int pieceData) const;
+
     const sf::Texture& getBoardTexture() const;
+    const sf::Texture& getBoardSelectedTexture() const;
+    const sf::Texture& getBoardMoveTexture() const;
+    const sf::Texture& getBoardCaptureTexture() const;
+    const sf::Texture& getBoardCheckTexture() const;
+    const sf::Texture& getBoardCheckMateTexture() const;
+
     const ColorItemMulti* getButtonColor() const;
     const ColorItemMulti* getTextColor() const;
     const sf::Font getFont() const;
     const int getFontSize() const;
+
+public: // default
+    std::unique_ptr<sf::Texture> makeTexture(Point size, sf::Color sfColor);
 };
 
 struct ThemeData {

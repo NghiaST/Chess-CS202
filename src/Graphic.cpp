@@ -1,24 +1,5 @@
 #include "Graphic.hpp"
 
-// Graphic::Graphic(sf::RenderWindow*& window, const Theme* theme, int priorityPrint, Point windowPosition)
-// {
-//     this->window = window;
-//     this->theme = theme;
-//     this->priorityPrint = priorityPrint;
-//     this->windowPosition = windowPosition;
-// }
-
-// void Graphic::setWindow(sf::RenderWindow*& window)
-// {
-//     this->window = window;
-// }
-
-// void Graphic::setTheme(const Theme *theme)
-// {
-//     this->theme = theme;
-//     reloadTheme();
-// }
-
 Graphic::Graphic(bool isPrint, int priorityPrint, Point windowPosition)
 {
     this->isPrint = isPrint;
@@ -44,7 +25,18 @@ void Graphic::setWindowPosition(double x, double y) {
     this->windowPosition = Point(x, y);
 }
 
+void Graphic::setIsPrint(bool isPrint) {
+    this->isPrint = isPrint;
+}
+
 const int& Graphic::getPriorityPrint() const {
     return priorityPrint;
 }
 
+const Point& Graphic::getWindowPosition() const {
+    return windowPosition;
+}
+
+const bool& Graphic::getIsPrint() const {
+    return isPrint;
+}

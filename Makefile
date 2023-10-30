@@ -16,7 +16,7 @@ FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-a
 
 FILE_ORIGIN = main Graphic Chess
 FILE_BOARDSCREEN = Board Piece PieceBoard
-FILE_DATACONTROL = Color FrontEnd GameSettings Include Settings Theme
+FILE_DATACONTROL = Color Event GameSettings Include Settings Theme
 FILE = $(FILE_ORIGIN) $(FILE_BOARDSCREEN:%=BoardScreen/%) $(FILE_DATACONTROL:%=DataControl/%)
 FILE_O = $(FILE_ORIGIN:%=%.o) $(FILE_BOARDSCREEN:%=BoardScreen/%.o) $(FILE_DATACONTROL:%=DataControl/%.o)
 FILE_CPP = $(FILE_ORIGIN:%=/%.cpp) $(FILE_BOARDSCREEN:%=BoardScreen/%.cpp) $(FILE_DATACONTROL:%=DataControl/%.cpp)
@@ -29,7 +29,7 @@ FFF = $(ICON:$(OBJDIR)/%.res=$(SRCDIR)/%.rc)
 
 FILENAME = $(notdir $(wildcard src/*))
 
-VERBOSE = TRUE
+VERBOSE = FALSE
 ifeq (${VERBOSE}, TRUE)
 	HIDE = 
 else
@@ -91,8 +91,6 @@ run:
 	${HIDE} ${NAME}.exe
 
 rebuild: clean all
-debug:
-	./$(BINDIR)/$(NAME)
 
 test: $(OBJDIR)/Board.o
 

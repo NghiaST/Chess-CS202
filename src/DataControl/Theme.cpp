@@ -101,7 +101,12 @@ Theme::Theme() : ThemeIndex(ThemeData::ThemeIndexDefault)
 {
     this->BackgroundTexture = std::make_unique<sf::Texture>();
     this->PieceTextureList = new ThemePiece();
-    this->BoardTexture = std::make_unique<sf::Texture>();
+    this->BoardTexture          = std::make_unique<sf::Texture>();
+    this->BoardSelectedTexture  = std::make_unique<sf::Texture>();
+    this->BoardMoveTexture      = std::make_unique<sf::Texture>();
+    this->BoardCaptureTexture   = std::make_unique<sf::Texture>();
+    this->BoardCheckTexture     = std::make_unique<sf::Texture>();
+    this->BoardCheckMateTexture = std::make_unique<sf::Texture>();
     this->ColorButton = new ColorItemMulti(Color::ColorItemMultiDefault);
     this->ColorText = new ColorItemMulti(Color::ColorItemMultiNoButton);
     this->setTheme(ThemeData::ThemeIndexDefault);
@@ -125,6 +130,11 @@ void Theme::setTheme(const ThemeIndex themeIndex)
     this->PieceTextureList->buildTexture(this->PieceName);
     if (!this->BoardTexture->loadFromFile(this->BoardName))
         printf("Error loading board texture: %s\n", BoardName.c_str());
+    this->BoardSelectedTexture  = makeTexture(Point(60, 60), sf::Color(255, 255, 0));
+    this->BoardMoveTexture      = makeTexture(Point(60, 60), sf::Color(120, 24, 136));
+    this->BoardCaptureTexture   = makeTexture(Point(60, 60), sf::Color(220, 0, 0));
+    this->BoardCheckTexture     = makeTexture(Point(60, 60), sf::Color(255, 255, 0));
+    this->BoardCheckMateTexture = makeTexture(Point(60, 60), sf::Color(255, 0, 255));
     if (!this->FontText.loadFromFile(this->FontName))
         printf("Error loading fonttext texture: %s\n", FontName.c_str());
     
@@ -156,9 +166,34 @@ const sf::Texture& Theme::getBoardTexture() const
     return *this->BoardTexture;
 }
 
+const sf::Texture& Theme::getBoardSelectedTexture() const
+{
+    return *this->BoardSelectedTexture;
+}
+
 const ColorItemMulti* Theme::getButtonColor() const
 {
     return this->ColorButton;
+}
+
+const sf::Texture& Theme::getBoardMoveTexture() const
+{
+    return *this->BoardMoveTexture;
+}
+
+const sf::Texture& Theme::getBoardCaptureTexture() const
+{
+    return *this->BoardCaptureTexture;
+}
+
+const sf::Texture& Theme::getBoardCheckTexture() const
+{
+    return *this->BoardCheckTexture;
+}
+
+const sf::Texture& Theme::getBoardCheckMateTexture() const
+{
+    return *this->BoardCheckMateTexture;
 }
 
 const ColorItemMulti* Theme::getTextColor() const
@@ -174,4 +209,29 @@ const sf::Font Theme::getFont() const
 const int Theme::getFontSize() const
 {
     return this->FontSize;
+}
+
+std::unique_ptr<sf::Texture> Theme::makeTexture(Point size, sf::Color sfColor)
+{
+    // Create a render texture
+    sf::RenderTexture renderTexture;
+    renderTexture.create(size.x, size.y);
+
+    // Clear the render texture
+    renderTexture.clear();
+
+    // Create a rectangle shape
+    sf::RectangleShape rectangleShape(sf::Vector2f(size.x, size.y));
+    rectangleShape.setFillColor(sfColor);
+    rectangleShape.setPosition(0, 0);
+
+    // Draw the rectangle shape to the render texture
+    renderTexture.draw(rectangleShape);
+
+    // Update the render texture
+    renderTexture.display();
+
+    // Create a texture from the render texture
+    std::unique_ptr<sf::Texture> texture = std::make_unique<sf::Texture>(renderTexture.getTexture());
+    return texture;
 }

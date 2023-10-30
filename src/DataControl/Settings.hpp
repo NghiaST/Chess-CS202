@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "GameSettings.hpp"
 #include "Theme.hpp"
-#include "FrontEnd.hpp"
+#include "Event.hpp"
 
 class Settings {
 private:

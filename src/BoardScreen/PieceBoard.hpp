@@ -5,16 +5,24 @@
 #include "../DataControl/Include.hpp"
 #include "Piece.hpp"
 #include "Board.hpp"
-#include "../DataControl/FrontEnd.hpp"
+#include "../DataControl/Event.hpp"
 #include <vector>
 
-class PieceBoard : public Graphic {
+class PieceBoard {
+private:
+    Theme* theme;
 private:
     std::vector<Piece*> pieceList;
     Board* board;
     int gameStatus; // 0: none, 1: newgame, 2: ongoing, 3: endgame
     CHESS::COLOR turn; // 8: white, 16: black
     CHESS::COLOR winner;
+
+    bool isPieceSelected;
+    int selectedPiecePos;
+
+    bool isPieceMoving;
+    int movingPiecePos;
 
 public:
     PieceBoard();
@@ -31,9 +39,9 @@ public:
     void NewGame();
 
 public:
-    void update(FrontEnd* frontEnd);
-    void preparePrint(const Theme* theme);
-    void print(sf::RenderWindow* window);
+    void handleEvent(Event* event);
+    void update();
+    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default);
 };
 
 #endif
