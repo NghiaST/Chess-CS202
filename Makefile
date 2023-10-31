@@ -15,7 +15,7 @@ ICON = $(OBJDIR)/Other/resource.res
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
 FILE_ORIGIN = main Graphic Chess
-FILE_BOARDSCREEN = Board Piece PieceBoard
+FILE_BOARDSCREEN = Board ChessHistory Piece PieceBoard
 FILE_DATACONTROL = Color GameSettings Include Settings Theme
 FILE = $(FILE_ORIGIN) $(FILE_BOARDSCREEN:%=BoardScreen/%) $(FILE_DATACONTROL:%=DataControl/%)
 FILE_O = $(FILE_ORIGIN:%=%.o) $(FILE_BOARDSCREEN:%=BoardScreen/%.o) $(FILE_DATACONTROL:%=DataControl/%.o)
