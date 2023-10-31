@@ -6,9 +6,7 @@ Piece::Piece(int position, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int s
     this->position = position;
     this->posx = position / 8;
     this->posy = position % 8;
-    this->pieceColor = pieceColor;
-    this->pieceType = pieceType;
-    this->pieceData = pieceColor | pieceType;
+    setPiece(pieceColor, pieceType);
     this->status = status;
     this->mousestatus = MOUSE::NONE;
     this->renderPosition = INTERFACE::POSBOARD;
@@ -19,9 +17,7 @@ Piece::Piece(int position, int pieceData, int status)
     this->position = position;
     this->posx = position / 8;
     this->posy = position % 8;
-    this->pieceColor = (CHESS::COLOR)(pieceData & CHESS::BLACKWHITE);
-    this->pieceType = (PIECE::TYPE)(pieceData & 7);
-    this->pieceData = pieceData;
+    setPieceData(pieceData);
     this->status = status;
     this->mousestatus = MOUSE::NONE;
     this->renderPosition = INTERFACE::POSBOARD;
@@ -47,16 +43,18 @@ void Piece::setPieceColor(int pieceColor) {
     setPiece(pieceColor, this->pieceType);
 }
 void Piece::setPieceData(int pieceData) {
-    setPiece(pieceData & CHESS::ALLCOLOR, pieceData & PIECE::ALLTYPE);
+    setPiece(pieceData & CHESS::BOTHCOLOR, pieceData & PIECE::ALLTYPE);
 }
 void Piece::setPiece(int pieceColor, int pieceType) {
     this->pieceColor = (CHESS::COLOR) pieceColor;
     this->pieceType = (PIECE::TYPE) pieceType;
     this->pieceData = pieceColor | pieceType;
+    setIsPrint(pieceData != PIECE::NONE);
 }
-void Piece::setMouseStatus(int mousestatus)
+void Piece::setMouseStatus(int mousestatus, Point mousePosition)
 {
     this->mousestatus = (MOUSE::STATUS) mousestatus;
+    this->mousePosition = mousePosition;
 }
 void Piece::setPosition(int position)
 {
@@ -66,20 +64,30 @@ void Piece::setPosition(int position)
 }
 
 void Piece::update(const Theme* theme) {
+    if (!isPrint) return;
     double size_pBoard = renderSize.x;
     const sf::Texture& texture = theme->getPieceTexture(pieceData);
     sf::Vector2u size = texture.getSize();
     if (size == sf::Vector2u(0, 0)) return;
 
-    int printPosx = renderPosition.x + posx * size_pBoard;
-    int printPosy = renderPosition.y + (7 - posy) * size_pBoard;
-    
+    Point printPos;
+    if (mousestatus != MOUSE::HOLD) {
+        printPos.x = renderPosition.x + posx * size_pBoard;
+        printPos.y = renderPosition.y + (7 - posy) * size_pBoard;
+        setPriorityPrint(1);
+    }
+    else {
+        printPos = mousePosition - renderSize / 2;
+        setPriorityPrint(100);
+    }
+
     sprite.setTexture(texture);
     sprite.setScale(size_pBoard / size.x, size_pBoard / size.y);
-    sprite.setPosition(printPosx, printPosy);
+    sprite.setPosition(printPos.x, printPos.y);
 }
 
 void Piece::render(sf::RenderTarget& target, sf::RenderStates state)
 {
+    if (!isPrint) return;
     target.draw(sprite);
 }

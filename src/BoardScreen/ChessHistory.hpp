@@ -27,9 +27,10 @@ public:
     ChessHistory();
     ~ChessHistory();
     void addMove(const MovingStore move);
-    void undoMove();
+    void popMove();
     void loadHistory(std::string filename = "dat/history.txt");
     void saveHistory(std::string filename = "dat/history.txt");
+    int getCntMove() const;
     MovingStore getLastMove() const;
 
     bool isCastlePossible(int color, int side) const;

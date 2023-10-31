@@ -14,6 +14,7 @@ private:
     PIECE::TYPE pieceType;
     int status; // 0: none, 1: alive, 2: dead, 3: viewed
     MOUSE::STATUS mousestatus; // 0: none, 1: pointed, 2: selected, 3: hold, 4: unpressed
+    Point mousePosition;
 
 private:
     sf::Sprite sprite;
@@ -29,7 +30,7 @@ public:
     void setPieceColor(int pieceColor);
     void setPieceData(int pieceData);
     void setPiece(int pieceColor, int pieceType);
-    void setMouseStatus(int mousestatus);
+    void setMouseStatus(int mousestatus, Point mousePosition = Point(0, 0));
     void setPosition(int position);
 
 public: // front-end

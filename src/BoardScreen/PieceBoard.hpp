@@ -10,6 +10,8 @@
 
 class PieceBoard {
 private:
+    sf::Shader shader;
+    sf::RenderStates state;
     Theme* theme;
     // list const position: board, analysis
     Point boardPosition;
@@ -35,9 +37,13 @@ private:
     CHESS::COLOR winner;
 
     bool isPieceSelected;
-    int selectedPiecePos;
-    std::vector<int> possiblePosList; // all position is prepared to move
+    bool isPieceHold;
     bool isCheck;
+    int selectedPiecePos;
+    int holdPiecePos;
+    int prePosition, curPosition;
+    std::vector<int> possiblePosList; // all position is prepared to move
+    std::vector<int> viewPosList;   /// all position which is right clicked
 
     /// history of game
     ChessHistory* history;
@@ -45,25 +51,34 @@ private:
 public:
     PieceBoard();
     ~PieceBoard();
+
+private:
+
     const Piece* getPiece(int position) const;
     const Piece* getPiece(int posx, int posy) const;
     const ChessHistory* getHistory() const;
+    int getPieceData(int position) const;
+    int getPieceColor(int position) const;
+    int getPieceType(int position) const;
     std::vector<int> getAllPieceData();
 
-    // bool isBoardLegal(std::vector<int> dataPieceList) const;
-    int ifMoveLegalThisTurn(int startpos, int endpos) const;
-    int ifMoveLegalThisTurn(int startpos, int endpos, std::vector<int> tmpDataPieceList) const;
+    bool ifCellAttacked(int position, int myTurn) const; // check if cell is threaten by the opponent, prevent CASTLE
+    bool ifControll(int startpos, int endpos) const;  // check if this cell is controlled
+    int ifMoveLegalWithoutCheck(int startpos, int endpos) const;
+    int ifMoveLegalWithoutCheck(int startpos, int endpos, std::vector<int> tmpDataPieceList) const; // check if move is legal, except Check
     int ifMoveLegal(int startpos, int endpos) const;
     int ifMoveLegal(int startx, int starty, int endx, int endy) const;
     std::vector<int> getPossibleMove(int startpos) const;
-    std::vector<sf::Vector2i> getAllPossibleMove() const;
+    std::vector<sf::Vector2i> getAllPossibleMove() const;   /// get all possible move of current turn
 
-    bool ifCheck() const;
-    bool ifCheckMate() const;
+    int getKingPosition() const;
+    bool ifCheck() const;   /// check if current turn is checked
+    bool ifCheckMate() const;  /// check if current turn is checked and no possible move
+    bool ifStaleMate() const;  /// check if current turn is not checked and no possible move
 
-
-    void MakeMove(int startpos, int endpos);
-    void MakeMove(int startx, int starty, int endx, int endy); //x, y -> x', y'
+    int TryMove(int startpos, int endpos);         /// move selected piece to selected position, without changing visual but changing data. must call undomove() after processing
+    bool MakeMove(int startpos, int endpos);
+    bool UndoMove();
 
     void NewGame();
 

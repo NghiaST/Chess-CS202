@@ -4,6 +4,10 @@
 #include <bits/stdc++.h>
 
 PieceBoard::PieceBoard() {
+    if (!shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment)) {
+        std::cout << "Error loading shader" << std::endl;
+    }
+    state.shader = &shader;
     theme = new Theme();
     pieceList.assign(64, nullptr);
     for(auto it = pieceList.begin(); it != pieceList.end(); ++it) {
@@ -39,6 +43,18 @@ const ChessHistory* PieceBoard::getHistory() const {
     return history;
 }
 
+int PieceBoard::getPieceData(int position) const {
+    return dataPieceList[position];
+}
+
+int PieceBoard::getPieceColor(int position) const {
+    return dataPieceList[position] & CHESS::BLACKWHITE;
+}
+
+int PieceBoard::getPieceType(int position) const {
+    return dataPieceList[position] & PIECE::ALLTYPE;
+}
+
 std::vector<int> PieceBoard::getAllPieceData()
 {
     std::vector<int> res;
@@ -48,10 +64,60 @@ std::vector<int> PieceBoard::getAllPieceData()
     return res;
 }
 
-int PieceBoard::ifMoveLegalThisTurn(int startpos, int endpos) const {
-    return ifMoveLegalThisTurn(startpos, endpos, dataPieceList);
+bool PieceBoard::ifCellAttacked(int position, int myTurn) const {
+    for(int i = 0; i < 64; i++) {
+        if ((dataPieceList[i] & myTurn) && ifControll(i, position)) {
+            return true;
+        }
+    }
+    return false;
 }
-int PieceBoard::ifMoveLegalThisTurn(int startpos, int endpos, std::vector<int> tmpDataPieceList) const
+
+bool PieceBoard::ifControll(int startpos, int endpos) const {
+    int pieceType = dataPieceList[startpos] & PIECE::ALLTYPE;
+    int pieceColor = dataPieceList[startpos] & CHESS::BLACKWHITE;
+    int curPieceColor = dataPieceList[endpos] & CHESS::BLACKWHITE;
+    sf::Vector2i startCoord(startpos / 8, startpos % 8);
+    sf::Vector2i endCoord(endpos / 8, endpos % 8);
+    sf::Vector2i diff = endCoord - startCoord;
+    int direct = (pieceColor == CHESS::WHITE) ? 1 : -1;
+
+    if (pieceType == PIECE::PAWN) {
+        if (curPieceColor == pieceColor) {
+            return ILLEGAL;
+        }
+        else {
+            if (abs(diff.x) == 1 && direct * diff.y == 1) {
+                return LEGAL;
+            }
+            else {
+                return ILLEGAL;
+            }
+        }
+    }
+    else if (pieceType == PIECE::KING) {
+        if (curPieceColor == pieceColor) {
+            return ILLEGAL;
+        }
+        else {
+            int distance = std::max(abs(diff.x), abs(diff.y));
+            if (distance == 1) {
+                return LEGAL;
+            }
+            else {
+                return ILLEGAL;
+            }
+        }
+    }
+    else {
+        return ifMoveLegalWithoutCheck(startpos, endpos);
+    }
+}
+
+int PieceBoard::ifMoveLegalWithoutCheck(int startpos, int endpos) const {
+    return ifMoveLegalWithoutCheck(startpos, endpos, dataPieceList);
+}
+int PieceBoard::ifMoveLegalWithoutCheck(int startpos, int endpos, std::vector<int> tmpDataPieceList) const
 {
     std::function<int(int)> getPieceType = [&](int position) {
         return tmpDataPieceList[position] & PIECE::ALLTYPE;
@@ -220,8 +286,20 @@ int PieceBoard::ifMoveLegalThisTurn(int startpos, int endpos, std::vector<int> t
 }
 
 int PieceBoard::ifMoveLegal(int startpos, int endpos) const {
-    int status = ifMoveLegalThisTurn(startpos, endpos);
+    int status = ifMoveLegalWithoutCheck(startpos, endpos);
     if (status == ILLEGAL) return status;
+    if (status == CASTLE) {
+        int direct = endpos < startpos ? -8 : 8;
+        printf("%d %d %d\n", startpos, endpos, direct);
+        for(int i = 0; i < 3; i++) {
+            int curpos = startpos + direct * i;
+            if (ifCellAttacked(curpos, turn ^ CHESS::BOTHCOLOR)) {
+                printf("%d ioashnfgmd\n", curpos);
+                return ILLEGAL;
+            }
+        }
+        printf("aUGHIBUs\n");
+    }
 
     std::vector<int> newDataPieceList = dataPieceList;
     newDataPieceList[endpos] = newDataPieceList[startpos];
@@ -246,7 +324,7 @@ int PieceBoard::ifMoveLegal(int startpos, int endpos) const {
         }
     }
     for(int i = 0; i < 64; i++) {
-        if (ifMoveLegalThisTurn(i, kingPos, newDataPieceList) != ILLEGAL) {
+        if (ifMoveLegalWithoutCheck(i, kingPos, newDataPieceList) != ILLEGAL) {
             return ILLEGAL;
         }
     }
@@ -271,13 +349,24 @@ std::vector<int> PieceBoard::getPossibleMove(int startpos) const
 std::vector<sf::Vector2i> PieceBoard::getAllPossibleMove() const
 {
     std::vector<sf::Vector2i> legalMove;
-    for(int i = 0; i < 64; i++)
-    for (int j = 0; j < 64; j++) {
-        if (ifMoveLegal(i, j)) {
-            legalMove.push_back(sf::Vector2i(i, j));
+    for(int i = 0; i < 64; i++) 
+    if (dataPieceList[i] & turn) {
+        for (int j = 0; j < 64; j++) {
+            if (ifMoveLegal(i, j)) {
+                legalMove.push_back(sf::Vector2i(i, j));
+            }
         }
     }
     return legalMove;
+}
+
+int PieceBoard::getKingPosition() const {
+    for(int i = 0; i < 64; i++) {
+        if (dataPieceList[i] == (PIECE::KING + turn)) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 bool PieceBoard::ifCheck() const {
@@ -288,17 +377,19 @@ bool PieceBoard::ifCheck() const {
             break;
         }
     }
-    for(int i = 0; i < 64; i++) {
-        if (ifMoveLegalThisTurn(i, kingPos) != ILLEGAL) {
-            return true;
-        }
-    }
-    return false;
+    return ifCellAttacked(kingPos, turn ^ CHESS::BOTHCOLOR);
 }
 
-void PieceBoard::MakeMove(int startpos, int endpos) {
-    printf("%d %d\n", startpos, endpos);
-    int status = ifMoveLegal(startpos, endpos);
+bool PieceBoard::ifCheckMate() const {
+    return ifCheck() && getAllPossibleMove().size() == 0;
+}
+
+bool PieceBoard::ifStaleMate() const {
+    return !ifCheck() && getAllPossibleMove().size() == 0;
+}
+
+int PieceBoard::TryMove(int startpos, int endpos) {
+    int status = ifMoveLegalWithoutCheck(startpos, endpos);
     history->addMove(MovingStore(startpos, endpos, pieceList[startpos]->getPieceData(), pieceList[endpos]->getPieceData(), status));
 
     dataPieceList[endpos] = dataPieceList[startpos];
@@ -314,12 +405,53 @@ void PieceBoard::MakeMove(int startpos, int endpos) {
         dataPieceList[rookEndx * 8 + rookPosy] = dataPieceList[rookPosx * 8 + rookPosy];
         dataPieceList[rookPosx * 8 + rookPosy] = PIECE::NONE;
     }
-    turn = (CHESS::COLOR) (turn ^ CHESS::ALLCOLOR);
+    turn = (CHESS::COLOR) (turn ^ CHESS::BOTHCOLOR);
+    return status;
 }
 
-void PieceBoard::MakeMove(int startx, int starty, int endx, int endy) {
-    // code to make move on the board
-    MakeMove(startx * 8 + starty, endx * 8 + endy);
+bool PieceBoard::MakeMove(int startpos, int endpos) {
+    if (dataPieceList[startpos] & turn != turn) return false;
+    int status = ifMoveLegal(startpos, endpos);
+    if (status == ILLEGAL) return false;
+    printf("%d %d\n", startpos, endpos);
+    history->addMove(MovingStore(startpos, endpos, pieceList[startpos]->getPieceData(), pieceList[endpos]->getPieceData(), status));
+
+    dataPieceList[endpos] = dataPieceList[startpos];
+    dataPieceList[startpos] = PIECE::NONE;
+    if (status == ENPASSANT) {
+        int direct = dataPieceList[startpos] & CHESS::WHITE ? 1 : -1;
+        dataPieceList[endpos - direct] = PIECE::NONE;
+    }
+    if (status == CASTLE) {
+        int rookPosx = (endpos < startpos ? 0 : 7);
+        int rookPosy = startpos % 8;
+        int rookEndx = (endpos < startpos ? 3 : 5);
+        dataPieceList[rookEndx * 8 + rookPosy] = dataPieceList[rookPosx * 8 + rookPosy];
+        dataPieceList[rookPosx * 8 + rookPosy] = PIECE::NONE;
+    }
+    turn = (CHESS::COLOR) (turn ^ CHESS::BOTHCOLOR);
+    return true;
+}
+
+bool PieceBoard::UndoMove() {
+    if (!history->getCntMove()) return false;
+    MovingStore lastMove = history->getLastMove();
+    dataPieceList[lastMove.prePos] = lastMove.preData;
+    dataPieceList[lastMove.curPos] = lastMove.curData;
+    if (lastMove.moveStatus == ENPASSANT) {
+        int direct = dataPieceList[lastMove.prePos] & CHESS::WHITE ? 1 : -1;
+        dataPieceList[lastMove.curPos - direct] = lastMove.curData;
+    }
+    if (lastMove.moveStatus == CASTLE) {
+        int rookPosx = (lastMove.curPos < lastMove.prePos ? 0 : 7);
+        int rookPosy = lastMove.prePos % 8;
+        int rookEndx = (lastMove.curPos < lastMove.prePos ? 3 : 5);
+        dataPieceList[rookPosx * 8 + rookPosy] = dataPieceList[rookEndx * 8 + rookPosy];
+        dataPieceList[rookEndx * 8 + rookPosy] = PIECE::NONE;
+    }
+    turn = (CHESS::COLOR) (turn ^ CHESS::BOTHCOLOR);
+    history->popMove();
+    return true;
 }
 
 void PieceBoard::NewGame() {
@@ -358,73 +490,122 @@ void PieceBoard::NewGame() {
     }
 }
 
-void PieceBoard::handleEvent(const sf::Event& event, const Point mousePos, double eventClock) {
+void PieceBoard::handleEvent(const sf::Event& event, const Point mousePosition, double eventClock) {
     if (event.type == sf::Event::MouseButtonPressed) {
         if (event.mouseButton.button == sf::Mouse::Left) {
             if (gameStatus == NEWGAME || gameStatus == ONGOING) {
-                if (board->isMouseOn(mousePos)) {
+                if (board->isMouseOn(mousePosition)) {
+                    viewPosList.clear();
                     Point coordChess;
-                    coordChess.x = (int) (mousePos.x - boardPosition.x) / (int)boardSize.x;
-                    coordChess.y = 7 - (int) (mousePos.y - boardPosition.y) / (int)boardSize.y;
+                    coordChess.x = (int) (mousePosition.x - boardPosition.x) / (int)boardSize.x;
+                    coordChess.y = 7 - (int) (mousePosition.y - boardPosition.y) / (int)boardSize.y;
                     int position = coordChess.x * 8 + coordChess.y;
                     if (!isPieceSelected) {
-                        if (getPiece(position)->getPieceColor() == turn) {
+                        if (getPieceColor(position) == turn) {
                             isPieceSelected = true;
+                            isPieceHold = true;
                             selectedPiecePos = position;
+                            holdPiecePos = position;
                             possiblePosList = getPossibleMove(position);
                         }
                     }
                     else {
                         if (selectedPiecePos == position) {
                             isPieceSelected = false;
-                            possiblePosList.clear();
+                            isPieceHold = true;
                         }
                         else /// when click other pos
-                        if (board->getStateCell(position) == Board::POSSIBLE || board->getStateCell(position) == Board::POSSIBLE_CAPTURE) {
-                            int prePosition = selectedPiecePos;
-                            int curPosition = position;
+                        if (MakeMove(selectedPiecePos, position)) {
                             isPieceSelected = false;
-                            selectedPiecePos = 0;
-                            MakeMove(prePosition, curPosition);
+                            prePosition = selectedPiecePos;
+                            curPosition = position;
                         }
-                        else if (getPiece(position)->getPieceColor() == turn) {
+                        else if (getPieceColor(position) == turn) {
                             isPieceSelected = true;
+                            isPieceHold = true;
                             selectedPiecePos = position;
+                            holdPiecePos = position;
                             possiblePosList = getPossibleMove(position);
+                        }
+                        else {
+                            isPieceSelected = false;
                         }
                     }
                 }
             }
         }
     }
+    else if (event.type == sf::Event::MouseButtonReleased) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            if (gameStatus == NEWGAME || gameStatus == ONGOING) {
+                if (board->isMouseOn(mousePosition)) {
+                    Point coordChess;
+                    coordChess.x = (int) (mousePosition.x - boardPosition.x) / (int)boardSize.x;
+                    coordChess.y = 7 - (int) (mousePosition.y - boardPosition.y) / (int)boardSize.y;
+                    int position = coordChess.x * 8 + coordChess.y;
+                    if (isPieceHold) {
+                        if (MakeMove(selectedPiecePos, position)) {
+                            isPieceSelected = false;
+                            isPieceHold = false;
+                            selectedPiecePos = 0;
+                            prePosition = selectedPiecePos;
+                            curPosition = position;
+                        }
+                        else {
+                            isPieceHold = false;
+                        }
+                    }
+                }
+                else {
+                    isPieceHold = false;
+                }
+            }
+        }
+    }
+
     for(int i = 0; i < 64; i++) {
         pieceList[i]->setPieceData(dataPieceList[i]);
+        pieceList[i]->setMouseStatus(MOUSE::NONE);
         board->setStateCell(i, Board::COMMON);
     }
-    if (isPieceSelected) {
+    if (ifCheck()) {
+        board->setStateCell(getKingPosition(), Board::CHECK);
+    }
+    if (ifCheckMate()) {
+        board->setStateCell(getKingPosition(), Board::CHECKMATE);
+    }
+    if (history->getCntMove()) {
+        MovingStore lastMove = history->getLastMove();
+        board->setStateCell(lastMove.prePos, Board::CHECKMATE);
+        board->setStateCell(lastMove.curPos, Board::CHECKMATE);
+    }
+    if (isPieceSelected | isPieceHold) {
         board->setStateCell(selectedPiecePos, Board::SELECTED);
         for(int u : possiblePosList) 
             board->setStateCell(u, Board::POSSIBLE);
     }
-
-    // add: check, checkmate
+    if (isPieceHold) {
+        board->setStateCell(holdPiecePos, Board::SELECTED);
+        pieceList[holdPiecePos]->setMouseStatus(MOUSE::HOLD, mousePosition);
+    }
 }
 
 void PieceBoard::update() {
     board->update(theme);
     for(int i = 0; i < 64; i++) {
-        if (pieceList[i]->getPieceData() != PIECE::NONE) {
-            pieceList[i]->update(theme);
-        }
+        pieceList[i]->update(theme);
     }
 }
 
 void PieceBoard::render(sf::RenderTarget& target, sf::RenderStates state)
 {
-    board->render(target);
-    for(int i = 0; i < 64; i++) {
-        if (pieceList[i]->getPieceData() != PIECE::NONE) {
-            pieceList[i]->render(target);
-        }
+    state = this->state;
+    board->render(target, state);
+    std::vector<std::pair<int, int>> piecePriority;
+    for(int i = 0; i < 64; i++)
+        piecePriority.emplace_back(pieceList[i]->getPriorityPrint(), i);
+    std::sort(piecePriority.begin(), piecePriority.end());
+    for(std::pair<int, int> data : piecePriority) {
+        pieceList[data.second]->render(target, state);
     }
 }

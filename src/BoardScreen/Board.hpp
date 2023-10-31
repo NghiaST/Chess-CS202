@@ -17,7 +17,8 @@ public:
         CHECKMATE = 5
     };
 private:
-    std::vector<sf::Sprite> spriteSquareList;
+    std::vector<sf::Sprite> spriteBoardList;
+    std::vector<sf::Sprite> spriteBoardShaderList;
     // stateBoard[i] = 0: common, 1: selected, 2: possible move, 3: possible capture, 4: check, 5: checkmate
     std::vector<int> stateBoard;
     double sizeBoard;

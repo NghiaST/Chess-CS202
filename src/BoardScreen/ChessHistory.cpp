@@ -51,7 +51,7 @@ void ChessHistory::addMove(const MovingStore move) {
     }
 }
 
-void ChessHistory::undoMove() {
+void ChessHistory::popMove() {
     if (cntMove == 0) return;
     MovingStore move = moveList.back();
     moveList.pop_back();
@@ -102,6 +102,10 @@ void ChessHistory::saveHistory(std::string filename) {
     std::string encoded = encodeHistory();
     fout << encoded << std::endl;
     fout.close();
+}
+
+int ChessHistory::getCntMove() const {
+    return cntMove;
 }
 
 MovingStore ChessHistory::getLastMove() const {

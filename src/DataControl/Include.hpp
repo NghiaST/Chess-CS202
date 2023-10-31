@@ -17,7 +17,7 @@ class CHESS {
 public:
     enum COLOR{NONE = 0, WHITE = 8, BLACK = 16};
     static const int BLACKWHITE = COLOR::WHITE | COLOR::BLACK;
-    static const int ALLCOLOR = 24;
+    static const int BOTHCOLOR = 24;
 };
 class MOUSE {
 public:

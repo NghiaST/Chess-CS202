@@ -27,7 +27,8 @@ int Board::getStateCell(int index)
 
 void Board::update(const Theme* theme) {
     double sizeBoard = renderSize.x / 8;
-    spriteSquareList.clear();
+    spriteBoardList.clear();
+    spriteBoardShaderList.clear();
     const sf::Texture& boardTexture = theme->getBoardTexture();
     const sf::Texture& boardSelectedTexture = theme->getBoardSelectedTexture();
     const sf::Texture& boardMoveTexture = theme->getBoardMoveTexture();
@@ -57,7 +58,7 @@ void Board::update(const Theme* theme) {
             
             sprite.setScale(sizeBoard / size.x * 2, sizeBoard / size.y);
             sprite.setPosition(printPosx, printPosy);
-            spriteSquareList.push_back(sprite);
+            spriteBoardList.push_back(sprite);
         }
 
         // add board if state is: selected, move, capture, check, checkmate
@@ -84,13 +85,16 @@ void Board::update(const Theme* theme) {
             }
             sprite.setScale(sizeBoard / sizeOther.x, sizeBoard / sizeOther.y);
             sprite.setPosition(printPosx, printPosy);
-            spriteSquareList.push_back(sprite);
+            spriteBoardShaderList.push_back(sprite);
         }
     }
 }
 
 void Board::render(sf::RenderTarget& target, sf::RenderStates state) {
-    for(sf::Sprite sprite : spriteSquareList) {
+    for(sf::Sprite sprite : spriteBoardList) {
         target.draw(sprite);
+    }
+    for(sf::Sprite sprite : spriteBoardShaderList) {
+        target.draw(sprite, state);
     }
 }
