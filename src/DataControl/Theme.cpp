@@ -10,7 +10,7 @@ const std::string ThemeData::FontDirectory = "asset/font/";
 const std::vector<std::string> ThemeData::BackgroundNameList = {"universe-boom.jpg", "Background_01.png", "Background_02.png", "Background_03.png", "Background_04.png", "Background_05.png", "Background_06.png", "Background_07.png", "Background_08.png", "Background_09.png"};
 const std::vector<std::string> ThemeData::PieceNameList = {"default", "Piece_01", "Piece_02", "Piece_03", "Piece_04", "Piece_05", "Piece_06", "Piece_07", "Piece_08", "Piece_09"};
 const std::vector<std::string> ThemeData::BoardNameList = {"lichess.png", "Board_01.png", "Board_02.png", "Board_03.png", "Board_04.png", "Board_05.png", "Board_06.png", "Board_07.png", "Board_08.png", "Board_09.png"};
-const std::vector<std::string> ThemeData::FontNameList = {"arial.ttf", "Font_01.ttf", "Font_02.ttf", "Font_03.ttf", "Font_04.ttf", "Font_05.ttf", "Font_06.ttf", "Font_07.ttf", "Font_08.ttf", "Font_09.ttf"};
+const std::vector<std::string> ThemeData::FontNameList = {"Arial-bold.ttf", "Arial.ttf", "BelieveIt.ttf", "CarryYou.ttf", "ChristmasJumper.ttf", "CuteMonster.ttf", "DailyBold.ttf", "Debrosee.ttf", "Hippiemods.otf", "MouldyCheese.ttf", "ShortBaby.ttf", "TimesNewRoman-bold.ttf", "TimesNewRoman.ttf", "Vni-times-bold.ttf", "Vni-times.ttf"};
 const std::vector<int> ThemeData::FontSizeList = {8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
 const int ThemeData::ThemeCount = 10;
 const ThemeIndex ThemeData::ThemeIndexDefault = ThemeIndex(0, 0, 0, 0, 0);
@@ -107,8 +107,8 @@ Theme::Theme() : ThemeIndex(ThemeData::ThemeIndexDefault)
     this->BoardCaptureTexture   = std::make_unique<sf::Texture>();
     this->BoardCheckTexture     = std::make_unique<sf::Texture>();
     this->BoardCheckMateTexture = std::make_unique<sf::Texture>();
-    this->ColorButton = new ColorItemMulti(Color::ColorItemMultiDefault);
-    this->ColorText = new ColorItemMulti(Color::ColorItemMultiNoButton);
+    this->ColorButton = new ColorButMulti(Color::ColorButMultiDefault);
+    this->ColorText = new ColorButMulti(Color::ColorButMultiNoButton);
     this->setTheme(ThemeData::ThemeIndexDefault);
 }
 
@@ -138,8 +138,8 @@ void Theme::setTheme(const ThemeIndex themeIndex)
     if (!this->FontText.loadFromFile(this->FontName))
         printf("Error loading fonttext texture: %s\n", FontName.c_str());
     
-    this->ColorButton = new ColorItemMulti(Color::ColorItemMultiDefault);
-    this->ColorText = new ColorItemMulti(Color::ColorItemMultiNoButton);
+    this->ColorButton = new ColorButMulti(Color::ColorButMultiDefault);
+    this->ColorText = new ColorButMulti(Color::ColorButMultiNoButton);
 }
 
 void Theme::setTheme(const int themeIndex)
@@ -171,7 +171,7 @@ const sf::Texture& Theme::getBoardSelectedTexture() const
     return *this->BoardSelectedTexture;
 }
 
-const ColorItemMulti* Theme::getButtonColor() const
+const ColorButMulti* Theme::getButtonColor() const
 {
     return this->ColorButton;
 }
@@ -196,7 +196,7 @@ const sf::Texture& Theme::getBoardCheckMateTexture() const
     return *this->BoardCheckMateTexture;
 }
 
-const ColorItemMulti* Theme::getTextColor() const
+const ColorButMulti* Theme::getTextColor() const
 {
     return this->ColorText;
 }

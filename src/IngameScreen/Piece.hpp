@@ -34,8 +34,8 @@ public:
     void setPosition(int position);
 
 public: // front-end
-    void update(const Theme* theme) override;
-    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) override;
+    void update(const Theme* theme);
+    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const override;
 };
 
 #endif

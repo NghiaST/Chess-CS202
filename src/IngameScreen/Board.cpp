@@ -1,7 +1,7 @@
 #include "Board.hpp"
 
 Board::Board() 
-  : Graphic(true, 100, INTERFACE::POSBOARD)
+  : Graphic(INTERFACE::POSBOARD, Point(60, 60), true, 100)
 {
     stateBoard.resize(64);
     for(int i = 0; i < 64; i++) {
@@ -90,7 +90,7 @@ void Board::update(const Theme* theme) {
     }
 }
 
-void Board::render(sf::RenderTarget& target, sf::RenderStates state) {
+void Board::render(sf::RenderTarget& target, sf::RenderStates state) const {
     for(sf::Sprite sprite : spriteBoardList) {
         target.draw(sprite);
     }

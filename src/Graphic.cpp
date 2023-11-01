@@ -1,11 +1,11 @@
 #include "Graphic.hpp"
 
-Graphic::Graphic(bool isPrint, int priorityPrint, Point renderPosition, Point renderSize)
+Graphic::Graphic(Point renderPosition, Point renderSize, bool isPrint, int priorityPrint)
 {
-    this->isPrint = isPrint;
-    this->priorityPrint = priorityPrint;
     this->renderPosition = renderPosition;
     this->renderSize = renderSize;
+    this->isPrint = isPrint;
+    this->priorityPrint = priorityPrint;
 }
 
 Graphic::~Graphic()
@@ -38,7 +38,7 @@ const int& Graphic::getPriorityPrint() const {
     return priorityPrint;
 }
 
-const Point& Graphic::getrenderPosition() const {
+const Point& Graphic::getRenderPosition() const {
     return renderPosition;
 }
 

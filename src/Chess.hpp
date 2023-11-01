@@ -4,17 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include "DataControl/Include.hpp"
 #include "DataControl/Theme.hpp"
-#include "BoardScreen/PieceBoard.hpp"
+#include "IngameScreen/IngameScreen.hpp"
 
 class Chess {
-private:
-    PieceBoard* pieceBoard;
-    sf::RenderWindow mWindow;
-private:
-    Point windowSize;
-    sf::Vector2i renderPosition;
-    sf::Clock clock;
-
 public:
     Chess();
     ~Chess();
@@ -24,7 +16,14 @@ private:
     void processEvents();
     void update();
     void render();
-    
+
+private:
+    sf::RenderWindow mWindow;
+    IngameScreen* pieceBoard;
+
+    Point windowSize;
+    Point renderPosition;
+    sf::Clock clock;
 };
 
 #endif

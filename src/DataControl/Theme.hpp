@@ -49,8 +49,8 @@ private:
     std::unique_ptr<sf::Texture> BoardCheckTexture;
     std::unique_ptr<sf::Texture> BoardCheckMateTexture;
     
-    ColorItemMulti* ColorButton;
-    ColorItemMulti* ColorText;
+    ColorButMulti* ColorButton;
+    ColorButMulti* ColorText;
     sf::Font FontText;
     int FontSize;
 
@@ -69,8 +69,8 @@ public:
     const sf::Texture& getBoardCheckTexture() const;
     const sf::Texture& getBoardCheckMateTexture() const;
 
-    const ColorItemMulti* getButtonColor() const;
-    const ColorItemMulti* getTextColor() const;
+    const ColorButMulti* getButtonColor() const;
+    const ColorButMulti* getTextColor() const;
     const sf::Font getFont() const;
     const int getFontSize() const;
 

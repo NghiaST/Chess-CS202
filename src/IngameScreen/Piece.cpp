@@ -67,8 +67,8 @@ void Piece::update(const Theme* theme) {
     if (!isPrint) return;
     double size_pBoard = renderSize.x;
     const sf::Texture& texture = theme->getPieceTexture(pieceData);
-    sf::Vector2u size = texture.getSize();
-    if (size == sf::Vector2u(0, 0)) return;
+    Point size = texture.getSize();
+    if (size == Point(0, 0)) return;
 
     Point printPos;
     if (mousestatus != MOUSE::HOLD) {
@@ -86,7 +86,7 @@ void Piece::update(const Theme* theme) {
     sprite.setPosition(printPos.x, printPos.y);
 }
 
-void Piece::render(sf::RenderTarget& target, sf::RenderStates state)
+void Piece::render(sf::RenderTarget& target, sf::RenderStates state) const
 {
     if (!isPrint) return;
     target.draw(sprite);

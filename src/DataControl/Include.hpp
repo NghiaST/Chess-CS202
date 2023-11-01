@@ -25,19 +25,30 @@ public:
 };
 class INTERFACE {
 public:
-    static const Point POSBOARD;
+    static const sf::Vector2f POSBOARD;
     static const double SIZEBOARD;
 };
-struct Point {
-    double x, y;
-    Point(double x = 0, double y = 0);
-    Point(const sf::Vector2i& vector) : x(vector.x), y(vector.y) {}
-    Point(const sf::Vector2u& vector) : x(vector.x), y(vector.y) {}
-    Point(const sf::Vector2f& vector) : x(vector.x), y(vector.y) {}
-    Point operator + (const Point& p) const { return Point(x + p.x, y + p.y); }
-    Point operator - (const Point& p) const { return Point(x - p.x, y - p.y); }
-    Point operator * (const double& k) const { return Point(x * k, y * k); }
-    Point operator / (const double& k) const { return Point(x / k, y / k); }
+
+class Point {
+public:
+    Point();
+    Point(double x, double y);
+    Point(const sf::Vector2f& vector);
+    Point(const sf::Vector2i& vector);
+    Point(const sf::Vector2u& vector);
+    Point operator+(const Point& other) const;
+    Point operator-(const Point& other) const;
+    Point operator*(double other) const;
+    friend Point operator*(double other, const Point& p);
+    Point operator/(double other) const;
+    Point div(int other) const;
+    bool operator==(const Point& other) const;
+    sf::Vector2f to2f() const;
+    sf::Vector2i to2i() const;
+    sf::Vector2u to2u() const;
+
+public:
+    int x, y;
 };
 
 #endif

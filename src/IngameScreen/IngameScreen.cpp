@@ -1,9 +1,9 @@
-#include "PieceBoard.hpp"
+#include "IngameScreen.hpp"
 #include <iostream>
 #include <cmath>
 #include <bits/stdc++.h>
 
-PieceBoard::PieceBoard() {
+IngameScreen::IngameScreen() {
     if (!shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment)) {
         std::cout << "Error loading shader" << std::endl;
     }
@@ -26,36 +26,36 @@ PieceBoard::PieceBoard() {
     NewGame();
 }
 
-PieceBoard::~PieceBoard() {
+IngameScreen::~IngameScreen() {
     for(auto it = pieceList.begin(); it != pieceList.end(); ++it) {
         delete *it;
     }
 }
 
-const Piece* PieceBoard::getPiece(int position) const {
+const Piece* IngameScreen::getPiece(int position) const {
     return pieceList[position];
 }
-const Piece* PieceBoard::getPiece(int posx, int posy) const {
+const Piece* IngameScreen::getPiece(int posx, int posy) const {
     return getPiece(posx * 8 + posy);
 }
 
-const ChessHistory* PieceBoard::getHistory() const {
+const ChessHistory* IngameScreen::getHistory() const {
     return history;
 }
 
-int PieceBoard::getPieceData(int position) const {
+int IngameScreen::getPieceData(int position) const {
     return dataPieceList[position];
 }
 
-int PieceBoard::getPieceColor(int position) const {
+int IngameScreen::getPieceColor(int position) const {
     return dataPieceList[position] & CHESS::BLACKWHITE;
 }
 
-int PieceBoard::getPieceType(int position) const {
+int IngameScreen::getPieceType(int position) const {
     return dataPieceList[position] & PIECE::ALLTYPE;
 }
 
-std::vector<int> PieceBoard::getAllPieceData()
+std::vector<int> IngameScreen::getAllPieceData()
 {
     std::vector<int> res;
     for(int i = 0; i < 64; i++) {
@@ -64,7 +64,7 @@ std::vector<int> PieceBoard::getAllPieceData()
     return res;
 }
 
-bool PieceBoard::ifCellAttacked(int position, int myTurn) const {
+bool IngameScreen::ifCellAttacked(int position, int myTurn) const {
     for(int i = 0; i < 64; i++) {
         if ((dataPieceList[i] & myTurn) && ifControll(i, position)) {
             return true;
@@ -73,13 +73,13 @@ bool PieceBoard::ifCellAttacked(int position, int myTurn) const {
     return false;
 }
 
-bool PieceBoard::ifControll(int startpos, int endpos) const {
+bool IngameScreen::ifControll(int startpos, int endpos) const {
     int pieceType = dataPieceList[startpos] & PIECE::ALLTYPE;
     int pieceColor = dataPieceList[startpos] & CHESS::BLACKWHITE;
     int curPieceColor = dataPieceList[endpos] & CHESS::BLACKWHITE;
-    sf::Vector2i startCoord(startpos / 8, startpos % 8);
-    sf::Vector2i endCoord(endpos / 8, endpos % 8);
-    sf::Vector2i diff = endCoord - startCoord;
+    Point startCoord(startpos / 8, startpos % 8);
+    Point endCoord(endpos / 8, endpos % 8);
+    Point diff = endCoord - startCoord;
     int direct = (pieceColor == CHESS::WHITE) ? 1 : -1;
 
     if (pieceType == PIECE::PAWN) {
@@ -114,10 +114,10 @@ bool PieceBoard::ifControll(int startpos, int endpos) const {
     }
 }
 
-int PieceBoard::ifMoveLegalWithoutCheck(int startpos, int endpos) const {
+int IngameScreen::ifMoveLegalWithoutCheck(int startpos, int endpos) const {
     return ifMoveLegalWithoutCheck(startpos, endpos, dataPieceList);
 }
-int PieceBoard::ifMoveLegalWithoutCheck(int startpos, int endpos, std::vector<int> tmpDataPieceList) const
+int IngameScreen::ifMoveLegalWithoutCheck(int startpos, int endpos, std::vector<int> tmpDataPieceList) const
 {
     std::function<int(int)> getPieceType = [&](int position) {
         return tmpDataPieceList[position] & PIECE::ALLTYPE;
@@ -130,9 +130,9 @@ int PieceBoard::ifMoveLegalWithoutCheck(int startpos, int endpos, std::vector<in
         return ILLEGAL;
     }
 
-    sf::Vector2i startCoord(startpos / 8, startpos % 8);
-    sf::Vector2i endCoord(endpos / 8, endpos % 8);
-    sf::Vector2i diff = endCoord - startCoord;
+    Point startCoord(startpos / 8, startpos % 8);
+    Point endCoord(endpos / 8, endpos % 8);
+    Point diff = endCoord - startCoord;
     int pieceType = getPieceType(startpos);
     int pieceColor = getPieceColor(startpos);
     int horizontal = (pieceColor == CHESS::WHITE ? startCoord.y : 7 - startCoord.y);
@@ -184,7 +184,7 @@ int PieceBoard::ifMoveLegalWithoutCheck(int startpos, int endpos, std::vector<in
         else {
             int stepx = (diff.x >= 0 ? diff.x > 0 ? 1 : 0 : -1);
             int stepy = (diff.y >= 0 ? diff.y > 0 ? 1 : 0 : -1);
-            int totaldiff = abs(diff.x) | abs(diff.y);
+            int totaldiff = (int)abs(diff.x) | (int)abs(diff.y);
             for (int i = 1; i < totaldiff; i++) {
                 if (getPieceType((startCoord.x + i * stepx) * 8 + (startCoord.y + i * stepy)) != PIECE::NONE) {
                     return ILLEGAL;
@@ -285,7 +285,7 @@ int PieceBoard::ifMoveLegalWithoutCheck(int startpos, int endpos, std::vector<in
     return ILLEGAL;
 }
 
-int PieceBoard::ifMoveLegal(int startpos, int endpos) const {
+int IngameScreen::ifMoveLegal(int startpos, int endpos) const {
     int status = ifMoveLegalWithoutCheck(startpos, endpos);
     if (status == ILLEGAL) return status;
     if (status == CASTLE) {
@@ -294,11 +294,9 @@ int PieceBoard::ifMoveLegal(int startpos, int endpos) const {
         for(int i = 0; i < 3; i++) {
             int curpos = startpos + direct * i;
             if (ifCellAttacked(curpos, turn ^ CHESS::BOTHCOLOR)) {
-                printf("%d ioashnfgmd\n", curpos);
                 return ILLEGAL;
             }
         }
-        printf("aUGHIBUs\n");
     }
 
     std::vector<int> newDataPieceList = dataPieceList;
@@ -331,11 +329,11 @@ int PieceBoard::ifMoveLegal(int startpos, int endpos) const {
     return status;
 }
 
-int PieceBoard::ifMoveLegal(int startx, int starty, int endx, int endy) const {
+int IngameScreen::ifMoveLegal(int startx, int starty, int endx, int endy) const {
     return ifMoveLegal(startx * 8 + starty, endx * 8 + endy);
 }
 
-std::vector<int> PieceBoard::getPossibleMove(int startpos) const
+std::vector<int> IngameScreen::getPossibleMove(int startpos) const
 {
     std::vector<int> legalMove;
     for (int i = 0; i < 64; i++) {
@@ -346,21 +344,21 @@ std::vector<int> PieceBoard::getPossibleMove(int startpos) const
     return legalMove;
 }
 
-std::vector<sf::Vector2i> PieceBoard::getAllPossibleMove() const
+std::vector<Point> IngameScreen::getAllPossibleMove() const
 {
-    std::vector<sf::Vector2i> legalMove;
+    std::vector<Point> legalMove;
     for(int i = 0; i < 64; i++) 
     if (dataPieceList[i] & turn) {
         for (int j = 0; j < 64; j++) {
             if (ifMoveLegal(i, j)) {
-                legalMove.push_back(sf::Vector2i(i, j));
+                legalMove.push_back(Point(i, j));
             }
         }
     }
     return legalMove;
 }
 
-int PieceBoard::getKingPosition() const {
+int IngameScreen::getKingPosition() const {
     for(int i = 0; i < 64; i++) {
         if (dataPieceList[i] == (PIECE::KING + turn)) {
             return i;
@@ -369,7 +367,7 @@ int PieceBoard::getKingPosition() const {
     return -1;
 }
 
-bool PieceBoard::ifCheck() const {
+bool IngameScreen::ifCheck() const {
     int kingPos = -1;
     for(int i = 0; i < 64; i++) {
         if (dataPieceList[i] == (PIECE::KING + turn)) {
@@ -380,15 +378,15 @@ bool PieceBoard::ifCheck() const {
     return ifCellAttacked(kingPos, turn ^ CHESS::BOTHCOLOR);
 }
 
-bool PieceBoard::ifCheckMate() const {
+bool IngameScreen::ifCheckMate() const {
     return ifCheck() && getAllPossibleMove().size() == 0;
 }
 
-bool PieceBoard::ifStaleMate() const {
+bool IngameScreen::ifStaleMate() const {
     return !ifCheck() && getAllPossibleMove().size() == 0;
 }
 
-int PieceBoard::TryMove(int startpos, int endpos) {
+int IngameScreen::TryMove(int startpos, int endpos) {
     int status = ifMoveLegalWithoutCheck(startpos, endpos);
     history->addMove(MovingStore(startpos, endpos, pieceList[startpos]->getPieceData(), pieceList[endpos]->getPieceData(), status));
 
@@ -409,7 +407,7 @@ int PieceBoard::TryMove(int startpos, int endpos) {
     return status;
 }
 
-bool PieceBoard::MakeMove(int startpos, int endpos) {
+bool IngameScreen::MakeMove(int startpos, int endpos) {
     if (dataPieceList[startpos] & turn != turn) return false;
     int status = ifMoveLegal(startpos, endpos);
     if (status == ILLEGAL) return false;
@@ -433,7 +431,7 @@ bool PieceBoard::MakeMove(int startpos, int endpos) {
     return true;
 }
 
-bool PieceBoard::UndoMove() {
+bool IngameScreen::UndoMove() {
     if (!history->getCntMove()) return false;
     MovingStore lastMove = history->getLastMove();
     dataPieceList[lastMove.prePos] = lastMove.preData;
@@ -454,7 +452,7 @@ bool PieceBoard::UndoMove() {
     return true;
 }
 
-void PieceBoard::NewGame() {
+void IngameScreen::NewGame() {
     dataPieceList = std::vector<int>(64, PIECE::NONE);
     dataPieceList[0]  = dataPieceList[56] = PIECE::ROOK + CHESS::WHITE;
     dataPieceList[8]  = dataPieceList[48] = PIECE::KNIGHT + CHESS::WHITE;
@@ -490,13 +488,18 @@ void PieceBoard::NewGame() {
     }
 }
 
-void PieceBoard::handleEvent(const sf::Event& event, const Point mousePosition, double eventClock) {
+void IngameScreen::handleEvent(const sf::Event& event) {
+    if (event.type == sf::Event::MouseMoved) {
+        mousePosition = Point(event.mouseMove.x, event.mouseMove.y);
+    }
+
     if (event.type == sf::Event::MouseButtonPressed) {
+        mousePosition = Point(event.mouseButton.x, event.mouseButton.y);
         if (event.mouseButton.button == sf::Mouse::Left) {
             if (gameStatus == NEWGAME || gameStatus == ONGOING) {
                 if (board->isMouseOn(mousePosition)) {
                     viewPosList.clear();
-                    Point coordChess;
+                    sf::Vector2i coordChess;
                     coordChess.x = (int) (mousePosition.x - boardPosition.x) / (int)boardSize.x;
                     coordChess.y = 7 - (int) (mousePosition.y - boardPosition.y) / (int)boardSize.y;
                     int position = coordChess.x * 8 + coordChess.y;
@@ -539,7 +542,7 @@ void PieceBoard::handleEvent(const sf::Event& event, const Point mousePosition, 
         if (event.mouseButton.button == sf::Mouse::Left) {
             if (gameStatus == NEWGAME || gameStatus == ONGOING) {
                 if (board->isMouseOn(mousePosition)) {
-                    Point coordChess;
+                    sf::Vector2i coordChess;
                     coordChess.x = (int) (mousePosition.x - boardPosition.x) / (int)boardSize.x;
                     coordChess.y = 7 - (int) (mousePosition.y - boardPosition.y) / (int)boardSize.y;
                     int position = coordChess.x * 8 + coordChess.y;
@@ -562,7 +565,15 @@ void PieceBoard::handleEvent(const sf::Event& event, const Point mousePosition, 
             }
         }
     }
+}
 
+void IngameScreen::update(sf::Time deltaTime) {
+    /// logic (time)
+    /*
+        code something here
+    */
+
+    /// update render
     for(int i = 0; i < 64; i++) {
         pieceList[i]->setPieceData(dataPieceList[i]);
         pieceList[i]->setMouseStatus(MOUSE::NONE);
@@ -588,16 +599,14 @@ void PieceBoard::handleEvent(const sf::Event& event, const Point mousePosition, 
         board->setStateCell(holdPiecePos, Board::SELECTED);
         pieceList[holdPiecePos]->setMouseStatus(MOUSE::HOLD, mousePosition);
     }
-}
 
-void PieceBoard::update() {
     board->update(theme);
     for(int i = 0; i < 64; i++) {
         pieceList[i]->update(theme);
     }
 }
 
-void PieceBoard::render(sf::RenderTarget& target, sf::RenderStates state)
+void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates state) const
 {
     state = this->state;
     board->render(target, state);
@@ -608,4 +617,13 @@ void PieceBoard::render(sf::RenderTarget& target, sf::RenderStates state)
     for(std::pair<int, int> data : piecePriority) {
         pieceList[data.second]->render(target, state);
     }
+
+    sf::Font ff;
+    ff.loadFromFile("asset/font/Hippiemods.otf");
+    StaticButton buttonHome(BUTTON_ID::ButtonHome + 100, Point(600, 100), Point(200, 60), &ff, Color::ColorButtonBlue, 20, "Hello0123456789, uikmERTgyjWorld!");
+    Button buttonH2(BUTTON_ID::ButtonHome + 101, Point(600, 300), Point(200, 60), &ff, Color::ColorButMultiBlue, 20, "Hello0123456789, uikmERTgsdfZZyjWorld!");
+    buttonHome.updateRender();
+    buttonH2.updateRender();
+    target.draw(buttonHome);
+    target.draw(buttonH2);
 }

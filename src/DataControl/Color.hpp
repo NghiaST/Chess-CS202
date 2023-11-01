@@ -4,20 +4,21 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-struct ColorItem {
+struct ColorButton {
     sf::Color FillColor;
     sf::Color TextColor;
     sf::Color OutlineColor;
-    ColorItem();
-    ColorItem(sf::Color FillColor, sf::Color TextColor, sf::Color OutlineColor);
+    ColorButton();
+    ColorButton(sf::Color FillColor, sf::Color TextColor, sf::Color OutlineColor);
 };
 
-class ColorItemMulti { /// note: statusColor = 0: none, 1: pointed, 2: selected, 3: hold
+class ColorButMulti { /// note: statusColor = 0: none, 1: pointed, 2: selected, 3: hold
 protected :
-    std::vector<ColorItem> listColor; /// suggested: size = 4
+    std::vector<ColorButton> listColor; /// suggested: size = 4
 public :
-    ColorItemMulti(std::vector<ColorItem> listColor);
-    ColorItem getColor(int statusColor);
+    ColorButMulti();
+    ColorButMulti(std::vector<ColorButton> listColor);
+    ColorButton get(int statusColor);
 };
 
 struct Color {
@@ -48,27 +49,27 @@ struct Color {
     static const sf::Color BrightPinkColor;
     static const sf::Color TransparentColor;
 
-    static const ColorItem ColorItemNoButton;
-    static const ColorItem ColorItemDefault;
-    static const ColorItem ColorItemRed;
-    static const ColorItem ColorItemGreen;
-    static const ColorItem ColorItemBlue;
-    static const ColorItem ColorItemBlack;
-    static const ColorItem ColorItemWhite;
-    static const ColorItem ColorItemOrange;
-    static const ColorItem ColorItemYellow;
-    static const ColorItem ColorItemLightGreen;
-    static const ColorItem ColorItemLightYellow;
-    static const ColorItem ColorItemLavenderBush;
+    static const ColorButton ColorButtonNoButton;
+    static const ColorButton ColorButtonDefault;
+    static const ColorButton ColorButtonRed;
+    static const ColorButton ColorButtonGreen;
+    static const ColorButton ColorButtonBlue;
+    static const ColorButton ColorButtonBlack;
+    static const ColorButton ColorButtonWhite;
+    static const ColorButton ColorButtonOrange;
+    static const ColorButton ColorButtonYellow;
+    static const ColorButton ColorButtonLightGreen;
+    static const ColorButton ColorButtonLightYellow;
+    static const ColorButton ColorButtonLavenderBush;
 
-    static const ColorItemMulti ColorItemMultiNoButton;
-    static const ColorItemMulti ColorItemMultiDefault;
-    static const ColorItemMulti ColorItemMultiRed;
-    static const ColorItemMulti ColorItemMultiGreen;
-    static const ColorItemMulti ColorItemMultiBlue;
-    static const ColorItemMulti ColorItemMultiBlack;
-    static const ColorItemMulti ColorItemMultiWhite;
-    static const ColorItemMulti ColorItemMultiOrange;
+    static const ColorButMulti ColorButMultiNoButton;
+    static const ColorButMulti ColorButMultiDefault;
+    static const ColorButMulti ColorButMultiRed;
+    static const ColorButMulti ColorButMultiGreen;
+    static const ColorButMulti ColorButMultiBlue;
+    static const ColorButMulti ColorButMultiBlack;
+    static const ColorButMulti ColorButMultiWhite;
+    static const ColorButMulti ColorButMultiOrange;
 };
 
 #endif

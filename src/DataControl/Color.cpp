@@ -24,48 +24,50 @@ const sf::Color Color::TeaRoseColor = sf::Color(255, 209, 209);
 const sf::Color Color::BrightPinkColor = sf::Color(238, 75, 106);
 const sf::Color Color::TransparentColor = sf::Color(0, 0, 0, 0);
 
-const ColorItem Color::ColorItemNoButton = ColorItem(TransparentColor, BlackColor, TransparentColor);
-const ColorItem Color::ColorItemDefault = ColorItem(WhiteColor, BlackColor, BlackColor);
-const ColorItem Color::ColorItemRed = ColorItem(RedColor, WhiteColor, BlackColor);
-const ColorItem Color::ColorItemGreen = ColorItem(GreenColor, WhiteColor, BlackColor);
-const ColorItem Color::ColorItemBlue = ColorItem(BlueColor, WhiteColor, BlackColor);
-const ColorItem Color::ColorItemBlack = ColorItem(BlackColor, WhiteColor, BlackColor);
-const ColorItem Color::ColorItemWhite = ColorItem(WhiteColor, BlackColor, BlackColor);
-const ColorItem Color::ColorItemOrange = ColorItem(OrangeColor, WhiteColor, BlackColor);
-const ColorItem Color::ColorItemYellow = ColorItem(YellowColor, BlackColor, BlackColor);
-const ColorItem Color::ColorItemLightGreen = ColorItem(LightGreenColor, BlackColor, BlackColor);
-const ColorItem Color::ColorItemLightYellow = ColorItem(LightYellowColor, BlackColor, BlackColor);
-const ColorItem Color::ColorItemLavenderBush = ColorItem(LavenderBushColor, BlackColor, BlackColor);
+const ColorButton Color::ColorButtonNoButton = ColorButton(TransparentColor, BlackColor, TransparentColor);
+const ColorButton Color::ColorButtonDefault = ColorButton(WhiteColor, BlackColor, BlackColor);
+const ColorButton Color::ColorButtonRed = ColorButton(RedColor, WhiteColor, BlackColor);
+const ColorButton Color::ColorButtonGreen = ColorButton(GreenColor, WhiteColor, BlackColor);
+const ColorButton Color::ColorButtonBlue = ColorButton(BlueColor, WhiteColor, BlackColor);
+const ColorButton Color::ColorButtonBlack = ColorButton(BlackColor, WhiteColor, BlackColor);
+const ColorButton Color::ColorButtonWhite = ColorButton(WhiteColor, BlackColor, BlackColor);
+const ColorButton Color::ColorButtonOrange = ColorButton(OrangeColor, WhiteColor, BlackColor);
+const ColorButton Color::ColorButtonYellow = ColorButton(YellowColor, BlackColor, BlackColor);
+const ColorButton Color::ColorButtonLightGreen = ColorButton(LightGreenColor, BlackColor, BlackColor);
+const ColorButton Color::ColorButtonLightYellow = ColorButton(LightYellowColor, BlackColor, BlackColor);
+const ColorButton Color::ColorButtonLavenderBush = ColorButton(LavenderBushColor, BlackColor, BlackColor);
 
-const ColorItemMulti Color::ColorItemMultiNoButton = ColorItemMulti(std::vector<ColorItem>{ColorItemNoButton, ColorItemNoButton, ColorItemNoButton, ColorItemNoButton});
-const ColorItemMulti Color::ColorItemMultiDefault = ColorItemMulti(std::vector<ColorItem>{ColorItemDefault, ColorItemGreen, ColorItemYellow, ColorItemLavenderBush});
-const ColorItemMulti Color::ColorItemMultiRed = ColorItemMulti(std::vector<ColorItem>{ColorItemRed, ColorItemRed, ColorItemRed, ColorItemRed});
-const ColorItemMulti Color::ColorItemMultiGreen = ColorItemMulti(std::vector<ColorItem>{ColorItemGreen, ColorItemGreen, ColorItemGreen, ColorItemGreen});
-const ColorItemMulti Color::ColorItemMultiBlue = ColorItemMulti(std::vector<ColorItem>{ColorItemBlue, ColorItemBlue, ColorItemBlue, ColorItemBlue});
-const ColorItemMulti Color::ColorItemMultiBlack = ColorItemMulti(std::vector<ColorItem>{ColorItemBlack, ColorItemBlack, ColorItemBlack, ColorItemBlack});
-const ColorItemMulti Color::ColorItemMultiWhite = ColorItemMulti(std::vector<ColorItem>{ColorItemWhite, ColorItemWhite, ColorItemWhite, ColorItemWhite});
-const ColorItemMulti Color::ColorItemMultiOrange = ColorItemMulti(std::vector<ColorItem>{ColorItemOrange, ColorItemOrange, ColorItemOrange, ColorItemOrange});
+const ColorButMulti Color::ColorButMultiNoButton = ColorButMulti(std::vector<ColorButton>{ColorButtonNoButton, ColorButtonNoButton, ColorButtonNoButton, ColorButtonNoButton});
+const ColorButMulti Color::ColorButMultiDefault = ColorButMulti(std::vector<ColorButton>{ColorButtonDefault, ColorButtonGreen, ColorButtonYellow, ColorButtonLavenderBush});
+const ColorButMulti Color::ColorButMultiRed = ColorButMulti(std::vector<ColorButton>{ColorButtonRed, ColorButtonRed, ColorButtonRed, ColorButtonRed});
+const ColorButMulti Color::ColorButMultiGreen = ColorButMulti(std::vector<ColorButton>{ColorButtonGreen, ColorButtonGreen, ColorButtonGreen, ColorButtonGreen});
+const ColorButMulti Color::ColorButMultiBlue = ColorButMulti(std::vector<ColorButton>{ColorButtonBlue, ColorButtonBlue, ColorButtonBlue, ColorButtonBlue});
+const ColorButMulti Color::ColorButMultiBlack = ColorButMulti(std::vector<ColorButton>{ColorButtonBlack, ColorButtonBlack, ColorButtonBlack, ColorButtonBlack});
+const ColorButMulti Color::ColorButMultiWhite = ColorButMulti(std::vector<ColorButton>{ColorButtonWhite, ColorButtonWhite, ColorButtonWhite, ColorButtonWhite});
+const ColorButMulti Color::ColorButMultiOrange = ColorButMulti(std::vector<ColorButton>{ColorButtonOrange, ColorButtonOrange, ColorButtonOrange, ColorButtonOrange});
 
-ColorItem::ColorItem() {
+ColorButton::ColorButton() {
     FillColor = sf::Color::White;
     TextColor = sf::Color::Black;
     OutlineColor = sf::Color::Black;
 }
 
-ColorItem::ColorItem(sf::Color FillColor, sf::Color TextColor, sf::Color OutlineColor) {
+ColorButton::ColorButton(sf::Color FillColor, sf::Color TextColor, sf::Color OutlineColor) {
     this->FillColor = FillColor;
     this->TextColor = TextColor;
     this->OutlineColor = OutlineColor;
 }
 
-ColorItemMulti::ColorItemMulti(std::vector<ColorItem> listColor) {
+ColorButMulti::ColorButMulti() {}
+
+ColorButMulti::ColorButMulti(std::vector<ColorButton> listColor) {
     this->listColor = listColor;
 }
 
-ColorItem ColorItemMulti::getColor(int statusColor) {
+ColorButton ColorButMulti::get(int statusColor) {
     if (statusColor >= 0 && statusColor < listColor.size()) {
         return listColor[statusColor];
     } else {
-        return ColorItem();
+        return ColorButton();
     }
 }

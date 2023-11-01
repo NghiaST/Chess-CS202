@@ -15,11 +15,11 @@ ICON = $(OBJDIR)/Other/resource.res
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
 FILE_ORIGIN = main Graphic Chess
-FILE_BOARDSCREEN = Board ChessHistory Piece PieceBoard
-FILE_DATACONTROL = Color GameSettings Include Settings Theme
-FILE = $(FILE_ORIGIN) $(FILE_BOARDSCREEN:%=BoardScreen/%) $(FILE_DATACONTROL:%=DataControl/%)
-FILE_O = $(FILE_ORIGIN:%=%.o) $(FILE_BOARDSCREEN:%=BoardScreen/%.o) $(FILE_DATACONTROL:%=DataControl/%.o)
-FILE_CPP = $(FILE_ORIGIN:%=/%.cpp) $(FILE_BOARDSCREEN:%=BoardScreen/%.cpp) $(FILE_DATACONTROL:%=DataControl/%.cpp)
+FILE_INGAMESCREEN = Board ChessHistory Piece IngameScreen
+FILE_DATACONTROL = Button Color GameSettings Include Settings StaticButton Theme
+FILE = $(FILE_ORIGIN) $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%)
+FILE_O = $(FILE_ORIGIN:%=%.o) $(FILE_INGAMESCREEN:%=IngameScreen/%.o) $(FILE_DATACONTROL:%=DataControl/%.o)
+FILE_CPP = $(FILE_ORIGIN:%=/%.cpp) $(FILE_INGAMESCREEN:%=IngameScreen/%.cpp) $(FILE_DATACONTROL:%=DataControl/%.cpp)
 
 SOURCES = $(FILE_CPP:%=$(SRCDIR)/%)
 OBJS = $(FILE_O:%=$(OBJDIR)/%)
@@ -44,9 +44,9 @@ ifeq ($(wildcard $(OBJDIR)),)
 	${HIDE} mkdir ${OBJDIR}
 endif
 
-ifeq ($(wildcard $(OBJDIR)\BoardScreen),)
-	${HIDE} echo create folder "${OBJDIR}\BoardScreen"
-	${HIDE} mkdir $(OBJDIR)\BoardScreen
+ifeq ($(wildcard $(OBJDIR)\IngameScreen),)
+	${HIDE} echo create folder "${OBJDIR}\IngameScreen"
+	${HIDE} mkdir $(OBJDIR)\IngameScreen
 endif
 
 ifeq ($(wildcard $(OBJDIR)\DataControl),)
