@@ -22,7 +22,8 @@ public :
     ColorButton get(int statusColor);
 };
 
-struct Color {
+class Color {
+public:
     static const sf::Color SilverColor;
     static const sf::Color DimGrayColor;
     static const sf::Color RedColor;

@@ -85,7 +85,8 @@ private:
     int FontSize;
 };
 
-struct ThemeData {
+class ThemeData {
+public:
     static const std::string ThemeDataFile;
     static const std::string BackgroundDirectory;
     static const std::string PieceDirectory;

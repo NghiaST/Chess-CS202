@@ -33,6 +33,11 @@ public:
     // void loadGame(std::vector<int> dataPieceList, CHESS::COLOR turn);
     // void loadGameFromHistory(std::vector<MovingStore> moveList);
 
+    // Functions
+    bool UndoMove();
+    bool MakeMove(int startpos, int endpos);
+    void NewGame();
+
 private:
     // Process
     const Piece* getPiece(int position) const;
@@ -58,10 +63,6 @@ private:
     bool ifStaleMate() const;  /// check if current turn is not checked and no possible move
 
     int TryMove(int startpos, int endpos);         /// move selected piece to selected position, without changing visual but changing data. must call undomove() after processing
-    bool MakeMove(int startpos, int endpos);
-    bool UndoMove();
-
-    void NewGame();
 
 private:
     sf::Shader shader;

@@ -98,12 +98,21 @@ void IngameScreen::handleEvent(const sf::Event& event) {
         }
         else if (name == "undo") {
             status = undoButton->handleEvent(event) ? "undo" : "";
+            if (status == "undo") {
+                board->UndoMove();
+                if (board->getTurn() != CHESS::COLOR::WHITE) {
+                    board->UndoMove();
+                }
+            }
         }
         else if (name == "redo") {
             status = redoButton->handleEvent(event) ? "redo" : "";
         }
         else if (name == "newgame") {
             status = newgameButton->handleEvent(event) ? "newgame" : "";
+            if (status == "newgame") {
+                board->NewGame();
+            }
         }
         else if (name == "exit") {
             status = exitButton->handleEvent(event) ? "exit" : "";
