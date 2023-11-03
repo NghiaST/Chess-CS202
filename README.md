@@ -6,7 +6,7 @@ Note:
 - '?': unknown
 
 struct Chess;
-+   struct ColorItem, ColorItemMulti;
++   struct ColorButton, ColorButMulti;
 +   struct Theme;
 *?  struct Settings;
 +       struct Theme;
