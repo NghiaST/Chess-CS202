@@ -2,14 +2,15 @@
 
 ///-----------------------------------------------------------------
 ///-----------------------------ThemeData---------------------------
+const std::string ThemeData::ThemeDataFile = "dat/theme.dat";
 const std::string ThemeData::BackgroundDirectory = "asset/image/background/";
 const std::string ThemeData::PieceDirectory = "asset/image/piece/";
 const std::string ThemeData::BoardDirectory = "asset/image/board/";
 const std::string ThemeData::FontDirectory = "asset/font/";
 
-const std::vector<std::string> ThemeData::BackgroundNameList = {"universe-boom.jpg", "Background_01.png", "Background_02.png", "Background_03.png", "Background_04.png", "Background_05.png", "Background_06.png", "Background_07.png", "Background_08.png", "Background_09.png"};
-const std::vector<std::string> ThemeData::PieceNameList = {"default", "Piece_01", "Piece_02", "Piece_03", "Piece_04", "Piece_05", "Piece_06", "Piece_07", "Piece_08", "Piece_09"};
-const std::vector<std::string> ThemeData::BoardNameList = {"lichess.png", "Board_01.png", "Board_02.png", "Board_03.png", "Board_04.png", "Board_05.png", "Board_06.png", "Board_07.png", "Board_08.png", "Board_09.png"};
+const std::vector<std::string> ThemeData::BackgroundNameList = {"cherry-blossom.jpg", "haibara-1.jpg", "universe-boom.jpg", "lightdark.jpg", "surface_earth.jpg", "beautiful_image.jfif", "modern-futuristic-neon.jpg", "brown-wooden-wall.jpg", "wall.jpg", "palace.jpg"};
+const std::vector<std::string> ThemeData::PieceNameList = {"caliente", "cburnett", "celtic", "dubrovny", "fresca", "frugale", "gioco", "governor", "kiwen-suwi", "maestro", "usual"};
+const std::vector<std::string> ThemeData::BoardNameList = {"pink-pyramid.png", "blue.png",  "blue-marble.png", "canvas.png", "green-plastic.png", "leather.png", "maple.png", "ncf-board.png", "purple-diag.png", "wood.png", "wood2.png"};
 const std::vector<std::string> ThemeData::FontNameList = {"Arial-bold.ttf", "Arial.ttf", "BelieveIt.ttf", "CarryYou.ttf", "ChristmasJumper.ttf", "CuteMonster.ttf", "DailyBold.ttf", "Debrosee.ttf", "Hippiemods.otf", "MouldyCheese.ttf", "ShortBaby.ttf", "TimesNewRoman-bold.ttf", "TimesNewRoman.ttf", "Vni-times-bold.ttf", "Vni-times.ttf"};
 const std::vector<int> ThemeData::FontSizeList = {8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
 const int ThemeData::ThemeCount = 10;
@@ -103,17 +104,46 @@ Theme::Theme() : ThemeIndex(ThemeData::ThemeIndexDefault)
     this->PieceTextureList = new ThemePiece();
     this->BoardTexture          = std::make_unique<sf::Texture>();
     this->BoardSelectedTexture  = std::make_unique<sf::Texture>();
+    this->BoardPreMoveTexture   = std::make_unique<sf::Texture>();
     this->BoardMoveTexture      = std::make_unique<sf::Texture>();
     this->BoardCaptureTexture   = std::make_unique<sf::Texture>();
     this->BoardCheckTexture     = std::make_unique<sf::Texture>();
     this->BoardCheckMateTexture = std::make_unique<sf::Texture>();
     this->ColorButton = new ColorButMulti(Color::ColorButMultiDefault);
     this->ColorText = new ColorButMulti(Color::ColorButMultiNoButton);
+    this->FontText = new sf::Font();
     this->setTheme(ThemeData::ThemeIndexDefault);
 }
 
 Theme::~Theme()
 {
+    delete this->PieceTextureList;
+    this->BackgroundTexture = nullptr;
+    this->PieceTextureList = nullptr;
+    this->BoardTexture = nullptr;
+    this->BoardSelectedTexture = nullptr;
+    this->BoardPreMoveTexture = nullptr;
+    this->BoardMoveTexture = nullptr;
+    this->BoardCaptureTexture = nullptr;
+    this->BoardCheckTexture = nullptr;
+    this->BoardCheckMateTexture = nullptr;
+    delete this->ColorButton;
+    delete this->ColorText;
+    delete this->FontText;
+}
+
+void Theme::loadFile()
+{
+    std::fstream fin(ThemeData::ThemeDataFile, std::ios::in);
+    if (fin.is_open() == false) {
+        printf("WARNING: Loading theme from file FAILED: %s\n", ThemeData::ThemeDataFile.c_str());
+        return;
+    }
+    int newBackgroundIndex, newPieceIndex, newBoardIndex, newButtonIndex, newTextIndex;
+    fin >> newBackgroundIndex >> newPieceIndex >> newBoardIndex >> newButtonIndex >> newTextIndex;
+    fin.close();
+
+    setThemeIndex(ThemeIndex(newBackgroundIndex, newPieceIndex, newBoardIndex, newButtonIndex, newTextIndex));
 }
 
 void Theme::setTheme(const ThemeIndex themeIndex)
@@ -130,16 +160,17 @@ void Theme::setTheme(const ThemeIndex themeIndex)
     this->PieceTextureList->buildTexture(this->PieceName);
     if (!this->BoardTexture->loadFromFile(this->BoardName))
         printf("Error loading board texture: %s\n", BoardName.c_str());
-    this->BoardSelectedTexture  = makeTexture(Point(60, 60), sf::Color(255, 255, 0));
-    this->BoardMoveTexture      = makeTexture(Point(60, 60), sf::Color(120, 24, 136));
-    this->BoardCaptureTexture   = makeTexture(Point(60, 60), sf::Color(220, 0, 0));
-    this->BoardCheckTexture     = makeTexture(Point(60, 60), sf::Color(255, 255, 0));
-    this->BoardCheckMateTexture = makeTexture(Point(60, 60), sf::Color(255, 0, 255));
-    if (!this->FontText.loadFromFile(this->FontName))
+    this->BoardSelectedTexture  = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(255, 255, 0));
+    this->BoardPreMoveTexture   = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(41, 235, 20));
+    this->BoardMoveTexture      = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(100, 100, 255));
+    this->BoardCaptureTexture   = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(220, 0, 0));
+    this->BoardCheckTexture     = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color::Red);
+    this->BoardCheckMateTexture = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(255, 0, 255));
+    if (!this->FontText->loadFromFile(this->FontName))
         printf("Error loading fonttext texture: %s\n", FontName.c_str());
     
     this->ColorButton = new ColorButMulti(Color::ColorButMultiDefault);
-    this->ColorText = new ColorButMulti(Color::ColorButMultiNoButton);
+    this->ColorText = new ColorButMulti(Color::ColorButMultiDefault);
 }
 
 void Theme::setTheme(const int themeIndex)
@@ -171,9 +202,9 @@ const sf::Texture& Theme::getBoardSelectedTexture() const
     return *this->BoardSelectedTexture;
 }
 
-const ColorButMulti* Theme::getButtonColor() const
+const sf::Texture& Theme::getBoardPreMoveTexture() const
 {
-    return this->ColorButton;
+    return *this->BoardPreMoveTexture;
 }
 
 const sf::Texture& Theme::getBoardMoveTexture() const
@@ -196,14 +227,19 @@ const sf::Texture& Theme::getBoardCheckMateTexture() const
     return *this->BoardCheckMateTexture;
 }
 
-const ColorButMulti* Theme::getTextColor() const
+const ColorButMulti& Theme::getButtonColorMulti() const
 {
-    return this->ColorText;
+    return *this->ColorButton;
 }
 
-const sf::Font Theme::getFont() const
+const ColorButMulti& Theme::getTextColorMulti() const
 {
-    return this->FontText;
+    return *this->ColorText;
+}
+
+const sf::Font& Theme::getFont() const
+{
+    return *this->FontText;
 }
 
 const int Theme::getFontSize() const

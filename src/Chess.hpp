@@ -19,7 +19,7 @@ private:
 
 private:
     sf::RenderWindow mWindow;
-    IngameScreen* pieceBoard;
+    IngameScreen* ingameScreen;
 
     Point windowSize;
     Point renderPosition;

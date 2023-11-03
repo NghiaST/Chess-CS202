@@ -13,8 +13,9 @@ enum ButtonStates { BTN_IDLE = 0, BTN_HOVER, BTN_ACTIVE, BTN_HOLD };
 
 class Button : public StaticButton {
 public:
-    Button(int buttonID, Point renderPosition, Point renderSize, const sf::Font* sfFont, 
-            const ColorButMulti& colorButMulti, unsigned int sizeText = 12, std::string text = "");
+    Button(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, 
+            const sf::Font* sfFont, const ColorButMulti& colorButMulti, unsigned int sizeText = 12, 
+            std::string text = "", float thickness = -1, Point renderOffsetText = Point(0, 0));
     ~Button();
 
     // Mutators
@@ -27,8 +28,8 @@ public:
     // Functions
 
     /// handleEvent: return 0 if no event, 1 if event
-    bool handleEvent(sf::Event& event);
-    virtual void update();
+    bool handleEvent(const sf::Event& event);
+    virtual void updateRender();
     void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const override {}
     
 private:

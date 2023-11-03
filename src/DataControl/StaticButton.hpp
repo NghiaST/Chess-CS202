@@ -18,14 +18,13 @@ public:
     typedef std::unique_ptr<StaticButton> Ptr;
 
 public:
-    StaticButton(int buttonID, Point renderPosition, Point renderSize, const sf::Font* sfFont,
-            const ColorButton& colorButton = Color::ColorButtonDefault, unsigned int sizeText = 12, 
-            std::string text = "", float thickness = -1, bool isRenderTextOrigin = true, Point renderOffsetText = Point(0, 0));
+    StaticButton(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, 
+            const sf::Font* sfFont, const ColorButton& colorButton = Color::ColorButtonDefault, unsigned int sizeText = 12, 
+            std::string text = "", float thickness = -1, Point renderOffsetText = Point(0, 0));
     ~StaticButton();
 
     // Mutators
     void setFont(const sf::Font* sfFont);
-    void setRenderTextOrigin(Point renderTextOrigin);
     void setSizeText(unsigned int sizeText);
     void setText(std::string text);
     void setRenderOffsetText(Point renderOffsetText);
@@ -44,7 +43,7 @@ public:
 
 public:
     // Functions
-    void updateRender();
+    void updateStaticRender();
     virtual void draw(sf::RenderTarget& target, sf::RenderStates = sf::RenderStates::Default) const;
     virtual void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const override;
 

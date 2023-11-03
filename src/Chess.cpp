@@ -1,21 +1,21 @@
 #include "Chess.hpp"
 
 Chess::Chess() {
-    pieceBoard = new IngameScreen();
+    ingameScreen = new IngameScreen();
     clock.restart();
 
-    windowSize = Point(1000, 650);
-    renderPosition = Point(200, 10);
+    windowSize = INTERFACE::WINDOWSIZE;
+    renderPosition = Point(sf::VideoMode::getDesktopMode().width / 2 - windowSize.x / 2, 10);
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8.0;
-    mWindow.create(sf::VideoMode(windowSize.x, windowSize.y), "ChessLion", sf::Style::Default, settings);
+    mWindow.create(sf::VideoMode(windowSize.x, windowSize.y), "ChessLion", sf::Style::Close, settings);
     mWindow.setFramerateLimit(60);
     mWindow.setPosition(renderPosition.to2i());
 }
 
 Chess::~Chess() {
-    delete pieceBoard;
+    delete ingameScreen;
 }
 
 void Chess::run() {
@@ -32,7 +32,7 @@ void Chess::processEvents() {
         if (sfEvent.type == sf::Event::Closed) {
             mWindow.close();
         }
-        pieceBoard->handleEvent(sfEvent);
+        ingameScreen->handleEvent(sfEvent);
     }
     clock.restart();
 }
@@ -40,11 +40,11 @@ void Chess::processEvents() {
 void Chess::update() {
     sf::Time deltaTime = clock.getElapsedTime();
     clock.restart();
-    pieceBoard->update(deltaTime);
+    ingameScreen->update(deltaTime);
 }
 
 void Chess::render() {
     mWindow.clear(sf::Color::Red);
-    pieceBoard->render(mWindow, sf::RenderStates::Default);
+    ingameScreen->render(mWindow, sf::RenderStates::Default);
     mWindow.display();
 }

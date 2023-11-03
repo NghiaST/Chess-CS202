@@ -2,6 +2,7 @@
 #include <algorithm>
 
 Piece::Piece(int position, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int status)
+    : Graphic(Point(0, 0), Point(0, 0), true, 0)
 {
     this->position = position;
     this->posx = position / 8;
@@ -9,10 +10,10 @@ Piece::Piece(int position, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int s
     setPiece(pieceColor, pieceType);
     this->status = status;
     this->mousestatus = MOUSE::NONE;
-    this->renderPosition = INTERFACE::POSBOARD;
 }
 
 Piece::Piece(int position, int pieceData, int status)
+    : Graphic(Point(0, 0), Point(0, 0), true, 0)
 {
     this->position = position;
     this->posx = position / 8;
@@ -20,7 +21,6 @@ Piece::Piece(int position, int pieceData, int status)
     setPieceData(pieceData);
     this->status = status;
     this->mousestatus = MOUSE::NONE;
-    this->renderPosition = INTERFACE::POSBOARD;
 }
 
 Piece::~Piece()

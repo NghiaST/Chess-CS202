@@ -4,7 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-struct ColorButton {
+class ColorButton {
+public :
     sf::Color FillColor;
     sf::Color TextColor;
     sf::Color OutlineColor;

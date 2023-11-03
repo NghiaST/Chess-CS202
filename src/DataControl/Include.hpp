@@ -25,7 +25,7 @@ public:
 };
 class INTERFACE {
 public:
-    static const sf::Vector2f POSBOARD;
+    static const sf::Vector2f WINDOWSIZE;
     static const double SIZEBOARD;
 };
 
@@ -48,7 +48,7 @@ public:
     sf::Vector2u to2u() const;
 
 public:
-    int x, y;
+    double x, y;
 };
 
 #endif

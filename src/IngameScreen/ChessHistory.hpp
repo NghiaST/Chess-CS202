@@ -26,14 +26,22 @@ private:
 public:
     ChessHistory();
     ~ChessHistory();
+
+    // Mutators
     void addMove(const MovingStore move);
     void popMove();
     void loadHistory(std::string filename = "dat/history.txt");
     void saveHistory(std::string filename = "dat/history.txt");
+    void clear();
+    
+    // Accessors
     int getCntMove() const;
     MovingStore getLastMove() const;
-
     bool isCastlePossible(int color, int side) const;
+
+    // Functions
+    std::string getStringLastMove() const;
+    std::string getStringHistory() const;
 };
 
 #endif

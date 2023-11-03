@@ -46,7 +46,7 @@ void ChessHistory::addMove(const MovingStore move) {
     if (move.prePos == 32 && move.preData == PIECE::KING + CHESS::WHITE) {
         dataMovingKing[0] += 1;
     }
-    if (move.prePos == 38 && move.preData == PIECE::KING + CHESS::BLACK) {
+    if (move.prePos == 39 && move.preData == PIECE::KING + CHESS::BLACK) {
         dataMovingKing[1] += 1;
     }
 }
@@ -104,6 +104,13 @@ void ChessHistory::saveHistory(std::string filename) {
     fout.close();
 }
 
+void ChessHistory::clear() {
+    cntMove = 0;
+    moveList.clear();
+    memset(dataMovingRook, 0, sizeof(dataMovingRook));
+    memset(dataMovingKing, 0, sizeof(dataMovingKing));
+}
+
 int ChessHistory::getCntMove() const {
     return cntMove;
 }
@@ -117,6 +124,47 @@ MovingStore ChessHistory::getLastMove() const {
 
 bool ChessHistory::isCastlePossible(int color, int side) const {
     return dataMovingKing[color] == 0 && dataMovingRook[color][side] == 0;
+}
+
+std::string ChessHistory::getStringLastMove() const
+{
+    if (cntMove == 0) return "";
+    MovingStore move = moveList[cntMove - 1];
+    std::string str = "";
+
+    std::map<int, char> mp;
+    mp[PIECE::KNIGHT] = 'N';
+    mp[PIECE::BISHOP] = 'B';
+    mp[PIECE::ROOK] = 'R';
+    mp[PIECE::QUEEN] = 'Q';
+    mp[PIECE::KING] = 'K';
+    
+    static int ENPASSANT = 2, CASTLE = 3;
+    if (move.moveStatus == CASTLE) {
+        if (move.curPos == 62) return "O-O";
+        if (move.curPos == 58) return "O-O-O";
+    }
+    else if ((move.preData & 7) != PIECE::PAWN) {
+        str = mp[move.preData & 7];
+    }
+    if (move.curData != PIECE::NONE || move.moveStatus == ENPASSANT) {
+        str += "x";
+    }
+    str += (char)('a' + move.curPos % 8);
+    str += (char)('1' + move.curPos / 8);
+    return str;
+}
+
+std::string ChessHistory::getStringHistory() const
+{
+    std::string str = "";
+    for (int i = 0; i < cntMove; i++) {
+        if (i % 2 == 0) str += std::to_string(i / 2 + 1) + ". ";
+        else str += " ";
+        str += getStringLastMove();
+        if (i % 2 == 1) str += "\n";
+    }
+    return str;
 }
 
 std::string ChessHistory::encodeHistory() {

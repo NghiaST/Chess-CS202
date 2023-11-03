@@ -1,12 +1,14 @@
 #include "Button.hpp"
 
-Button::Button(int buttonID, Point renderPosition, Point renderSize, const sf::Font* sfFont, 
-            const ColorButMulti& colorButMulti, unsigned int sizeText, std::string text)
-    : StaticButton(buttonID, renderPosition, renderSize, sfFont, 
-                Color::ColorButtonDefault, sizeText, text, -1, true, Point(0, 0))
+Button::Button(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, 
+        const sf::Font* sfFont, const ColorButMulti& colorButMulti, unsigned int sizeText, 
+        std::string text, float thickness, Point renderOffsetText)
+    : StaticButton(buttonID, renderPosition, renderSize, isPositionCenter, isRenderTextOrigin, 
+            sfFont, Color::ColorButtonDefault, sizeText, text, thickness, renderOffsetText)
 {
     this->colorButMulti = colorButMulti;
     this->buttonState = BTN_IDLE;
+    updateRender();
 }
 
 Button::~Button() {
@@ -24,7 +26,7 @@ int Button::getButtonState() const {
 }
 
 //Functions
-bool Button::handleEvent(sf::Event& event) {
+bool Button::handleEvent(const sf::Event& event) {
     /* Update the booleans for hover and pressed */
     bool isEvent = false;
     if (event.type == sf::Event::MouseButtonPressed) {
@@ -42,19 +44,27 @@ bool Button::handleEvent(sf::Event& event) {
             if (isMouseOn(mousePos)) {
                 setButtonState(BTN_HOVER);
             }
+            else {
+                setButtonState(BTN_IDLE);
+            }
         }
     }
     else if (event.type == sf::Event::MouseMoved) {
-        Point mousePos = Point(event.mouseMove.x, event.mouseMove.y);
-        if (isMouseOn(mousePos)) {
-            setButtonState(BTN_HOVER);
+        if (buttonState == BTN_ACTIVE) {
+            // do nothing
         }
         else {
-            setButtonState(BTN_IDLE);
+            Point mousePos = Point(event.mouseMove.x, event.mouseMove.y);
+            if (isMouseOn(mousePos)) {
+                setButtonState(BTN_HOVER);
+            }
+            else {
+                setButtonState(BTN_IDLE);
+            }
         }
     }
     else if (event.type == sf::Event::MouseLeft) {
-        this->buttonState = BTN_IDLE;
+        setButtonState(BTN_IDLE);
     }
     else if (event.type == sf::Event::MouseEntered) {
         Point mousePos = Point(event.mouseMove.x, event.mouseMove.y);
@@ -65,9 +75,13 @@ bool Button::handleEvent(sf::Event& event) {
             setButtonState(BTN_IDLE);
         }
     }
+    else {
+        // do nothing
+    }
     return isEvent;
 }
 
-void Button::update() {
+void Button::updateRender() {
     setColorButton(colorButMulti.get(buttonState));
+    updateStaticRender();
 }

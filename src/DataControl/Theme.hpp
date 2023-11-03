@@ -1,10 +1,12 @@
 #ifndef __Theme_hpp__
 #define __Theme_hpp__
 
+#include <cstring>
+#include <fstream>
+
 #include <SFML/Graphics.hpp>
 #include "Include.hpp"
 #include "Color.hpp"
-#include <cstring>
 
 class ThemeIndex {
 public:
@@ -32,6 +34,31 @@ public:
 };
 
 class Theme : private ThemeIndex {
+public:
+    Theme();
+    ~Theme();
+    void loadFile();
+    void setTheme(const ThemeIndex themeIndex);
+    void setTheme(const int themeIndex);
+    const sf::Texture& getBackgroundTexture() const;
+    const sf::Texture& getPieceTexture(int pieceData) const;
+
+    const sf::Texture& getBoardTexture() const;
+    const sf::Texture& getBoardSelectedTexture() const;
+    const sf::Texture& getBoardPreMoveTexture() const;
+    const sf::Texture& getBoardMoveTexture() const;
+    const sf::Texture& getBoardCaptureTexture() const;
+    const sf::Texture& getBoardCheckTexture() const;
+    const sf::Texture& getBoardCheckMateTexture() const;
+
+    const ColorButMulti& getButtonColorMulti() const;
+    const ColorButMulti& getTextColorMulti() const;
+    const sf::Font& getFont() const;
+    const int getFontSize() const;
+
+public: // default
+    std::unique_ptr<sf::Texture> makeTexture(Point size, sf::Color sfColor);
+
 private:
     std::string BackgroundName;
     std::string PieceName;
@@ -44,6 +71,7 @@ private:
     // board texture list
     std::unique_ptr<sf::Texture> BoardTexture;
     std::unique_ptr<sf::Texture> BoardSelectedTexture;
+    std::unique_ptr<sf::Texture> BoardPreMoveTexture;
     std::unique_ptr<sf::Texture> BoardMoveTexture;
     std::unique_ptr<sf::Texture> BoardCaptureTexture;
     std::unique_ptr<sf::Texture> BoardCheckTexture;
@@ -51,34 +79,14 @@ private:
     
     ColorButMulti* ColorButton;
     ColorButMulti* ColorText;
-    sf::Font FontText;
+    ColorButMulti* ColorMText;
+
+    sf::Font* FontText;
     int FontSize;
-
-public:
-    Theme();
-    ~Theme();
-    void setTheme(const ThemeIndex themeIndex);
-    void setTheme(const int themeIndex);
-    const sf::Texture& getBackgroundTexture() const;
-    const sf::Texture& getPieceTexture(int pieceData) const;
-
-    const sf::Texture& getBoardTexture() const;
-    const sf::Texture& getBoardSelectedTexture() const;
-    const sf::Texture& getBoardMoveTexture() const;
-    const sf::Texture& getBoardCaptureTexture() const;
-    const sf::Texture& getBoardCheckTexture() const;
-    const sf::Texture& getBoardCheckMateTexture() const;
-
-    const ColorButMulti* getButtonColor() const;
-    const ColorButMulti* getTextColor() const;
-    const sf::Font getFont() const;
-    const int getFontSize() const;
-
-public: // default
-    std::unique_ptr<sf::Texture> makeTexture(Point size, sf::Color sfColor);
 };
 
 struct ThemeData {
+    static const std::string ThemeDataFile;
     static const std::string BackgroundDirectory;
     static const std::string PieceDirectory;
     static const std::string BoardDirectory;

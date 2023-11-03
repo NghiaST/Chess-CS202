@@ -1,7 +1,7 @@
 #include "Include.hpp"
 
-const sf::Vector2f INTERFACE::POSBOARD = sf::Vector2f(50, 40);
-const double INTERFACE::SIZEBOARD = 70;
+const sf::Vector2f INTERFACE::WINDOWSIZE = sf::Vector2f(1024, 672);
+const double INTERFACE::SIZEBOARD = 64;
 
 Point::Point() : x(0), y(0) {}
 Point::Point(double x, double y) : x(x), y(y) {}
