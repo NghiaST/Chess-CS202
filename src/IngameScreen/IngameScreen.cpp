@@ -3,7 +3,6 @@
 IngameScreen::IngameScreen() {
     shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment);
     state.shader = &shader;
-    // shader.setUniform("texture", sf::Shader::CurrentTexture);
     theme = new Theme();
     // theme->loadFile();
     srand(time(NULL));
@@ -12,6 +11,7 @@ IngameScreen::IngameScreen() {
 
     boardSize = Point(64, 64) * 8;
     buttonSize = Point(150, 70);
+    timeButtonSize = Point(80, 40);
     boardPosition = Point(100, INTERFACE::WINDOWSIZE.y / 2 - boardSize.y / 2);
 
     timeButtonPosition = Point(boardPosition.x / 2, boardPosition.y + boardSize.y / 2);
@@ -23,8 +23,13 @@ IngameScreen::IngameScreen() {
     newgameButtonPosition = Point(leftPositionButton, 4.20 * buttonSize.y);
     exitButtonPosition    = Point(leftPositionButton, 5.25 * buttonSize.y);
 
+    Point timeButtonPositionWhite = boardPosition + boardSize - Point(timeButtonSize.x, 0) + Point(0, 5);
+    Point timeButtonPositionBlack = boardPosition + Point(boardSize.x, 0) - timeButtonSize - Point(0, 5);
+
     board = new Board(boardPosition, boardSize, theme);
-    timeButton    = new Button(50, timeButtonPosition   , Point(40, 40), true , true, &theme->getFont(), Color::ColorButMultiGreen, 20, "Time");
+    timeButton = new TimeButton(50, timeButtonPositionWhite, timeButtonPositionBlack, timeButtonSize, &theme->getFont(), theme->getTextColorMulti());
+    // timeButton    = new TimeButton(50, timeButtonPosition, Point(40, 40), true , true, &theme->getFont(), Color::ColorButMultiGreen, 20, "Time");
+    //(50, timeButtonPosition   , Point(40, 40), true , true, &theme->getFont(), Color::ColorButMultiGreen, 20, "Time");
     saveButton    = new Button(51, saveButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getButtonColorMulti(), 20, "Save");
     undoButton    = new Button(52, undoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getButtonColorMulti(), 20, "Undo");
     redoButton    = new Button(53, redoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getButtonColorMulti(), 20, "Redo");
@@ -89,9 +94,17 @@ void IngameScreen::handleEvent(const sf::Event& event) {
         if (status != "") break;
         if (name == "board") {
             status = board->handleEvent(event);
+            if (status == "make move") {
+                timeButton->setTurn(board->getTurn());
+                timeButton->setIsCountDown(true);
+                // timeButton->changeTurn();
+                if (board->ifCheckMate()) {
+                    timeButton->setIsCountDown(false);
+                }
+            }
         }
         else if (name == "time") {
-            status = timeButton->handleEvent(event) ? "time" : "";
+            // status = timeButton->handleEvent(event) ? "time" : "";
         }
         else if (name == "save") {
             status = saveButton->handleEvent(event) ? "save" : "";
@@ -112,6 +125,7 @@ void IngameScreen::handleEvent(const sf::Event& event) {
             status = newgameButton->handleEvent(event) ? "newgame" : "";
             if (status == "newgame") {
                 board->NewGame();
+                timeButton->reset();
             }
         }
         else if (name == "exit") {
@@ -128,7 +142,7 @@ void IngameScreen::update(sf::Time deltaTime) {
 
     for(std::string name : updateOrder) {
         if (name == "time") {
-            // timeButton.update(deltaTime);
+            timeButton->update(deltaTime);
         }
         if (status == "" || status == "no event") {
             // no event: do nothing
@@ -140,23 +154,22 @@ void IngameScreen::update(sf::Time deltaTime) {
             // default: do nothing
         }
     }
+}
 
+void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates state) const {
     board->updateRender();
-    
     timeButton->updateRender();
     saveButton->updateRender();
     undoButton->updateRender();
     redoButton->updateRender();
     newgameButton->updateRender();
     exitButton->updateRender();
-}
-
-void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates state) const {
-    board->render(target, state);
-    target.draw(*timeButton);
+    
     target.draw(*saveButton);
     target.draw(*undoButton);
     target.draw(*redoButton);
     target.draw(*newgameButton);
     target.draw(*exitButton);
+    board->render(target, state);
+    timeButton->render(target);
 }

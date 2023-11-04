@@ -4,9 +4,9 @@
 Piece::Piece(int position, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int status)
     : Graphic(Point(0, 0), Point(0, 0), true, 0)
 {
-    this->position = position;
-    this->posx = position / 8;
-    this->posy = position % 8;
+    this->index = position;
+    this->rank = position / 8;
+    this->file = position % 8;
     setPiece(pieceColor, pieceType);
     this->status = status;
     this->mousestatus = MOUSE::NONE;
@@ -15,9 +15,9 @@ Piece::Piece(int position, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int s
 Piece::Piece(int position, int pieceData, int status)
     : Graphic(Point(0, 0), Point(0, 0), true, 0)
 {
-    this->position = position;
-    this->posx = position / 8;
-    this->posy = position % 8;
+    this->index = position;
+    this->rank = position / 8;
+    this->file = position % 8;
     setPieceData(pieceData);
     this->status = status;
     this->mousestatus = MOUSE::NONE;
@@ -36,12 +36,6 @@ const CHESS::COLOR& Piece::getPieceColor() const {
 const int& Piece::getPieceData() const {
     return pieceData;
 }
-void Piece::setPieceType(int pieceType) {
-    setPiece(this->pieceColor, pieceType);
-}
-void Piece::setPieceColor(int pieceColor) {
-    setPiece(pieceColor, this->pieceType);
-}
 void Piece::setPieceData(int pieceData) {
     setPiece(pieceData & CHESS::BOTHCOLOR, pieceData & PIECE::ALLTYPE);
 }
@@ -56,11 +50,11 @@ void Piece::setMouseStatus(int mousestatus, Point mousePosition)
     this->mousestatus = (MOUSE::STATUS) mousestatus;
     this->mousePosition = mousePosition;
 }
-void Piece::setPosition(int position)
+void Piece::setIndex(int index)
 {
-    this->position = position;
-    this->posx = position / 8;
-    this->posy = position % 8;
+    this->index = index;
+    this->rank = index / 8;
+    this->file = index % 8;
 }
 
 void Piece::update(const Theme* theme) {
@@ -72,8 +66,8 @@ void Piece::update(const Theme* theme) {
 
     Point printPos;
     if (mousestatus != MOUSE::HOLD) {
-        printPos.x = renderPosition.x + posx * size_pBoard;
-        printPos.y = renderPosition.y + (7 - posy) * size_pBoard;
+        printPos.x = renderPosition.x + file * size_pBoard;
+        printPos.y = renderPosition.y + (7 - rank) * size_pBoard;
         setPriorityPrint(1);
     }
     else {

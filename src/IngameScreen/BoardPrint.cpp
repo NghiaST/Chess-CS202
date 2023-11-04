@@ -42,7 +42,7 @@ void BoardPrint::update(const Theme* theme) {
     sf::Vector2u sizeOther = boardSelectedTexture.getSize();
     if (size == sf::Vector2u(0, 0)) return;
 
-    // calculate size and position of square
+    // calculate size and index of square
     {
         sf::Sprite sprite;
         sprite.setTexture(boardTexture);
@@ -52,24 +52,24 @@ void BoardPrint::update(const Theme* theme) {
         spriteBoardList.push_back(sprite);
     }
 
-    for(int i = 0; i < 8; i++)
-    for(int j = 0; j < 8; j++) {
-        int index = i * 8 + j;
-        int color = (i+j) % 2;
+    for(int rank = 0; rank < 8; rank++)
+    for(int file = 0; file < 8; file++) {
+        int index = rank * 8 + file;
+        int colorBoard = (rank + file) % 2;
         
-        float printPosx = renderPosition.x + i * cellSize.x;
-        float printPosy = renderPosition.y + (7 - j) * cellSize.y;
+        float printPosx = renderPosition.x + file * cellSize.x;
+        float printPosy = renderPosition.y + (7 - rank) * cellSize.y;
 
         // add boardPrint, common
-        if (false) {
-            sf::Sprite sprite;
-            sprite.setTexture(boardTexture);
-            sprite.setTextureRect(sf::IntRect(color * size.x / 2, 0, size.x / 2, size.y));
-            
-            sprite.setScale(cellSize.x / size.x * 2, cellSize.y / size.y);
-            sprite.setPosition(printPosx, printPosy);
-            spriteBoardList.push_back(sprite);
-        }
+        // if (false) {
+        //     sf::Sprite sprite;
+        //     sprite.setTexture(boardTexture);
+        //     sprite.setTextureRect(sf::IntRect(color * size.x / 2, 0, size.x / 2, size.y));
+
+        //     sprite.setScale(cellSize.x / size.x * 2, cellSize.y / size.y);
+        //     sprite.setPosition(printPosx, printPosy);
+        //     spriteBoardList.push_back(sprite);
+        // }
 
         // add boardPrint if state is: selected, move, capture, check, checkmate
         if (stateBoard[index]) {

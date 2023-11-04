@@ -5,16 +5,16 @@
 #include <cstring>
 
 MovingStore::MovingStore() {
-    this->prePos = -1;
-    this->curPos = -1;
+    this->preIndex = -1;
+    this->curIndex = -1;
     this->preData = 0;
     this->curData = 0;
     this->moveStatus = 0;
 }
 
-MovingStore::MovingStore(int prePos, int curPos, int preData, int curData, int moveStatus) {
-    this->prePos = prePos;
-    this->curPos = curPos;
+MovingStore::MovingStore(int preIndex, int curIndex, int preData, int curData, int moveStatus) {
+    this->preIndex = preIndex;
+    this->curIndex = curIndex;
     this->preData = preData;
     this->curData = curData;
     this->moveStatus = moveStatus;
@@ -31,22 +31,22 @@ ChessHistory::~ChessHistory() {}
 void ChessHistory::addMove(const MovingStore move) {
     moveList.push_back(move);
     cntMove++;
-    if (move.prePos == 0 && move.preData == PIECE::ROOK + CHESS::WHITE) {
+    if (move.preIndex == 0 && move.preData == PIECE::ROOK + CHESS::WHITE) {
         dataMovingRook[0][0] += 1;
     }
-    if (move.prePos == 56 && move.preData == PIECE::ROOK + CHESS::WHITE) {
+    if (move.preIndex == 56 && move.preData == PIECE::ROOK + CHESS::WHITE) {
         dataMovingRook[0][1] += 1;
     }
-    if (move.prePos == 7 && move.preData == PIECE::ROOK + CHESS::BLACK) {
+    if (move.preIndex == 7 && move.preData == PIECE::ROOK + CHESS::BLACK) {
         dataMovingRook[1][0] += 1;
     }
-    if (move.prePos == 63 && move.preData == PIECE::ROOK + CHESS::BLACK) {
+    if (move.preIndex == 63 && move.preData == PIECE::ROOK + CHESS::BLACK) {
         dataMovingRook[1][1] += 1;
     }
-    if (move.prePos == 32 && move.preData == PIECE::KING + CHESS::WHITE) {
+    if (move.preIndex == 32 && move.preData == PIECE::KING + CHESS::WHITE) {
         dataMovingKing[0] += 1;
     }
-    if (move.prePos == 39 && move.preData == PIECE::KING + CHESS::BLACK) {
+    if (move.preIndex == 39 && move.preData == PIECE::KING + CHESS::BLACK) {
         dataMovingKing[1] += 1;
     }
 }
@@ -57,22 +57,22 @@ void ChessHistory::popMove() {
     moveList.pop_back();
     cntMove--;
 
-    if (move.prePos == 0 && move.preData == PIECE::ROOK + CHESS::WHITE) {
+    if (move.preIndex == 0 && move.preData == PIECE::ROOK + CHESS::WHITE) {
         dataMovingRook[0][0] -= 1;
     }
-    if (move.prePos == 56 && move.preData == PIECE::ROOK + CHESS::WHITE) {
+    if (move.preIndex == 56 && move.preData == PIECE::ROOK + CHESS::WHITE) {
         dataMovingRook[0][1] -= 1;
     }
-    if (move.prePos == 7 && move.preData == PIECE::ROOK + CHESS::BLACK) {
+    if (move.preIndex == 7 && move.preData == PIECE::ROOK + CHESS::BLACK) {
         dataMovingRook[1][0] -= 1;
     }
-    if (move.prePos == 63 && move.preData == PIECE::ROOK + CHESS::BLACK) {
+    if (move.preIndex == 63 && move.preData == PIECE::ROOK + CHESS::BLACK) {
         dataMovingRook[1][1] -= 1;
     }
-    if (move.prePos == 4 && move.preData == PIECE::KING + CHESS::WHITE) {
+    if (move.preIndex == 4 && move.preData == PIECE::KING + CHESS::WHITE) {
         dataMovingKing[0] -= 1;
     }
-    if (move.prePos == 60 && move.preData == PIECE::KING + CHESS::BLACK) {
+    if (move.preIndex == 60 && move.preData == PIECE::KING + CHESS::BLACK) {
         dataMovingKing[1] -= 1;
     }
 }
@@ -141,8 +141,8 @@ std::string ChessHistory::getStringLastMove() const
     
     static int ENPASSANT = 2, CASTLE = 3;
     if (move.moveStatus == CASTLE) {
-        if (move.curPos == 62) return "O-O";
-        if (move.curPos == 58) return "O-O-O";
+        if (move.curIndex % 8 == 6) return "O-O";
+        if (move.curIndex % 8 == 2) return "O-O-O";
     }
     else if ((move.preData & 7) != PIECE::PAWN) {
         str = mp[move.preData & 7];
@@ -150,8 +150,8 @@ std::string ChessHistory::getStringLastMove() const
     if (move.curData != PIECE::NONE || move.moveStatus == ENPASSANT) {
         str += "x";
     }
-    str += (char)('a' + move.curPos % 8);
-    str += (char)('1' + move.curPos / 8);
+    str += (char)('a' + move.curIndex % 8);
+    str += (char)('1' + move.curIndex / 8);
     return str;
 }
 
@@ -171,9 +171,9 @@ std::string ChessHistory::encodeHistory() {
     std::string encoded;
     for (int i = 0; i < cntMove; i++) {
         MovingStore move = moveList[i];
-        encoded += std::to_string(move.prePos) + " ";
+        encoded += std::to_string(move.preIndex) + " ";
         encoded += std::to_string(move.preData) + " ";
-        encoded += std::to_string(move.curPos) + " ";
+        encoded += std::to_string(move.curIndex) + " ";
         encoded += std::to_string(move.curData) + " ";
         encoded += std::to_string(move.moveStatus) + " ";
     }
@@ -186,17 +186,17 @@ std::vector<MovingStore> ChessHistory::decodeHistory(std::string encoded) {
     std::string token;
 
     while (std::getline(ss, token, ' ')) {
-        int prePos = std::stoi(token);
+        int preIndex = std::stoi(token);
         std::getline(ss, token, ' ');
         int preType = std::stoi(token);
         std::getline(ss, token, ' ');
-        int curPos = std::stoi(token);
+        int curIndex = std::stoi(token);
         std::getline(ss, token, ' ');
         int curData = std::stoi(token);
         std::getline(ss, token, ' ');
         int moveStatus = std::stoi(token);
 
-        MovingStore move(prePos, preType, curPos, curData, moveStatus);
+        MovingStore move(preIndex, preType, curIndex, curData, moveStatus);
         decoded.push_back(move);
     }
 

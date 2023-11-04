@@ -34,7 +34,6 @@ void Chess::processEvents() {
         }
         ingameScreen->handleEvent(sfEvent);
     }
-    clock.restart();
 }
 
 void Chess::update() {

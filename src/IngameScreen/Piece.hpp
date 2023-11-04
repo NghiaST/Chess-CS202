@@ -7,8 +7,8 @@
 
 class Piece : public Graphic {  /// a1 -> a2 -> ... -> b1 -> ...
 private:
-    int position; // 0 -> 63
-    int posx, posy; // 0 -> 7
+    int index; // 0 -> 63
+    int rank, file; // 0 -> 7
     int pieceData; // 0 -> 23
     CHESS::COLOR pieceColor;
     PIECE::TYPE pieceType;
@@ -20,18 +20,16 @@ private:
     sf::Sprite sprite;
 
 public:
-    Piece(int position, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int status = 0);
-    Piece(int position, int pieceData, int status = 0);
+    Piece(int index, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int status = 0);
+    Piece(int index, int pieceData, int status = 0);
     ~Piece();
     const PIECE::TYPE& getPieceType() const;
     const CHESS::COLOR& getPieceColor() const;
     const int& getPieceData() const;
-    void setPieceType(int pieceType);
-    void setPieceColor(int pieceColor);
     void setPieceData(int pieceData);
     void setPiece(int pieceColor, int pieceType);
     void setMouseStatus(int mousestatus, Point mousePosition = Point(0, 0));
-    void setPosition(int position);
+    void setIndex(int index);
 
 public: // front-end
     void update(const Theme* theme);

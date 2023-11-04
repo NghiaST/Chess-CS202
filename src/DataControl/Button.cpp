@@ -85,3 +85,7 @@ void Button::updateRender() {
     setColorButton(colorButMulti.get(buttonState));
     updateStaticRender();
 }
+
+void Button::render(sf::RenderTarget& target, sf::RenderStates state) const {
+    StaticButton::draw(target, state);
+}

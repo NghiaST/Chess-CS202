@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "Board.hpp"
+#include "TimeButton.hpp"
 
 class IngameScreen {
 public:
@@ -24,6 +25,7 @@ private:
 
     Point boardSize;
     Point buttonSize;
+    Point timeButtonSize;
 
 private:
     sf::Shader shader;
@@ -31,7 +33,7 @@ private:
     Theme* theme;
 
     Board* board;
-    Button* timeButton;
+    TimeButton* timeButton;
     Button* saveButton;
     Button* undoButton;
     Button* redoButton;

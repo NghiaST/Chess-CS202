@@ -5,11 +5,11 @@
 
 class MovingStore {
 public:
-    int prePos, curPos;
+    int preIndex, curIndex;
     int preData, curData;
     int moveStatus; // 0: illegal, 1: legal, 2: enpassant, 3: castle
     MovingStore();
-    MovingStore(int prePos, int curPos, int preData, int curData, int moveStatus);
+    MovingStore(int preIndex, int curIndex, int preData, int curData, int moveStatus);
 };
 
 class ChessHistory {

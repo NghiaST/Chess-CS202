@@ -30,7 +30,7 @@ public:
     /// handleEvent: return 0 if no event, 1 if event
     bool handleEvent(const sf::Event& event);
     virtual void updateRender();
-    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const override {}
+    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const override;
     
 private:
     ColorButMulti colorButMulti;
