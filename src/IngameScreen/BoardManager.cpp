@@ -8,6 +8,7 @@
 
 BoardManager::BoardManager(Point renderPosition, Point renderSize, Theme* theme) {
     board = new NewBoard();
+    bot = new Bot();
     if (!shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment)) {
         std::cout << "Error loading shader" << std::endl;
     }
@@ -69,6 +70,10 @@ bool BoardManager::ifEndGame() const {
     return gameStatus == ENDGAME;
 }
 
+const NewBoard &BoardManager::getBoard() const {
+    return *board;
+}
+
 // Modifiers
 
 void BoardManager::freshState() {
@@ -93,8 +98,8 @@ void BoardManager::freshState() {
 
 void BoardManager::NewGame() {
     board->LoadBasicPosition();
-    isBot[0] = false;
-    isBot[1] = true;
+    isBot[0] = true;
+    isBot[1] = false;
     gameStatus = GAMESTATUS::NEWGAME;
     gameResult = CHESS::None;
     isPieceSelected = false;
@@ -112,7 +117,7 @@ void BoardManager::Undo() {
     board->UndoMove();
     freshState();
 
-    if (isBot[isWhiteTurn == 0] == false) return;
+    if (isBot[isWhiteTurn] == false) return;
     if (board->isHistoryEmpty()) return;
     movesUndoList.push_back(board->getLastMove());
     board->UndoMove();
@@ -127,7 +132,7 @@ void BoardManager::Redo() {
     freshState();
 
     if (movesUndoList.size() == 0) return;
-    if (isBot[isWhiteTurn == 0] == false) return;
+    if (isBot[isWhiteTurn] == false) return;
     board->MakeMove(movesUndoList.back());
     movesUndoList.pop_back();
     freshState();
@@ -167,7 +172,6 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
     if (event.type == sf::Event::MouseButtonPressed) {
         mousePosition = Point(event.mouseButton.x, event.mouseButton.y);
         if (event.mouseButton.button == sf::Mouse::Left) {
-            printf("asdf\n");
             if (gameStatus == NEWGAME || gameStatus == ONGOING) {
                 if (boardPrint->isMouseOn(mousePosition)) {
                     noteViewIndexList.clear();
@@ -176,7 +180,6 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
                     coordChess.y = (int) (mousePosition.x - boardPosition.x) / (int)cellSize.x;
                     int squareIndex = coordChess.x * 8 + coordChess.y;
                     if (!isPieceSelected) {
-                    printf("asdf2\n");
                         if (PIECE::isPieceYourTurn(board->getPiece(squareIndex), isWhiteTurn)) {
                             isPieceSelected = true;
                             isPieceHold = true;
@@ -247,6 +250,19 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
 
 std::string BoardManager::update(sf::Time deltaTime) {
     std::string res = "";
+    if (gameStatus != ENDGAME && isBot[isWhiteTurn]) {
+        if (!isBotRunning) {
+            isBotRunning = true;
+            bot->LoadBoard(*board);
+        }
+        bot->Thinking();
+        if (bot->ifThinkingDone()) {
+            Move move = bot->getBestMove();
+            ManagerMove(move.startSquare, move.targetSquare);
+            isBotRunning = false;
+            res = "make move";
+        }
+    }
     /// logic (time)
     /*
         code something here

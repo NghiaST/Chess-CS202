@@ -31,7 +31,7 @@ private:
     int analysisUncompletePoint;
     int score;
 
-    bool multiplyScore;
+    int multiplyScore;
     int cntMoves;
     int id_search;
     bool isSearch;

@@ -154,6 +154,23 @@ void IngameScreen::update(sf::Time deltaTime) {
         if (name == "time") {
             timeButton->update(deltaTime);
         }
+        else if (name == "boardManager") {
+            status = boardManager->update(deltaTime);
+            if (status == "make move") {
+                timeButton->setTurn(boardManager->getTurn());
+                timeButton->setIsCountDown(true);
+                // timeButton->changeTurn();
+                if (boardManager->ifEndGame()) {
+                    timeButton->setIsCountDown(false);
+                    if (boardManager->ifCheckMate()) {
+                        status = "checkmate";
+                    }
+                    else if (boardManager->ifStaleMate()) {
+                        status = "stalemate";
+                    }
+                }
+            }
+        }
         if (status == "" || status == "no event") {
             // no event: do nothing
         }

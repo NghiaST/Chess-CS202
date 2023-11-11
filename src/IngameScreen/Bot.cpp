@@ -2,8 +2,8 @@
 
 Bot::Bot() {
     board = new NewBoard();
-    searchDepth = 4;
-    timeThinkingMs = 1000;
+    searchDepth = 2;
+    timeThinkingMs = 2000;
     isThinkingDone = false;
     moveSearching = new MoveSearching(searchDepth);
 }
@@ -19,6 +19,8 @@ void Bot::LoadBoard(const NewBoard& board) {
     this->board = new NewBoard(board);
     moveSearching = new MoveSearching(searchDepth);
     isThinkingDone = false;
+    clock.restart();
+    currentTimeThinkingMs = timeThinkingMs;
 }
 
 void Bot::LoadFEN(std::string fen) {
@@ -36,8 +38,10 @@ void Bot::setTimeThinkingMs(double timeThinkingMs) {
 void Bot::Thinking() {
     if (isThinkingDone) return;
     moveSearching->Searching(*board, limitThinkingTimeMs, searchDepth);
-    timeThinkingMs -= limitThinkingTimeMs;
-    if (moveSearching->IsSearchCompleted() || timeThinkingMs <= 0) {
+    currentTimeThinkingMs -= clock.getElapsedTime().asMilliseconds();
+    clock.restart();
+    printf("Thinking %d\n", currentTimeThinkingMs);
+    if (moveSearching->IsSearchCompleted() || currentTimeThinkingMs <= 0) {
         bestMove = moveSearching->GetBestMove();
         isThinkingDone = true;
     }

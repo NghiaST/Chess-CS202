@@ -8,6 +8,7 @@
 #include "Piece.hpp"
 #include "BoardPrint.hpp"
 #include "NewBoard.hpp"
+#include "Bot.hpp"
 #include <vector>
 
 class BoardManager {
@@ -28,6 +29,7 @@ public:
     bool ifCheckMate() const;
     bool ifStaleMate() const;
     bool ifEndGame() const;
+    const NewBoard& getBoard() const;
 
     // Modifiers
     void NewGame();
@@ -62,6 +64,7 @@ private:
 
 private:
     std::vector<Piece*> piecePrintList;
+    Bot* bot;
     BoardPrint* boardPrint;
     int gameStatus; // 0: none, 1: newgame, 2: ongoing, 3: endgame
     CHESS::COLOR gameResult; // 0: none, 1: white win, 2: black win, 3: draw
@@ -71,6 +74,8 @@ private:
     bool isCheckMate;
     bool isStaleMate;
     bool isWhiteTurn;
+
+    bool isBotRunning;
 
     bool isPieceSelected;
     bool isPieceHold;

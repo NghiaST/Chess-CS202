@@ -23,7 +23,7 @@ int MoveSearching::Searching(NewBoard& board, int timeSearchingMs, int searchDep
         isSearch = true;
 
         multiplyScore = board.ifWhiteTurn() ? 1 : -1;
-        score = CalculateScore(board);
+        score = CalculateScore(board) * multiplyScore;
         if (searchDepth == 0) {
             isSearchComplete = true;
             return score;
@@ -52,11 +52,11 @@ int MoveSearching::Searching(NewBoard& board, int timeSearchingMs, int searchDep
         Move move = moveSelections[id_search];
         board.MakeMove(move, true);
         if (moveSearches[id_search] == nullptr) {
-            moveSearches[id_search] = new MoveSearching(this->maxDepth);
+            moveSearches[id_search] = new MoveSearching(this->maxDepth - 1);
         }
         MoveSearching* moveSearch = moveSearches[id_search];
 
-        int newAnalysis = multiplyScore * moveSearch->Searching(board, timeSearchingMs, searchDepth - 1);
+        int newAnalysis = -moveSearch->Searching(board, timeSearchingMs, searchDepth - 1);
         if (moveScore[id_search] != newAnalysis) {
             moveScore[id_search] = newAnalysis;
             isChange = true;

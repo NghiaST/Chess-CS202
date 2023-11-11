@@ -3,6 +3,7 @@
 
 #include "NewBoard.hpp"
 #include "MoveSearching.hpp"
+#include <SFML/System/Clock.hpp>
 
 class Bot {
 public:
@@ -11,9 +12,11 @@ public:
 
 private:
     NewBoard* board;
-    const int limitThinkingTimeMs = 10;
+    const int limitThinkingTimeMs = 30;
     int searchDepth;
     int timeThinkingMs;
+
+    int currentTimeThinkingMs;
     std::vector<Move> moveSelections;
     std::vector<std::pair<Move, int>> moveScores;
     Move bestMove;
@@ -21,6 +24,7 @@ private:
 
     bool isThinkingDone;
     int timeRemainMs;
+    sf::Clock clock;
     
 public:
     void LoadBoard(const NewBoard& board);
