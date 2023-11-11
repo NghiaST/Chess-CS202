@@ -14,13 +14,13 @@ public:
     void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const;
 
     void setTime(int time);
-    void setTurn(CHESS::COLOR turn);
+    void setTurn(bool isWhiteTurn);
     void setIsCountDown(bool isCountDown);
     void changeTurn();
     void reset();
 
 private:
-    CHESS::COLOR turn;
+    bool isWhiteTurn;
     bool isCountDown;
     bool isOutOfTime;
     double totalTime;

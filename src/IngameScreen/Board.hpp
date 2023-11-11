@@ -10,7 +10,7 @@
 #include "ChessHistory.hpp"
 #include <vector>
 
-class Board : public sf::Transformable {
+class Board {
 public:
     Board();
     Board(Point renderPosition, Point renderSize, Theme* theme);
@@ -23,32 +23,28 @@ public:
 public:
     // Accessors
     int getGameStatus() const;
-    CHESS::COLOR getTurn() const;
-    CHESS::COLOR getWinner() const;
+    bool ifWhiteTurn() const;
+    int getResult() const;
     std::vector<int> getAllPieceData() const;
     std::string getStringLastMove() const;
     std::string getStringHistory() const;
 
     // Mutators
-    // void loadGame(std::vector<int> dataPieceList, CHESS::COLOR turn);
-    // void loadGameFromHistory(std::vector<MovingStore> moveList);
+    // void loadGame(std::vector<int> pieceList, CHESS::COLOR turn);
+    // void loadGameFromHistory(std::vector<GeneralMove> moveList);
 
     // Functions
     bool UndoMove();
-    bool MakeMove(int startSquareIndex, int endSquareIndex);
     void NewGame();
+    bool MakeMove(int startSquareIndex, int endSquareIndex);
     bool ifCheck() const;   /// check if current turn is checked
     bool ifCheckMate() const;  /// check if current turn is checked and no possible move
     bool ifStaleMate() const;  /// check if current turn is not checked and no possible move
+    GeneralMove getLastMove() const;
 
 private:
     // Process
-    const Piece* getPiece(int squareIndex) const;
-    const Piece* getPiece(int rank, int file) const;
     const ChessHistory* getHistory() const;
-    int getPieceData(int squareIndex) const;
-    int getPieceColor(int squareIndex) const;
-    int getPieceType(int squareIndex) const;
 
     // Functions
     bool ifCellAttacked(int squareIndex, int myTurn) const; // check if cell is threaten by the opponent, prevent CASTLE
@@ -88,10 +84,10 @@ private:
 private:
     std::vector<Piece*> piecePrintList;
     BoardPrint* boardPrint;
-    std::vector<int> dataPieceList;
+    std::vector<int> pieceList;
     int gameStatus; // 0: none, 1: newgame, 2: ongoing, 3: endgame
-    CHESS::COLOR turn; // 8: white, 16: black
-    CHESS::COLOR winner;
+    int isWhiteTurn;
+    int gameResult; // 0: none, 1: white win, 2: black win, 3: draw
 
     bool isPieceSelected;
     bool isPieceHold;

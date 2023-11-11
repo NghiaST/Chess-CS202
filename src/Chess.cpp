@@ -4,7 +4,7 @@ Chess::Chess() {
     ingameScreen = new IngameScreen();
     clock.restart();
 
-    windowSize = INTERFACE::WINDOWSIZE;
+    windowSize = INTERFACE::WindowSize;
     renderPosition = Point(sf::VideoMode::getDesktopMode().width / 2 - windowSize.x / 2, 10);
 
     sf::ContextSettings settings;

@@ -15,7 +15,7 @@ ICON = $(OBJDIR)/Other/resource.res
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
 FILE_ORIGIN = main Graphic Chess
-FILE_INGAMESCREEN = Board BoardPrint ChessHistory Piece IngameScreen TimeButton
+FILE_INGAMESCREEN = BoardManager BoardPrint GameState Move Piece IngameScreen TimeButton Fen NewBoard Bitboard BitboardProcess Bot MoveSearching
 FILE_DATACONTROL = Button Color GameSettings Include Settings StaticButton Theme
 FILE = $(FILE_ORIGIN) $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%)
 FILE_O = $(FILE_ORIGIN:%=%.o) $(FILE_INGAMESCREEN:%=IngameScreen/%.o) $(FILE_DATACONTROL:%=DataControl/%.o)
@@ -92,7 +92,13 @@ run:
 
 rebuild: clean all
 
-test: $(OBJDIR)/Board.o
+test: 
+	g++ -I SFML-2.5.1/include -c src/IngameScreen/Bitboard.cpp -o obj/IngameScreen/Bitboard.o
+	g++ -I SFML-2.5.1/include -c src/IngameScreen/Fen.cpp -o obj/IngameScreen/Fen.o
+	g++ -I SFML-2.5.1/include -c src/main.cpp -o obj/main.o
+	g++ -I SFML-2.5.1/include -c src/DataControl/Include.cpp -o obj/DataControl/Include.o
+	g++ obj/main.o obj/IngameScreen/fen.o obj/DataControl/Include.o obj/IngameScreen/Bitboard.o -o test
+	test.exe
 
 neww:
 	echo $(FFF)

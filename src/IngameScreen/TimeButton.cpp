@@ -1,7 +1,7 @@
 #include "TimeButton.hpp"
 
 TimeButton::TimeButton(int id, Point renderPositionWhite, Point renderPositionBlack, Point renderSize, const sf::Font* font, const ColorButMulti& colorButMulti) {
-    turn = CHESS::COLOR::WHITE;
+    isWhiteTurn = true;
     isCountDown = false;
     isOutOfTime = false;
     totalTime = 70;
@@ -19,7 +19,7 @@ TimeButton::~TimeButton() {
 
 std::string TimeButton::update(sf::Time deltaTime) {
     if (isCountDown) {
-        if (turn == CHESS::COLOR::WHITE) {
+        if (isWhiteTurn) {
             timeWhite -= deltaTime.asSeconds();
             if (timeWhite <= 0) {
                 timeWhite = 0;
@@ -66,8 +66,8 @@ void TimeButton::setTime(int time) {
     timeBlack = totalTime;
 }
 
-void TimeButton::setTurn(CHESS::COLOR turn) {
-    this->turn = turn;
+void TimeButton::setTurn(bool isWhiteturn) {
+    this->isWhiteTurn = isWhiteturn;
 }
 
 void TimeButton::setIsCountDown(bool isCountDown) {
@@ -75,12 +75,12 @@ void TimeButton::setIsCountDown(bool isCountDown) {
 }
 
 void TimeButton::changeTurn() {
-    turn = (turn == CHESS::COLOR::WHITE ? CHESS::COLOR::BLACK : CHESS::COLOR::WHITE);
+    isWhiteTurn ^= 1;
     isCountDown = true;
 }
 
 void TimeButton::reset() {
-    turn = CHESS::COLOR::WHITE;
+    isWhiteTurn = true;
     isCountDown = false;
     isOutOfTime = false;
     timeWhite = totalTime;

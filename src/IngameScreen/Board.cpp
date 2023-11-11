@@ -18,15 +18,15 @@ Board::Board() {
 
     piecePrintList.assign(64, nullptr);
     for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
-        *it = new Piece(std::distance(piecePrintList.begin(), it), PIECE::NONE);
+        *it = new Piece(std::distance(piecePrintList.begin(), it), PIECE::None);
     }
     boardPrint = new BoardPrint(boardPosition, boardSize);
     gameStatus = GAMESTATUS::NEWGAME;
-    turn = CHESS::WHITE;
-    winner = CHESS::NONE;
+    isWhiteTurn = true;
+    gameResult = 0;
 
     history = new ChessHistory();
-    dataPieceList.assign(64, PIECE::NONE);
+    pieceList.assign(64, PIECE::None);
 
     // setup render
     boardPrint->setRenderPosition(boardPosition);
@@ -51,15 +51,15 @@ Board::Board(Point renderPosition, Point renderSize, Theme* theme) {
 
     piecePrintList.assign(64, nullptr);
     for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
-        *it = new Piece(std::distance(piecePrintList.begin(), it), PIECE::NONE);
+        *it = new Piece(std::distance(piecePrintList.begin(), it), PIECE::None);
     }
     boardPrint = new BoardPrint(boardPosition, boardSize);
     gameStatus = GAMESTATUS::NEWGAME;
-    turn = CHESS::WHITE;
-    winner = CHESS::NONE;
+    isWhiteTurn = true;
+    gameResult = 0;
 
     history = new ChessHistory();
-    dataPieceList.assign(64, PIECE::NONE);
+    pieceList.assign(64, PIECE::None);
 
     // setup render
     boardPrint->setRenderPosition(boardPosition);
@@ -82,14 +82,14 @@ Board::~Board() {
 int Board::getGameStatus() const {
     return gameStatus;
 }
-CHESS::COLOR Board::getTurn() const {
-    return turn;
+bool Board::ifWhiteTurn() const {
+    return isWhiteTurn;
 }
-CHESS::COLOR Board::getWinner() const {
-    return winner;
+int Board::getResult() const {
+    return gameResult;
 }
 std::vector<int> Board::getAllPieceData() const {
-    return this->dataPieceList;
+    return this->pieceList;
 }
 std::string Board::getStringLastMove() const {
     return history->getStringLastMove();
@@ -98,33 +98,13 @@ std::string Board::getStringHistory() const {
     return history->getStringHistory();
 }
 
-
-const Piece* Board::getPiece(int squareIndex) const {
-    return piecePrintList[squareIndex];
-}
-const Piece* Board::getPiece(int rank, int file) const {
-    return getPiece(rank * 8 + file);
-}
-
 const ChessHistory* Board::getHistory() const {
     return history;
 }
 
-int Board::getPieceData(int squareIndex) const {
-    return dataPieceList[squareIndex];
-}
-
-int Board::getPieceColor(int squareIndex) const {
-    return dataPieceList[squareIndex] & CHESS::BLACKWHITE;
-}
-
-int Board::getPieceType(int squareIndex) const {
-    return dataPieceList[squareIndex] & PIECE::ALLTYPE;
-}
-
 bool Board::ifCellAttacked(int squareIndex, int myTurn) const {
     for(int otherIndex = 0; otherIndex < 64; otherIndex++) {
-        if ((dataPieceList[otherIndex] & myTurn) && ifControll(otherIndex, squareIndex)) {
+        if ((pieceList[otherIndex] & myTurn) && ifControll(otherIndex, squareIndex)) {
             return true;
         }
     }
@@ -132,15 +112,15 @@ bool Board::ifCellAttacked(int squareIndex, int myTurn) const {
 }
 
 bool Board::ifControll(int startSquareIndex, int endSquareIndex) const {
-    int pieceType = dataPieceList[startSquareIndex] & PIECE::ALLTYPE;
-    int pieceColor = dataPieceList[startSquareIndex] & CHESS::BLACKWHITE;
-    int curPieceColor = dataPieceList[endSquareIndex] & CHESS::BLACKWHITE;
+    int pieceType = PIECE::PieceType(pieceList[startSquareIndex]);
+    int pieceColor = PIECE::PieceColor(pieceList[startSquareIndex]);
+    int curPieceColor = PIECE::PieceColor(pieceList[endSquareIndex]);
     Point startIndex2D(startSquareIndex / 8, startSquareIndex % 8);
     Point endIndex2D(endSquareIndex / 8, endSquareIndex % 8);
     Point diff = endIndex2D - startIndex2D;
-    int direct = (pieceColor == CHESS::WHITE) ? 1 : -1;
+    int direct = (pieceColor == PIECE::White) ? 1 : -1;
 
-    if (pieceType == PIECE::PAWN) {
+    if (pieceType == PIECE::Pawn) {
         if (curPieceColor == pieceColor) {
             return ILLEGAL;
         }
@@ -153,7 +133,7 @@ bool Board::ifControll(int startSquareIndex, int endSquareIndex) const {
             }
         }
     }
-    else if (pieceType == PIECE::KING) {
+    else if (pieceType == PIECE::King) {
         if (curPieceColor == pieceColor) {
             return ILLEGAL;
         }
@@ -173,15 +153,15 @@ bool Board::ifControll(int startSquareIndex, int endSquareIndex) const {
 }
 
 int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex) const {
-    return ifMoveLegalWithoutCheck(startSquareIndex, endSquareIndex, dataPieceList);
+    return ifMoveLegalWithoutCheck(startSquareIndex, endSquareIndex, pieceList);
 }
 int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std::vector<int> tmpDataPieceList) const
 {
     std::function<int(int)> getPieceType = [&](int squareIndex) {
-        return tmpDataPieceList[squareIndex] & PIECE::ALLTYPE;
+        return tmpDataPieceList[squareIndex] & PIECE::AllType;
     };
     std::function<int(int)> getPieceColor = [&](int squareIndex) {
-        return tmpDataPieceList[squareIndex] & CHESS::BLACKWHITE;
+        return tmpDataPieceList[squareIndex] & PIECE::AllColor;
     };
 
     if (endSquareIndex < 0 || endSquareIndex > 63 || startSquareIndex == endSquareIndex) {
@@ -193,22 +173,22 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
     Point diff = endIndex2D - startIndex2D;
     int pieceType = getPieceType(startSquareIndex);
     int pieceColor = getPieceColor(startSquareIndex);
-    int playerRank = (pieceColor == CHESS::WHITE ? startIndex2D.x : 7 - startIndex2D.x);
+    int playerRank = (pieceColor == PIECE::White ? startIndex2D.x : 7 - startIndex2D.x);
 
-    if (pieceType == PIECE::NONE) {
+    if (pieceType == PIECE::None) {
         return ILLEGAL;
     }
     else if (getPieceColor(startSquareIndex) == getPieceColor(endSquareIndex)) {
         return ILLEGAL;
     }
-    if (pieceType == PIECE::KING) {
+    if (pieceType == PIECE::King) {
         int distance = std::max(abs(diff.x), abs(diff.y));
         if (distance == 1) {
             return LEGAL;
         }
         else if (abs(diff.y) == 2 && diff.x == 0) {
             if (playerRank == 0 && startIndex2D.y == 4) {
-                int color = (pieceColor == CHESS::WHITE ? 0 : 1);
+                int color = (pieceColor == PIECE::White ? 0 : 1);
                 int side = (endIndex2D.y == 2 ? 0 : 1);
                 bool isCastle = history->isCastlePossible(color, side);
                 if (isCastle) {
@@ -216,7 +196,7 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
                     int stepFile = (side == 0 ? -1 : 1);
                     int newdiffFile = abs(rookFile - startIndex2D.y);
                     for(int i = 1; i < newdiffFile; i++) {
-                        if (getPieceType(startIndex2D.x * 8 + (startIndex2D.y + i * stepFile)) != PIECE::NONE) {
+                        if (getPieceType(startIndex2D.x * 8 + (startIndex2D.y + i * stepFile)) != PIECE::None) {
                             return ILLEGAL;
                         }
                     }
@@ -234,7 +214,7 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
             return ILLEGAL;
         }
     }
-    if (pieceType == PIECE::QUEEN) {
+    if (pieceType == PIECE::Queen) {
         // implementation of ifMoveLegal function for queen
         if (diff.x != 0 && diff.y != 0 && abs(diff.x) != abs(diff.y)) {
             return ILLEGAL;
@@ -244,14 +224,14 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
             int stepFile = (diff.y >= 0 ? diff.y > 0 ? 1 : 0 : -1);
             int totaldiff = (int)abs(diff.x) | (int)abs(diff.y);
             for (int i = 1; i < totaldiff; i++) {
-                if (getPieceType((startIndex2D.x + i * stepRank) * 8 + (startIndex2D.y + i * stepFile)) != PIECE::NONE) {
+                if (getPieceType((startIndex2D.x + i * stepRank) * 8 + (startIndex2D.y + i * stepFile)) != PIECE::None) {
                     return ILLEGAL;
                 }
             }
             return LEGAL;
         }
     }
-    if (pieceType == PIECE::BISHOP) {
+    if (pieceType == PIECE::Bishop) {
         // implementation of ifMoveLegal function for bishop
         if (diff.x == 0 || diff.y == 0 || abs(diff.x) != abs(diff.y)) {
             return ILLEGAL;
@@ -260,7 +240,7 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
             int stepRank = diff.x / abs(diff.x);
             int stepFile = diff.y / abs(diff.y);
             for (int i = 1; i < abs(diff.y); i++) {
-                if (getPieceType((startIndex2D.x + i * stepRank) * 8 + (startIndex2D.y + i * stepFile)) != PIECE::NONE) {
+                if (getPieceType((startIndex2D.x + i * stepRank) * 8 + (startIndex2D.y + i * stepFile)) != PIECE::None) {
                     return ILLEGAL;
                 }
             }
@@ -268,7 +248,7 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
         }
 
     }
-    if (pieceType == PIECE::KNIGHT) {
+    if (pieceType == PIECE::Knight) {
         // implementation of ifMoveLegal function for knight
         if (abs(diff.x) == 1 && abs(diff.y) == 2) {
             return LEGAL;
@@ -280,7 +260,7 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
             return ILLEGAL;
         }
     }
-    if (pieceType == PIECE::ROOK) {
+    if (pieceType == PIECE::Rook) {
         // implementation of ifMoveLegal function for rook
         if (diff.x != 0 && diff.y != 0) {
             return ILLEGAL;
@@ -289,18 +269,18 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
             int stepRank = (diff.x >= 0 ? diff.x > 0 ? 1 : 0 : -1);
             int stepFile = (diff.y >= 0 ? diff.y > 0 ? 1 : 0 : -1);
             for (int i = 1; i < abs(diff.x + diff.y); i++) {
-                if (getPieceType((startIndex2D.x + i * stepRank) * 8 + (startIndex2D.y + i * stepFile)) != PIECE::NONE) {
+                if (getPieceType((startIndex2D.x + i * stepRank) * 8 + (startIndex2D.y + i * stepFile)) != PIECE::None) {
                     return ILLEGAL;
                 }
             }
             return LEGAL;
         }
     }
-    if (pieceType == PIECE::PAWN) {
+    if (pieceType == PIECE::Pawn) {
         // implementation of ifMoveLegal function for pawn
         int direct = (pieceColor == CHESS::WHITE) ? 1 : -1;
         if (diff.y == 0 && direct * diff.x == 1) {
-            if (getPieceType(endSquareIndex) == PIECE::NONE) {
+            if (getPieceType(endSquareIndex) == PIECE::None) {
                 return LEGAL;
             }
             else {
@@ -319,8 +299,8 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
                 }
                 int indexEnpassant = endSquareIndex - direct;
                 int preIndexEnpassant = endSquareIndex + direct;
-                const MovingStore lastMove = history->getLastMove();
-                if (lastMove.preIndex == preIndexEnpassant && lastMove.curIndex == indexEnpassant && (lastMove.preData & PIECE::PAWN)) {
+                const GeneralMove lastMove = history->getLastMove();
+                if (lastMove.startSquare == preIndexEnpassant && lastMove.targetSquare == indexEnpassant && (lastMove.startPiece & PIECE::Pawn)) {
                     return ENPASSANT;
                 }
                 else {
@@ -332,7 +312,7 @@ int Board::ifMoveLegalWithoutCheck(int startSquareIndex, int endSquareIndex, std
             }
         }
         else if (diff.y == 0 && direct * diff.x == 2) {
-            if (playerRank < 2 && getPieceType(endSquareIndex) == PIECE::NONE && getPieceType((startIndex2D.x + direct) * 8 + startIndex2D.y) == PIECE::NONE) {
+            if (playerRank < 2 && getPieceType(endSquareIndex) == PIECE::None && getPieceType((startIndex2D.x + direct) * 8 + startIndex2D.y) == PIECE::None) {
                 return LEGAL;
             }
             else {
@@ -356,24 +336,24 @@ int Board::ifMoveLegal(int startSquareIndex, int endSquareIndex) const {
         }
     }
 
-    std::vector<int> newDataPieceList = dataPieceList;
+    std::vector<int> newDataPieceList = pieceList;
     newDataPieceList[endSquareIndex] = newDataPieceList[startSquareIndex];
-    newDataPieceList[startSquareIndex] = PIECE::NONE;
+    newDataPieceList[startSquareIndex] = PIECE::None;
     if (status == ENPASSANT) {
-        int direct = dataPieceList[startSquareIndex] & CHESS::WHITE ? 8 : -8;
-        newDataPieceList[endSquareIndex - direct] = PIECE::NONE;
+        int direct = pieceList[startSquareIndex] & CHESS::WHITE ? 8 : -8;
+        newDataPieceList[endSquareIndex - direct] = PIECE::None;
     }
     if (status == CASTLE) {
         int rookFile = (endSquareIndex < startSquareIndex ? 0 : 7);
         int rookRank = startSquareIndex % 8;
         int rookEndFile = (endSquareIndex < startSquareIndex ? 3 : 5);
         newDataPieceList[rookRank * 8 + rookEndFile] = newDataPieceList[rookRank * 8 + rookFile];
-        newDataPieceList[rookRank * 8 + rookFile] = PIECE::NONE;
+        newDataPieceList[rookRank * 8 + rookFile] = PIECE::None;
     }
 
     int kingPos = -1;
     for(int i = 0; i < 64; i++) {
-        if (newDataPieceList[i] == (PIECE::KING + turn)) {
+        if (newDataPieceList[i] == (PIECE::King + turn)) {
             kingPos = i;
             break;
         }
@@ -405,7 +385,7 @@ std::vector<Point> Board::getAllPossibleMove() const
 {
     std::vector<Point> legalMove;
     for(int i = 0; i < 64; i++) 
-    if (dataPieceList[i] & turn) {
+    if (pieceList[i] & turn) {
         for (int j = 0; j < 64; j++) {
             if (ifMoveLegal(i, j)) {
                 legalMove.push_back(Point(i, j));
@@ -417,7 +397,7 @@ std::vector<Point> Board::getAllPossibleMove() const
 
 int Board::getKingSquareIndex() const {
     for(int i = 0; i < 64; i++) {
-        if (dataPieceList[i] == (PIECE::KING + turn)) {
+        if (pieceList[i] == (PIECE::King + turn)) {
             return i;
         }
     }
@@ -427,7 +407,7 @@ int Board::getKingSquareIndex() const {
 bool Board::ifCheck() const {
     int kingPos = -1;
     for(int i = 0; i < 64; i++) {
-        if (dataPieceList[i] == (PIECE::KING + turn)) {
+        if (pieceList[i] == (PIECE::King + turn)) {
             kingPos = i;
             break;
         }
@@ -443,46 +423,50 @@ bool Board::ifStaleMate() const {
     return !ifCheck() && getAllPossibleMove().size() == 0;
 }
 
+GeneralMove Board::getLastMove() const
+{
+    return history->getLastMove();
+}
+
 int Board::TryMove(int startSquareIndex, int endSquareIndex) {
     int status = ifMoveLegalWithoutCheck(startSquareIndex, endSquareIndex);
-    history->addMove(MovingStore(startSquareIndex, endSquareIndex, piecePrintList[startSquareIndex]->getPieceData(), piecePrintList[endSquareIndex]->getPieceData(), status));
+    history->addMove(GeneralMove(startSquareIndex, endSquareIndex, pieceList[startSquareIndex], pieceList[endSquareIndex], status));
 
-    dataPieceList[endSquareIndex] = dataPieceList[startSquareIndex];
-    dataPieceList[startSquareIndex] = PIECE::NONE;
+    pieceList[endSquareIndex] = pieceList[startSquareIndex];
+    pieceList[startSquareIndex] = PIECE::None;
     if (status == ENPASSANT) {
-        int direct = dataPieceList[startSquareIndex] & CHESS::WHITE ? 8 : -8;
-        dataPieceList[endSquareIndex - direct] = PIECE::NONE;
+        int direct = pieceList[startSquareIndex] & CHESS::WHITE ? 8 : -8;
+        pieceList[endSquareIndex - direct] = PIECE::None;
     }
     if (status == CASTLE) {
         int rookRank = startSquareIndex / 8;
         int rookFile = (endSquareIndex < startSquareIndex ? 0 : 7);
         int rookEndFile = (endSquareIndex < startSquareIndex ? 3 : 5);
-        dataPieceList[rookRank * 8 + rookEndFile] = dataPieceList[rookRank * 8 + rookFile];
-        dataPieceList[rookRank * 8 + rookFile] = PIECE::NONE;
+        pieceList[rookRank * 8 + rookEndFile] = pieceList[rookRank * 8 + rookFile];
+        pieceList[rookRank * 8 + rookFile] = PIECE::None;
     }
     turn = (CHESS::COLOR) (turn ^ CHESS::BOTHCOLOR);
     return status;
 }
 
 bool Board::MakeMove(int startSquareIndex, int endSquareIndex) {
-    if (dataPieceList[startSquareIndex] & turn != turn) return false;
+    if (pieceList[startSquareIndex] & turn != turn) return false;
     int status = ifMoveLegal(startSquareIndex, endSquareIndex);
     if (status == ILLEGAL) return false;
-    printf("Make move: %d %d\n", startSquareIndex, endSquareIndex);
-    history->addMove(MovingStore(startSquareIndex, endSquareIndex, piecePrintList[startSquareIndex]->getPieceData(), piecePrintList[endSquareIndex]->getPieceData(), status));
+    history->addMove(GeneralMove(startSquareIndex, endSquareIndex, pieceList[startSquareIndex], pieceList[endSquareIndex], status));
 
-    dataPieceList[endSquareIndex] = dataPieceList[startSquareIndex];
-    dataPieceList[startSquareIndex] = PIECE::NONE;
+    pieceList[endSquareIndex] = pieceList[startSquareIndex];
+    pieceList[startSquareIndex] = PIECE::None;
     if (status == ENPASSANT) {
-        int direct = dataPieceList[startSquareIndex] & CHESS::WHITE ? 8 : -8;
-        dataPieceList[endSquareIndex - direct] = PIECE::NONE;
+        int direct = pieceList[startSquareIndex] & CHESS::WHITE ? 8 : -8;
+        pieceList[endSquareIndex - direct] = PIECE::None;
     }
     if (status == CASTLE) {
         int rookRank = startSquareIndex / 8;
         int rookFile = (endSquareIndex < startSquareIndex ? 0 : 7);
         int rookEndFile = (endSquareIndex < startSquareIndex ? 3 : 5);
-        dataPieceList[rookRank * 8 + rookEndFile] = dataPieceList[rookRank * 8 + rookFile];
-        dataPieceList[rookRank * 8 + rookFile] = PIECE::NONE;
+        pieceList[rookRank * 8 + rookEndFile] = pieceList[rookRank * 8 + rookFile];
+        pieceList[rookRank * 8 + rookFile] = PIECE::None;
     }
 
     turn = (CHESS::COLOR) (turn ^ CHESS::BOTHCOLOR);
@@ -505,19 +489,19 @@ bool Board::MakeMove(int startSquareIndex, int endSquareIndex) {
 
 bool Board::UndoMove() {
     if (!history->getCntMove()) return false;
-    MovingStore lastMove = history->getLastMove();
-    dataPieceList[lastMove.preIndex] = lastMove.preData;
-    dataPieceList[lastMove.curIndex] = lastMove.curData;
-    if (lastMove.moveStatus == ENPASSANT) {
-        int direct = dataPieceList[lastMove.preIndex] & CHESS::WHITE ? 8 : -8;
-        dataPieceList[lastMove.curIndex - direct] = lastMove.curData;
+    GeneralMove lastMove = history->getLastMove();
+    pieceList[lastMove.startSquare] = lastMove.startPiece;
+    pieceList[lastMove.targetSquare] = lastMove.targetPiece;
+    if (lastMove.flag == ENPASSANT) {
+        int direct = pieceList[lastMove.startSquare] & CHESS::WHITE ? 8 : -8;
+        pieceList[lastMove.targetSquare - direct] = lastMove.targetPiece;
     }
-    if (lastMove.moveStatus == CASTLE) {
-        int rookRank = lastMove.preIndex / 8;
-        int rookFile = (lastMove.curIndex < lastMove.preIndex ? 0 : 7);
-        int rookEndFile = (lastMove.curIndex < lastMove.preIndex ? 3 : 5);
-        dataPieceList[rookRank * 8 + rookFile] = dataPieceList[rookRank * 8 + rookEndFile];
-        dataPieceList[rookRank * 8 + rookEndFile] = PIECE::NONE;
+    if (lastMove.flag == CASTLE) {
+        int rookRank = lastMove.startSquare / 8;
+        int rookFile = (lastMove.targetSquare < lastMove.startSquare ? 0 : 7);
+        int rookEndFile = (lastMove.targetSquare < lastMove.startSquare ? 3 : 5);
+        pieceList[rookRank * 8 + rookFile] = pieceList[rookRank * 8 + rookEndFile];
+        pieceList[rookRank * 8 + rookEndFile] = PIECE::None;
     }
     turn = (CHESS::COLOR) (turn ^ CHESS::BOTHCOLOR);
     history->popMove();
@@ -526,25 +510,25 @@ bool Board::UndoMove() {
 }
 
 void Board::NewGame() {
-    dataPieceList = std::vector<int>(64, PIECE::NONE);
-    dataPieceList[0]  = dataPieceList[7] = PIECE::ROOK + CHESS::WHITE;
-    dataPieceList[1]  = dataPieceList[6] = PIECE::KNIGHT + CHESS::WHITE;
-    dataPieceList[2] = dataPieceList[5] = PIECE::BISHOP + CHESS::WHITE;
-    dataPieceList[3] = PIECE::QUEEN + CHESS::WHITE;
-    dataPieceList[4] = PIECE::KING + CHESS::WHITE;
-    dataPieceList[56]  = dataPieceList[63] = PIECE::ROOK + CHESS::BLACK;
-    dataPieceList[57] = dataPieceList[62] = PIECE::KNIGHT + CHESS::BLACK;
-    dataPieceList[58] = dataPieceList[61] = PIECE::BISHOP + CHESS::BLACK;
-    dataPieceList[59] = PIECE::QUEEN + CHESS::BLACK;
-    dataPieceList[60] = PIECE::KING + CHESS::BLACK;
+    pieceList = std::vector<int>(64, PIECE::None);
+    pieceList[0]  = pieceList[7]  = PIECE::WhiteRook;
+    pieceList[1]  = pieceList[6]  = PIECE::WhiteKnight;
+    pieceList[2]  = pieceList[5]  = PIECE::WhiteBishop;
+    pieceList[3]                  = PIECE::WhiteQueen;
+    pieceList[4]                  = PIECE::WhiteKing;
+    pieceList[56] = pieceList[63] = PIECE::BlackRook;
+    pieceList[57] = pieceList[62] = PIECE::BlackKnight;
+    pieceList[58] = pieceList[61] = PIECE::BlackBishop;
+    pieceList[59]                 = PIECE::BlackQueen;
+    pieceList[60]                 = PIECE::BlackKing;
     for(int i = 0; i < 8; i++) {
-        dataPieceList[i + 8] = PIECE::PAWN + CHESS::WHITE;
-        dataPieceList[i + 48] = PIECE::PAWN + CHESS::BLACK;
+        pieceList[i + 8]          = PIECE::WhitePawn;
+        pieceList[i + 48]         = PIECE::BlackPawn;
     }
 
     // setup piece
     for(int i = 0; i < 64; i++) {
-        piecePrintList[i]->setPieceData(dataPieceList[i]);
+        piecePrintList[i]->setPiece(pieceList[i]);
     }
 
     // setup game status
@@ -579,7 +563,7 @@ std::string Board::handleEvent(const sf::Event& event) {
                     coordChess.y = (int) (mousePosition.x - boardPosition.x) / (int)cellSize.x;
                     int squareIndex = coordChess.x * 8 + coordChess.y;
                     if (!isPieceSelected) {
-                        if (getPieceColor(squareIndex) == turn) {
+                        if (PIECE::PieceColor(pieceList[squareIndex]) == turn) {
                             isPieceSelected = true;
                             isPieceHold = true;
                             selectedPieceIndex = squareIndex;
@@ -596,7 +580,7 @@ std::string Board::handleEvent(const sf::Event& event) {
                         if (MakeMove(selectedPieceIndex, squareIndex)) {
                             res = "make move";
                         }
-                        else if (getPieceColor(squareIndex) == turn) {
+                        else if (PIECE::PieceColor(pieceList[squareIndex]) == turn) {
                             isPieceSelected = true;
                             isPieceHold = true;
                             selectedPieceIndex = squareIndex;
@@ -679,9 +663,8 @@ std::string Board::update(sf::Time deltaTime) {
 }
 
 void Board::updateRender() {
-
     for(int i = 0; i < 64; i++) {
-        piecePrintList[i]->setPieceData(dataPieceList[i]);
+        piecePrintList[i]->setPiece(pieceList[i]);
         piecePrintList[i]->setMouseStatus(MOUSE::NONE);
         boardPrint->setStateCell(i, BoardPrint::COMMON);
     }
@@ -692,9 +675,9 @@ void Board::updateRender() {
         boardPrint->setStateCell(getKingSquareIndex(), BoardPrint::CHECKMATE);
     }
     if (history->getCntMove()) {
-        MovingStore lastMove = history->getLastMove();
-        boardPrint->setStateCell(lastMove.preIndex, BoardPrint::PREMOVE);
-        boardPrint->setStateCell(lastMove.curIndex, BoardPrint::PREMOVE);
+        GeneralMove lastMove = history->getLastMove();
+        boardPrint->setStateCell(lastMove.startSquare, BoardPrint::PREMOVE);
+        boardPrint->setStateCell(lastMove.targetSquare, BoardPrint::PREMOVE);
     }
     if (isPieceSelected | isPieceHold) {
         boardPrint->setStateCell(selectedPieceIndex, BoardPrint::SELECTED);

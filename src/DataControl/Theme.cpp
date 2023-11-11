@@ -76,7 +76,7 @@ ThemePiece::~ThemePiece()
 void ThemePiece::buildTexture(std::string PieceName)
 {
     const static std::string makeColor = " wb";
-    const static std::string makeName = " KQBNRP";
+    const static std::string makeName = " PNBRQK";
     const static std::string suffix = ".png";
     for(int chesscolor = 1; chesscolor <= 2; chesscolor++)
     {
@@ -160,12 +160,12 @@ void Theme::setTheme(const ThemeIndex themeIndex)
     this->PieceTextureList->buildTexture(this->PieceName);
     if (!this->BoardTexture->loadFromFile(this->BoardName))
         printf("Error loading board texture: %s\n", BoardName.c_str());
-    this->BoardSelectedTexture  = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(255, 255, 0));
-    this->BoardPreMoveTexture   = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(41, 235, 20));
-    this->BoardMoveTexture      = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(100, 100, 255));
-    this->BoardCaptureTexture   = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(220, 0, 0));
-    this->BoardCheckTexture     = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color::Red);
-    this->BoardCheckMateTexture = makeTexture(Point(INTERFACE::SIZEBOARD, INTERFACE::SIZEBOARD), sf::Color(255, 0, 255));
+    this->BoardSelectedTexture  = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(255, 255, 0));
+    this->BoardPreMoveTexture   = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(41, 235, 20));
+    this->BoardMoveTexture      = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(100, 100, 255));
+    this->BoardCaptureTexture   = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(220, 0, 0));
+    this->BoardCheckTexture     = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color::Red);
+    this->BoardCheckMateTexture = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(255, 0, 255));
     if (!this->FontText->loadFromFile(this->FontName))
         printf("Error loading fonttext texture: %s\n", FontName.c_str());
     

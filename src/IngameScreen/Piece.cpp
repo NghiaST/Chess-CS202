@@ -1,49 +1,29 @@
 #include "Piece.hpp"
 #include <algorithm>
 
-Piece::Piece(int position, CHESS::COLOR pieceColor, PIECE::TYPE pieceType, int status)
+Piece::Piece(int index, int piece, int status)
     : Graphic(Point(0, 0), Point(0, 0), true, 0)
 {
-    this->index = position;
-    this->rank = position / 8;
-    this->file = position % 8;
-    setPiece(pieceColor, pieceType);
+    setIndex(index);
+    setPiece(piece);
+    setMouseStatus(MOUSE::NONE);
     this->status = status;
-    this->mousestatus = MOUSE::NONE;
-}
-
-Piece::Piece(int position, int pieceData, int status)
-    : Graphic(Point(0, 0), Point(0, 0), true, 0)
-{
-    this->index = position;
-    this->rank = position / 8;
-    this->file = position % 8;
-    setPieceData(pieceData);
-    this->status = status;
-    this->mousestatus = MOUSE::NONE;
 }
 
 Piece::~Piece()
 {
 }
 
-const PIECE::TYPE& Piece::getPieceType() const {
-    return pieceType;
+const int Piece::getPiece() const {
+    return piece;
 }
-const CHESS::COLOR& Piece::getPieceColor() const {
-    return pieceColor;
-}
-const int& Piece::getPieceData() const {
-    return pieceData;
-}
-void Piece::setPieceData(int pieceData) {
-    setPiece(pieceData & CHESS::BOTHCOLOR, pieceData & PIECE::ALLTYPE);
+void Piece::setPiece(int piece) {
+    this->piece = piece;
+    setIsPrint(piece != PIECE::None);
 }
 void Piece::setPiece(int pieceColor, int pieceType) {
-    this->pieceColor = (CHESS::COLOR) pieceColor;
-    this->pieceType = (PIECE::TYPE) pieceType;
-    this->pieceData = pieceColor | pieceType;
-    setIsPrint(pieceData != PIECE::NONE);
+    this->piece = pieceColor | pieceType;
+    setIsPrint(piece != PIECE::None);
 }
 void Piece::setMouseStatus(int mousestatus, Point mousePosition)
 {
@@ -60,7 +40,7 @@ void Piece::setIndex(int index)
 void Piece::update(const Theme* theme) {
     if (!isPrint) return;
     double size_pBoard = renderSize.x;
-    const sf::Texture& texture = theme->getPieceTexture(pieceData);
+    const sf::Texture& texture = theme->getPieceTexture(piece);
     Point size = texture.getSize();
     if (size == Point(0, 0)) return;
 

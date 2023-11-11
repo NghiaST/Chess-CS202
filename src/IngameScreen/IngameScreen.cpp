@@ -12,11 +12,11 @@ IngameScreen::IngameScreen() {
     boardSize = Point(64, 64) * 8;
     buttonSize = Point(150, 70);
     timeButtonSize = Point(80, 40);
-    boardPosition = Point(100, INTERFACE::WINDOWSIZE.y / 2 - boardSize.y / 2);
+    boardPosition = Point(100, INTERFACE::WindowSize.y / 2 - boardSize.y / 2);
 
     timeButtonPosition = Point(boardPosition.x / 2, boardPosition.y + boardSize.y / 2);
     
-    int leftPositionButton = INTERFACE::WINDOWSIZE.x - buttonSize.x - 2;
+    int leftPositionButton = INTERFACE::WindowSize.x - buttonSize.x - 2;
     saveButtonPosition    = Point(leftPositionButton, 1.05 * buttonSize.y);
     undoButtonPosition    = Point(leftPositionButton, 2.10 * buttonSize.y);
     redoButtonPosition    = Point(leftPositionButton, 3.15 * buttonSize.y);
@@ -26,7 +26,7 @@ IngameScreen::IngameScreen() {
     Point timeButtonPositionWhite = boardPosition + boardSize - Point(timeButtonSize.x, 0) + Point(0, 5);
     Point timeButtonPositionBlack = boardPosition + Point(boardSize.x, 0) - timeButtonSize - Point(0, 5);
 
-    board = new Board(boardPosition, boardSize, theme);
+    boardManager = new BoardManager(boardPosition, boardSize, theme);
     timeButton = new TimeButton(50, timeButtonPositionWhite, timeButtonPositionBlack, timeButtonSize, &theme->getFont(), theme->getTextColorMulti());
     // timeButton    = new TimeButton(50, timeButtonPosition, Point(40, 40), true , true, &theme->getFont(), Color::ColorButMultiGreen, 20, "Time");
     //(50, timeButtonPosition   , Point(40, 40), true , true, &theme->getFont(), Color::ColorButMultiGreen, 20, "Time");
@@ -40,7 +40,7 @@ IngameScreen::IngameScreen() {
     mousePosition = Point(0, 0);
 
     defaultPriority = {
-        {"board", 0},
+        {"boardManager", 0},
         {"time", 1},
         {"save", 2},
         {"undo", 3},
@@ -50,7 +50,7 @@ IngameScreen::IngameScreen() {
     };
     priority = defaultPriority;
     handleOrder = {
-        "board",
+        "boardManager",
         "time",
         "save",
         "undo",
@@ -62,7 +62,7 @@ IngameScreen::IngameScreen() {
 
 IngameScreen::~IngameScreen() {
     delete theme;
-    delete board;
+    delete boardManager;
     delete timeButton;
     delete saveButton;
     delete undoButton;
@@ -92,14 +92,20 @@ void IngameScreen::handleEvent(const sf::Event& event) {
     std::string status = "";
     for(std::string name : handleOrder) {
         if (status != "") break;
-        if (name == "board") {
-            status = board->handleEvent(event);
+        if (name == "boardManager") {
+            status = boardManager->handleEvent(event);
             if (status == "make move") {
-                timeButton->setTurn(board->getTurn());
+                timeButton->setTurn(boardManager->getTurn());
                 timeButton->setIsCountDown(true);
                 // timeButton->changeTurn();
-                if (board->ifCheckMate()) {
+                if (boardManager->ifEndGame()) {
                     timeButton->setIsCountDown(false);
+                    if (boardManager->ifCheckMate()) {
+                        status = "checkmate";
+                    }
+                    else if (boardManager->ifStaleMate()) {
+                        status = "stalemate";
+                    }
                 }
             }
         }
@@ -112,24 +118,28 @@ void IngameScreen::handleEvent(const sf::Event& event) {
         else if (name == "undo") {
             status = undoButton->handleEvent(event) ? "undo" : "";
             if (status == "undo") {
-                board->UndoMove();
-                if (board->getTurn() != CHESS::COLOR::WHITE) {
-                    board->UndoMove();
-                }
+                boardManager->Undo();
             }
         }
         else if (name == "redo") {
             status = redoButton->handleEvent(event) ? "redo" : "";
+            if (status == "redo") {
+                boardManager->Redo();
+            }
         }
         else if (name == "newgame") {
             status = newgameButton->handleEvent(event) ? "newgame" : "";
             if (status == "newgame") {
-                board->NewGame();
+                boardManager->NewGame();
                 timeButton->reset();
             }
         }
         else if (name == "exit") {
             status = exitButton->handleEvent(event) ? "exit" : "";
+            // if (status == "newgame") {
+            //     boardManager->NewGame();
+            //     timeButton->reset();
+            // }
         }
     }
 }
@@ -137,7 +147,7 @@ void IngameScreen::handleEvent(const sf::Event& event) {
 void IngameScreen::update(sf::Time deltaTime) {
     std::string status = "";
     std::vector<std::string> updateOrder = {
-        "board", "time", "save", "undo", "redo", "newgame", "exit"
+        "boardManager", "time", "save", "undo", "redo", "newgame", "exit"
     };
 
     for(std::string name : updateOrder) {
@@ -157,7 +167,7 @@ void IngameScreen::update(sf::Time deltaTime) {
 }
 
 void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates state) const {
-    board->updateRender();
+    boardManager->updateRender();
     timeButton->updateRender();
     saveButton->updateRender();
     undoButton->updateRender();
@@ -170,6 +180,6 @@ void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates state) cons
     target.draw(*redoButton);
     target.draw(*newgameButton);
     target.draw(*exitButton);
-    board->render(target, state);
+    boardManager->render(target, state);
     timeButton->render(target);
 }

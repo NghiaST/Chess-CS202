@@ -2,7 +2,7 @@
 #define __IngameScreen_hpp__
 
 #include <SFML/Graphics.hpp>
-#include "Board.hpp"
+#include "BoardManager.hpp"
 #include "TimeButton.hpp"
 
 class IngameScreen {
@@ -32,7 +32,7 @@ private:
     sf::RenderStates state;
     Theme* theme;
 
-    Board* board;
+    BoardManager* boardManager;
     TimeButton* timeButton;
     Button* saveButton;
     Button* undoButton;
