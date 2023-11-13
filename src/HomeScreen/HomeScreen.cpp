@@ -60,7 +60,7 @@ void HomeScreen::handleEvent(const sf::Event& event) {
 void HomeScreen::update(sf::Time deltaTime) {
     TitleScreen->update(deltaTime);
 }
-
+#include "../DataControl/Arrow.hpp"
 void HomeScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     PlayButton->updateRender();
     SettingButton->updateRender();
@@ -73,4 +73,12 @@ void HomeScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     target.draw(*SettingButton);
     target.draw(*StatisticsButton);
     target.draw(*ExitButton);
+}
+
+void HomeScreen::formatTheme() {
+    theme->setTheme(FileInit::LoadTheme());
+    PlayButton->setColorBM(theme->getColorDefault());
+    SettingButton->setColorBM(theme->getColorDefault());
+    StatisticsButton->setColorBM(theme->getColorDefault());
+    ExitButton->setColorBM(theme->getColorDefault());
 }

@@ -13,6 +13,7 @@ class TextureMaking {
 public:
     static std::unique_ptr<sf::Texture> Make(Point size, sf::Color sfColor);
 };
+// Arrow
 
 struct ThemeIndex {
 public:
@@ -21,7 +22,6 @@ public:
     int BoardIndex;
     int ButtonIndex;
     int TextIndex;
-    // int ArrowIndex; ???
 
 public:
     ThemeIndex();
@@ -74,13 +74,21 @@ private:
     std::unique_ptr<sf::Texture> CheckMateTexture;
 };
 
-class Theme : private ThemeIndex {
+class Theme : protected ThemeIndex {
 public:
     Theme();
     ~Theme();
-    void loadFile();
     void setTheme(const ThemeIndex themeIndex);
-    void setTheme(const int themeIndex);
+
+    // Mutators
+    void setBackground(int BackgroundIndex);
+    void setPiece(int PieceIndex);
+    void setBoard(int BoardIndex);
+    void setButton(int ButtonIndex);
+    void setText(int TextIndex);
+
+    // Accessors
+    ThemeIndex getThemeIndex() const;
 
     const sf::Texture& getTitleScreenTexture() const;
     const sf::Texture& getBackgroundTexture() const;
@@ -150,13 +158,14 @@ public:
     static const std::vector<std::string> PieceNameList;
     static const std::vector<std::string> BoardNameList;
     static const std::vector<std::string> FontNameList;
+    static const std::vector<std::string> ColorBM_NameList;
+    static const std::vector<const ColorButMulti*> ColorBM_DefaultList;
 
 
     static const std::vector<int> FontSizeList;
     static const int ThemeCount;
 
     static const ThemeIndex ThemeIndexDefault;
-    static const std::vector<ThemeIndex> themeIndexList;
 };
 
 #endif

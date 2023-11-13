@@ -20,7 +20,7 @@ SUBFOLDER = IngameScreen DataControl HomeScreen SettingScreen StatisticsScreen O
 
 FILE_ORIGIN = main Graphic Chess Screen
 FILE_INGAMESCREEN = BoardManager BoardPrint GameState Move Piece IngameScreen TimeButton Fen NewBoard Bitboard BitboardProcess Bot MoveSearching
-FILE_DATACONTROL = Button Color GameSettings Include Settings StaticButton Theme Image FileInit ButtonOption
+FILE_DATACONTROL = Button Color GameSettings Include Settings StaticButton Theme Image FileInit ButtonOption Arrow
 FILE_HOMESCREEN = HomeScreen
 FILE_SETTINGSCREEN = SettingScreen
 FILE_STATISTICSSCREEN = StatisticsScreen
@@ -76,9 +76,10 @@ run:
 
 rebuild: clean all
 
-test: ${OBJS} test.exe
-	${HIDE} echo test.exe
-	${HIDE} test.exe
+test:
+	${HIDE} echo test.cpp
+	${CXX} ${CXXFLAGS} -I ${SFMLINCDIR} -c src/test.cpp -o test.exe -L ${FLAGS}
+	test.exe
 
 neww:
 	echo $(RCICON)

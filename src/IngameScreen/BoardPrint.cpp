@@ -1,22 +1,26 @@
 #include "BoardPrint.hpp"
 
-BoardPrint::BoardPrint(Point boardPosition, Point boardSize) 
+BoardPrint::BoardPrint(Point boardPosition, Point boardSize, const TextureBoard* textureBoard)
   : Graphic(boardPosition, boardSize, true, 100)
 {
-    stateBoard.resize(64);
-    for(int i = 0; i < 64; i++) {
-        stateBoard[i] = i % 6;
-    }
+    stateBoard.resize(64, 0);
+    this->textureBoard = textureBoard;
 }
 
 BoardPrint::~BoardPrint() {
 }
 
-void BoardPrint::setStateBoard(const std::vector<int>& stateBoard) {
+void BoardPrint::setStateBoard(const std::vector<int> &stateBoard)
+{
     this->stateBoard = stateBoard;
 }
 
-void BoardPrint::setStateCell(int index, STATUS state) {
+void BoardPrint::setTextureBoard(const TextureBoard *TextureBoard) {
+    this->textureBoard = TextureBoard;
+}
+
+void BoardPrint::setStateCell(int index, STATUS state)
+{
     this->stateBoard[index] = state;
 }
 
@@ -25,21 +29,20 @@ int BoardPrint::getStateCell(int index)
     return this->stateBoard[index];
 }
 
-void BoardPrint::update(const Theme* theme) {
+void BoardPrint::update() {
     Point cellSize = renderSize / 8;
     spriteBoardList.clear();
     spriteBoardShaderList.clear();
-    const TextureBoard& textureBoard = theme->getTextureBoard();
 
     // if no texture, return
-    sf::Vector2u size = textureBoard.getTexture(TextureBoard::Board).getSize();
-    sf::Vector2u sizeCell = textureBoard.getTexture(TextureBoard::Selected).getSize();
+    sf::Vector2u size = textureBoard->getTexture(TextureBoard::Board).getSize();
+    sf::Vector2u sizeCell = textureBoard->getTexture(TextureBoard::Selected).getSize();
     if (size == sf::Vector2u(0, 0)) return;
 
     // calculate size and index of square
     {
         sf::Sprite sprite;
-        sprite.setTexture(textureBoard.getTexture(TextureBoard::Board));
+        sprite.setTexture(textureBoard->getTexture(TextureBoard::Board));
         
         sprite.setScale(renderSize.x / size.x, renderSize.y / size.y);
         sprite.setPosition(renderPosition.to2f());
@@ -58,31 +61,31 @@ void BoardPrint::update(const Theme* theme) {
             sf::Sprite sprite;
             switch(stateBoard[index]) {
                 case STATUS::Selected:
-                    sprite.setTexture(textureBoard.getTexture(TextureBoard::Selected));
+                    sprite.setTexture(textureBoard->getTexture(TextureBoard::Selected));
                     break;
                 case STATUS::Hover:
-                    sprite.setTexture(textureBoard.getTexture(TextureBoard::Hover));
+                    sprite.setTexture(textureBoard->getTexture(TextureBoard::Hover));
                     break;
                 case STATUS::PreMoveStart:
-                    sprite.setTexture(textureBoard.getTexture(TextureBoard::PreMoveStart));
+                    sprite.setTexture(textureBoard->getTexture(TextureBoard::PreMoveStart));
                     break;
                 case STATUS::PreMoveTarget:
-                    sprite.setTexture(textureBoard.getTexture(TextureBoard::PreMoveTarget));
+                    sprite.setTexture(textureBoard->getTexture(TextureBoard::PreMoveTarget));
                     break;
                 case STATUS::Possible:  
-                    sprite.setTexture(textureBoard.getTexture(TextureBoard::Possible));
+                    sprite.setTexture(textureBoard->getTexture(TextureBoard::Possible));
                     break;
                 case STATUS::PossibleCapture:
-                    sprite.setTexture(textureBoard.getTexture(TextureBoard::PossibleCapture));
+                    sprite.setTexture(textureBoard->getTexture(TextureBoard::PossibleCapture));
                     break;
                 case STATUS::Check:
-                    sprite.setTexture(textureBoard.getTexture(TextureBoard::Check));
+                    sprite.setTexture(textureBoard->getTexture(TextureBoard::Check));
                     break;
                 case STATUS::CheckMate:
-                    sprite.setTexture(textureBoard.getTexture(TextureBoard::CheckMate));
+                    sprite.setTexture(textureBoard->getTexture(TextureBoard::CheckMate));
                     break;
                 case STATUS::StaleMate:
-                    sprite.setTexture(textureBoard.getTexture(TextureBoard::StaleMate));
+                    sprite.setTexture(textureBoard->getTexture(TextureBoard::StaleMate));
                     break;
                 default:
                     break;

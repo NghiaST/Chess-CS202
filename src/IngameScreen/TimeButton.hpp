@@ -13,6 +13,7 @@ public:
     void updateRender();
     void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 
+    void setColorBM(const ColorButMulti& colorButMulti);
     void setTime(int time);
     void setTurn(bool isWhiteTurn);
     void setIsCountDown(bool isCountDown);

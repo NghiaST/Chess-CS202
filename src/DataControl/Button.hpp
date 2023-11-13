@@ -20,6 +20,7 @@ public:
 
     // Mutators
     void setButtonState(ButtonStates buttonState);
+    void setColorBM(const ColorButMulti& colorButMulti);
 
     // Accessors
     int getButtonState() const;

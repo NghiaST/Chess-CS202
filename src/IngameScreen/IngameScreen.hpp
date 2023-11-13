@@ -15,6 +15,8 @@ public:
     void update(sf::Time deltaTime);
     void render(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) override;
 
+    void formatTheme() override;
+    
 private:
     // Process
     Point boardPosition;

@@ -1,4 +1,5 @@
 #include "Theme.hpp"
+#include "FileInit.hpp"
 
 ///-----------------------------------------------------------------
 ///-----------------------------ThemeData---------------------------
@@ -13,21 +14,11 @@ const std::vector<std::string> ThemeData::BackgroundNameList = {"cherry-blossom.
 const std::vector<std::string> ThemeData::PieceNameList = {"caliente", "cburnett", "celtic", "dubrovny", "fresca", "frugale", "gioco", "governor", "kiwen-suwi", "maestro", "usual"};
 const std::vector<std::string> ThemeData::BoardNameList = {"pink-pyramid.png", "blue.png",  "blue-marble.png", "canvas.png", "green-plastic.png", "leather.png", "maple.png", "ncf-board.png", "purple-diag.png", "wood.png", "wood2.png"};
 const std::vector<std::string> ThemeData::FontNameList = {"Arial-bold.ttf", "Arial.ttf", "ShortBaby.ttf", "CarryYou.ttf", "ChristmasJumper.ttf", "CuteMonster.ttf", "Hippiemods.otf", "MouldyCheese.ttf", "TimesNewRoman-bold.ttf", "TimesNewRoman.ttf", "Vni-times-bold.ttf", "Vni-times.ttf", "KeeponTruckin.ttf"};
+const std::vector<std::string> ThemeData::ColorBM_NameList = {"Default", "Light", "Dark"};
+const std::vector<const ColorButMulti*> ThemeData::ColorBM_DefaultList = {&Color::ColorButMultiDefault, &Color::ColorButMultiLight, &Color::ColorButMultiDark};
 const std::vector<int> ThemeData::FontSizeList = {8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
 const int ThemeData::ThemeCount = 10;
 const ThemeIndex ThemeData::ThemeIndexDefault = ThemeIndex(0, 0, 0, 0, 0);
-const std::vector<ThemeIndex> ThemeData::themeIndexList = {
-    ThemeIndex(0, 0, 0, 0, 0),
-    ThemeIndex(1, 1, 1, 1, 1),
-    ThemeIndex(2, 2, 2, 2, 2),
-    ThemeIndex(3, 3, 3, 3, 3),
-    ThemeIndex(4, 4, 4, 4, 4),
-    ThemeIndex(5, 5, 5, 5, 5),
-    ThemeIndex(6, 6, 6, 6, 6),
-    ThemeIndex(7, 7, 7, 7, 7),
-    ThemeIndex(8, 8, 8, 8, 8),
-    ThemeIndex(9, 9, 9, 9, 9)
-};
 
 ///-----------------------------------------------------------------
 ///-----------------------------TextureMaking-----------------------
@@ -193,7 +184,7 @@ Theme::Theme() : ThemeIndex(ThemeData::ThemeIndexDefault)
 
     if (!this->TitleScreenTexture->loadFromFile("asset/image/home/TitleImage.png")) printf("Error loading title screen texture\n");
     if (!this->FontTitle.loadFromFile(ThemeData::FontTitleName)) printf("Error loading fonttitle texture\n");
-    this->setTheme(ThemeData::ThemeIndexDefault);
+    this->setTheme(FileInit::LoadTheme());
 }
 
 Theme::~Theme() {
@@ -203,20 +194,6 @@ Theme::~Theme() {
     delete textureBoard;
 }
 
-void Theme::loadFile()
-{
-    std::fstream fin(ThemeData::ThemeDataFile, std::ios::in);
-    if (fin.is_open() == false) {
-        printf("WARNING: Loading theme from file FAILED: %s\n", ThemeData::ThemeDataFile.c_str());
-        return;
-    }
-    int newBackgroundIndex, newPieceIndex, newBoardIndex, newButtonIndex, newTextIndex;
-    fin >> newBackgroundIndex >> newPieceIndex >> newBoardIndex >> newButtonIndex >> newTextIndex;
-    fin.close();
-
-    setThemeIndex(ThemeIndex(newBackgroundIndex, newPieceIndex, newBoardIndex, newButtonIndex, newTextIndex));
-}
-#include <iostream>
 void Theme::freshNameURL() {
     BackgroundName = ThemeData::BackgroundNameList[BackgroundIndex];
     PieceDir = ThemeData::PieceNameList[PieceIndex];
@@ -227,7 +204,6 @@ void Theme::freshNameURL() {
     PieceDir = ThemeData::PieceDirectory + PieceDir;
     BoardURL = ThemeData::BoardDirectory + BoardName;
     FontURL = ThemeData::FontDirectory + FontName;
-    std::cout << FontName << std::endl;
 }   
 
 void Theme::setTheme(const ThemeIndex themeIndex)
@@ -239,19 +215,46 @@ void Theme::setTheme(const ThemeIndex themeIndex)
     if (!BackgroundTexture->loadFromFile(this->BackgroundURL)) printf("Error loading background texture: %s\n", BackgroundName.c_str());
     texturePieces->buildTexture(this->PieceDir);
     textureBoard->buildTexture(BoardURL);
+    
+    this->ColorBM_Default = *ThemeData::ColorBM_DefaultList[ButtonIndex];
     if (!FontText.loadFromFile(this->FontURL)) printf("Error loading fonttext texture: %s\n", FontName.c_str());
 }
 
-void Theme::setTheme(const int themeIndex)
-{
-    ThemeIndex index = ThemeData::ThemeIndexDefault;
-    if (themeIndex >= 0 && themeIndex < ThemeData::ThemeCount) {
-        index = ThemeData::themeIndexList[themeIndex];
-    }
-    this->setTheme(index);
+void Theme::setBackground(int BackgroundIndex) {
+    this->BackgroundIndex = BackgroundIndex;
+    freshNameURL();
+    if (!BackgroundTexture->loadFromFile(this->BackgroundURL)) printf("Error loading background texture: %s\n", BackgroundName.c_str());
 }
 
-const sf::Texture& Theme::getTitleScreenTexture() const {
+void Theme::setPiece(int PieceIndex) {
+    this->PieceIndex = PieceIndex;
+    freshNameURL();
+    texturePieces->buildTexture(this->PieceDir);
+}
+
+void Theme::setBoard(int BoardIndex) {
+    this->BoardIndex = BoardIndex;
+    freshNameURL();
+    textureBoard->buildTexture(BoardURL);
+}
+
+void Theme::setButton(int ButtonIndex) {
+    this->ButtonIndex = ButtonIndex;
+    this->ColorBM_Default = *ThemeData::ColorBM_DefaultList[ButtonIndex];
+}
+
+void Theme::setText(int TextIndex) {
+    this->TextIndex = TextIndex;
+    freshNameURL();
+    if (!FontText.loadFromFile(this->FontURL)) printf("Error loading fonttext texture: %s\n", FontName.c_str());
+}
+
+ThemeIndex Theme::getThemeIndex() const {
+    return ThemeIndex(BackgroundIndex, PieceIndex, BoardIndex, ButtonIndex, TextIndex);
+}
+
+const sf::Texture &Theme::getTitleScreenTexture() const
+{
     return *this->TitleScreenTexture;
 }
 

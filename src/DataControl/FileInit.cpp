@@ -98,3 +98,9 @@ ThemeIndex FileInit::LoadTheme() {
     file.close();
     return themeIndex;
 }
+
+void FileInit::SaveConfig(const ThemeIndex& themeIndex) {
+    std::ofstream file(datConfig);
+    file << themeIndex.BackgroundIndex << " " << themeIndex.PieceIndex << " " << themeIndex.BoardIndex << " " << themeIndex.ButtonIndex << " " << themeIndex.TextIndex << "\n0 0";
+    file.close();
+}

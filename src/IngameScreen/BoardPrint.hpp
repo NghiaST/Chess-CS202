@@ -22,14 +22,15 @@ public:
     };
 
 public:
-    BoardPrint(Point boardPosition = Point(0, 0), Point boardSize = Point(0, 0));
+    BoardPrint(Point boardPosition, Point boardSize, const TextureBoard* TextureBoard);
     ~BoardPrint();
+    void setTextureBoard(const TextureBoard* TextureBoard);
     void setStateBoard(const std::vector<int>& stateBoard);
     void setStateCell(int index, STATUS state);
     int getStateCell(int index);
 
 public: // front-end
-    void update(const Theme* theme);
+    void update();
     void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 
 private:
@@ -37,6 +38,7 @@ private:
     std::vector<sf::Sprite> spriteBoardShaderList;
     // stateBoard[i]: STATUS::COMMON, SELECTED, POSSIBLE, POSSIBLE_CAPTURE, CHECK, CHECKMATE
     std::vector<int> stateBoard;
+    const TextureBoard* textureBoard;
 };
 
 #endif

@@ -20,6 +20,11 @@ void Button::setButtonState(ButtonStates buttonState) {
     setColorButton(colorButMulti.get(buttonState));
 }
 
+void Button::setColorBM(const ColorButMulti &colorButMulti) {
+    this->colorButMulti = colorButMulti;
+    updateRender();
+}
+
 // Accessors
 int Button::getButtonState() const {
     return this->buttonState;

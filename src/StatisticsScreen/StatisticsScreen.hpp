@@ -13,6 +13,7 @@ public:
     void update(sf::Time deltaTime);
     void render(sf::RenderTarget &target, sf::RenderStates states) override;
 
+    void formatTheme() override;
 private:
     Point boardSize;
     Point boardPosition;

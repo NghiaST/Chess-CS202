@@ -60,7 +60,13 @@ void TimeButton::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.draw(*buttonBlack);
 }
 
-void TimeButton::setTime(int time) {
+void TimeButton::setColorBM(const ColorButMulti &colorButMulti) {
+    buttonWhite->setColorBM(colorButMulti);
+    buttonBlack->setColorBM(colorButMulti);
+}
+
+void TimeButton::setTime(int time)
+{
     totalTime = time;
     timeWhite = totalTime;
     timeBlack = totalTime;

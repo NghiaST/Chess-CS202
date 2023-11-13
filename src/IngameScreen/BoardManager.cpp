@@ -10,7 +10,7 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize, Theme* theme)
     board = new NewBoard();
     bot = new Bot();
     if (!shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment)) {
-        std::cout << "Error loading shader" << std::endl;
+        printf("Error loading shader\n");
     }
     state.shader = &shader;
     this->theme = theme;
@@ -22,13 +22,11 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize, Theme* theme)
     for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
         *it = new Piece(std::distance(piecePrintList.begin(), it), PIECE::None);
     }
-    boardPrint = new BoardPrint(boardPosition, boardSize);
+    boardPrint = new BoardPrint(boardPosition, boardSize, &theme->getTextureBoard());
     gameStatus = GAMESTATUS::NEWGAME;
     gameResult = CHESS::None;
 
     // setup render
-    boardPrint->setRenderPosition(boardPosition);
-    boardPrint->setRenderSize(boardSize);
     for(int index = 0; index < 64; index++) {
         piecePrintList[index]->setRenderPosition(boardPosition);
         piecePrintList[index]->setRenderSize(cellSize);
@@ -38,6 +36,9 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize, Theme* theme)
 }
 
 BoardManager::~BoardManager() {
+    delete board;
+    delete bot;
+    delete boardPrint;
     for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
         delete *it;
     }
@@ -305,7 +306,7 @@ void BoardManager::updateRender() {
         piecePrintList[holdPieceIndex]->setMouseStatus(MOUSE::HOLD, mousePosition);
     }
 
-    boardPrint->update(theme);
+    boardPrint->update();
     for(int i = 0; i < 64; i++) {
         piecePrintList[i]->update(theme);
     }

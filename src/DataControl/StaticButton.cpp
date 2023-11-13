@@ -42,6 +42,7 @@ void StaticButton::setThickness(float thickness) {
 }
 void StaticButton::setColorButton(const ColorButton& colorButton) {
     this->colorButton = colorButton;
+    updateStaticRender();
 }
 void StaticButton::setButtonID(int buttonID) {
     this->buttonID = buttonID;

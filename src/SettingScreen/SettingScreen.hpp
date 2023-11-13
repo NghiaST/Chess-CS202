@@ -4,6 +4,10 @@
 #include <iostream>
 #include "../Screen.hpp"
 #include "../DataControl/Image.hpp"
+#include "../IngameScreen/BoardPrint.hpp"
+#include "../IngameScreen/Piece.hpp"
+#include "../DataControl/ButtonOption.hpp"
+#include "../DataControl/Theme.hpp"
 
 class SettingScreen : public Screen {
 public:
@@ -12,6 +16,8 @@ public:
     void handleEvent(const sf::Event &event);
     void update(sf::Time deltaTime);
     void render(sf::RenderTarget &target, sf::RenderStates states) override;
+
+    void formatTheme() override;
 
 private:
     Point boardSize;
@@ -23,7 +29,13 @@ private:
 private:
     Image Background;
     BoardPrint* boardPrint;
+    std::vector<Piece*> piecePrintList;
     Button* BackButton;
+    ButtonOption* BackgroundOption;
+    ButtonOption* PieceOption;
+    ButtonOption* BoardOption;
+    ButtonOption* ButOption;
+    ButtonOption* TextOption;
 };
 
 #endif

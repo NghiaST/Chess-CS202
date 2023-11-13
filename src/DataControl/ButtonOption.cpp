@@ -23,18 +23,20 @@ ButtonOption::~ButtonOption() {
     delete rollRight;
 }
 
-void ButtonOption::handleEvent(const sf::Event &event) {
+bool ButtonOption::handleEvent(const sf::Event &event) {
     mainButton->handleEvent(event);
     bool isRollLeft = rollLeft->handleEvent(event);
     bool isRollRight = rollRight->handleEvent(event);
 
     if (isRollLeft) {
-        currentSelection--;
         setCurrentSelection(currentSelection - 1);
+        return true;
     }
     else if (isRollRight) {
         setCurrentSelection(currentSelection + 1);
+        return true;
     }
+    return false;
 }
 
 void ButtonOption::update(sf::Time deltaTime) {
@@ -53,16 +55,22 @@ void ButtonOption::draw(sf::RenderTarget &target, sf::RenderStates states) const
     target.draw(*rollRight, states);
 }
 
-void ButtonOption::setCurrentSelection(int currentSelection) {
+void ButtonOption::setColorBM(const ColorButMulti &colorButMulti) {
+    mainButton->setColorBM(colorButMulti);
+    rollLeft->setColorBM(colorButMulti);
+    rollRight->setColorBM(colorButMulti);
+}
+
+void ButtonOption::setCurrentSelection(int currentSelection)
+{
     this->currentSelection = currentSelection;
     if (this->currentSelection < 0) {
-        this->currentSelection = textOptions.size() - 1;
+        this->currentSelection = (int) textOptions.size() - 1;
     }
     else if (this->currentSelection >= textOptions.size()) {
         this->currentSelection = 0;
     }
-    mainButton->setText(textOptions[currentSelection]);
-    printf("changed\n");
+    mainButton->setText(textOptions[this->currentSelection]);
 }
 
 int ButtonOption::getCurrentSelection() const {

@@ -6,12 +6,15 @@ Image::Image(const sf::Texture& texture, Point renderPosition, Point renderSize,
     : Graphic(renderPosition, renderSize, isPrint, priorityPrint)
 {
     setTexture(texture);
-    setRenderSize(renderSize);
-    setRenderPosition(renderPosition);
+    setRenderPositionSize(renderPosition, renderSize);
+    // setRenderSize(renderSize);
+    // setRenderPosition(renderPosition);
 }
 
 void Image::setTexture(const sf::Texture& texture) {
+    sprite = sf::Sprite();
     sprite.setTexture(texture);
+    setRenderSize(renderSize);
 }
 
 void Image::setTextureRect(sf::IntRect textureRect) {
@@ -19,14 +22,13 @@ void Image::setTextureRect(sf::IntRect textureRect) {
 }
 
 void Image::setRenderPositionSize(Point renderPosition, Point renderSize) {
-    Graphic::setRenderSize(renderSize);
-    Graphic::setRenderPosition(renderPosition);
-    sprite.setTextureRect(sf::IntRect(renderPosition.x, renderPosition.y, renderSize.x, renderSize.y));
+    setRenderSize(renderSize);
+    setRenderPosition(renderPosition);
 }
 
 void Image::setRenderPosition(Point renderPosition) {
     Graphic::setRenderPosition(renderPosition);
-    sprite.setPosition(renderPosition.x, renderPosition.y);
+    sprite.setPosition(renderPosition.to2f());
 }
 
 void Image::setRenderSize(Point renderSize) {

@@ -13,6 +13,7 @@ public:
     static void Save(std::vector<Move> movesHistory, int mode, int level, int color, int timeWhite, int timeBlack);
     static bool Load(std::vector<Move>& movesHistory, int& mode, int& level, int& color, int& timeWhite, int& timeBlack);
     static ThemeIndex LoadTheme();
+    static void SaveConfig(const ThemeIndex& themeIndex);
     // static void Load();
 
     static const std::string datConfig;

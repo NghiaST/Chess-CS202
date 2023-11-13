@@ -38,12 +38,16 @@ void Chess::processEvents() {
     while (mWindow.pollEvent(sfEvent)) {
         if (sfEvent.type == sf::Event::Closed) {
             mWindow.close();
+            return;
         }
         mScreen->handleEvent(sfEvent);
     }
 }
 
 void Chess::update() {
+    if (!mWindow.isOpen()) {
+        return;
+    }
     sf::Time deltaTime = clock.getElapsedTime();
     clock.restart();
     if (mScreen->ifScreenChange()) {
@@ -53,6 +57,9 @@ void Chess::update() {
 }
 
 void Chess::render() {
+    if (!mWindow.isOpen()) {
+        return;
+    }
     mWindow.clear(sf::Color::Red);
     mScreen->render(mWindow, sf::RenderStates::Default);
     mWindow.display();
@@ -80,4 +87,5 @@ void Chess::changeScreen(ScreenType screenType) {
             exit(1);
     }
     mScreen->resetScreenChange();
+    mScreen->formatTheme();
 }

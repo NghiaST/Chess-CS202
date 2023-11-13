@@ -335,7 +335,7 @@ bool NewBoard::isPseudoMoveLegalWithoutCheck(Move move) const {
                         return false;
                     }
                 }
-                for(int i = 1; i < 3; i++) {
+                for(int i = 0; i < 3; i++) {
                     if (isSquareUnderAttack(startIndex2D.x * 8 + (startIndex2D.y + i * stepFile), isWhiteTurn ^ 1)) {
                         return false;
                     }

@@ -199,3 +199,14 @@ void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     timeButton->draw(target);
     boardManager->draw(target, states);
 }
+
+void IngameScreen::formatTheme() {
+    theme->setTheme(FileInit::LoadTheme());
+    Background.setTexture(theme->getBackgroundTexture());
+    saveButton->setColorBM(theme->getColorDefault());
+    undoButton->setColorBM(theme->getColorDefault());
+    redoButton->setColorBM(theme->getColorDefault());
+    newgameButton->setColorBM(theme->getColorDefault());
+    backButton->setColorBM(theme->getColorDefault());
+    timeButton->setColorBM(theme->getColorStatic());
+}

@@ -33,3 +33,9 @@ void StatisticsScreen::render(sf::RenderTarget& target, sf::RenderStates states)
     Background.draw(target);
     target.draw(*BackButton);
 }
+
+void StatisticsScreen::formatTheme() {
+    theme->setTheme(FileInit::LoadTheme());
+    Background.setTexture(theme->getBackgroundTexture());
+    BackButton->setColorBM(theme->getColorDefault());
+}
