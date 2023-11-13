@@ -2,11 +2,11 @@
 
 Screen::Screen() {
     shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment);
-    state.shader = &shader;
+    states.shader = &shader;
     theme = new Theme();
+    theme->setTheme(FileInit::LoadTheme());
     // theme->loadFile();
     srand(time(NULL));
-    theme->setTheme(6);
     isScreenChange = false;
     nextScreen = ScreenType::None;
 }

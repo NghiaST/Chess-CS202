@@ -6,6 +6,8 @@
 #include "DataControl/Theme.hpp"
 #include "IngameScreen/IngameScreen.hpp"
 #include "HomeScreen/HomeScreen.hpp"
+#include "SettingScreen/SettingScreen.hpp"
+#include "StatisticsScreen/StatisticsScreen.hpp"
 
 class Chess {
 public:
@@ -26,6 +28,8 @@ private:
     Screen* mScreen;
     IngameScreen* ingameScreen;
     HomeScreen* homeScreen;
+    SettingScreen* settingScreen;
+    StatisticsScreen* statisticsScreen;
 
     Point windowSize;
     Point renderPosition;

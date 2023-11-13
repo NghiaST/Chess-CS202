@@ -1,7 +1,7 @@
-#include "SettingScreen.hpp"
+#include "StatisticsScreen.hpp"
 
-SettingScreen::SettingScreen() : Screen() {
-    currentScreen = ScreenType::SettingScreen;
+StatisticsScreen::StatisticsScreen() : Screen() {
+    currentScreen = ScreenType::StatisticsScreen;
 
     boardSize = Point(64, 64) * 8;
     boardPosition = Point(150, 70);
@@ -13,21 +13,21 @@ SettingScreen::SettingScreen() : Screen() {
     BackButton = new Button(4, BackButtonPosition, BackButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "Back");
 }
 
-SettingScreen::~SettingScreen() {
+StatisticsScreen::~StatisticsScreen() {
     delete BackButton;
 }
 
-void SettingScreen::handleEvent(const sf::Event& event) {
+void StatisticsScreen::handleEvent(const sf::Event& event) {
     if (BackButton->handleEvent(event)) {
         isScreenChange = true;
         nextScreen = ScreenType::HomeScreen;
     }
 }
 
-void SettingScreen::update(sf::Time deltaTime) {
+void StatisticsScreen::update(sf::Time deltaTime) {
 }
 
-void SettingScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
+void StatisticsScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     BackButton->updateRender();
     
     Background.draw(target);

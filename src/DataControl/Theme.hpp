@@ -24,6 +24,7 @@ public:
     // int ArrowIndex; ???
 
 public:
+    ThemeIndex();
     ThemeIndex(int BackgroundIndex, int PieceIndex, int BoardIndex, int ButtonIndex, int TextIndex);
     ~ThemeIndex();
     void setThemeIndex(const ThemeIndex themeIndex);

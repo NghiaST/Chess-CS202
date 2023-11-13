@@ -94,18 +94,34 @@ FreeButton::FreeButton(int buttonID, Point renderPosition, Point renderSize, boo
     this->buttonState = BTN_IDLE;
     changeButtonState();
     timer = 0;
+
+    velocity = 20;
+    limit = 5;
+    timeMove = 0;
+    setRenderOffsetText(Point(0, 400));
 }
 
 FreeButton::~FreeButton() {
 }
 
 void FreeButton::changeButtonState() {
-    buttonState = (buttonState + 1) % 10;
+    buttonState = (buttonState + 1) % colorButMulti.getSize();
     setColorButton(colorButMulti.get(buttonState));
     updateStaticRender();
 }
 
 void FreeButton::update(sf::Time deltaTime) {
+    timeMove += abs(velocity) * deltaTime.asSeconds();
+    while (timeMove > 0.1) {
+        timeMove -= 0.1;
+        Point tmp = getRenderOffsetText();
+        tmp.y += velocity / abs(velocity);
+        if (tmp.y > limit) velocity = -abs(velocity);
+        else if (tmp.y < -limit) velocity = abs(velocity);
+        else velocity /= abs(velocity);
+        setRenderOffsetText(tmp);
+        updateStaticRender();
+    }
     timer += deltaTime.asSeconds();
     if (timer > 1) {
         timer -= 1;

@@ -8,16 +8,16 @@ HomeScreen::HomeScreen() : Screen() {
 
     TitleScreenPosition = Point(middle, 150);
 
-    PlayButtonSize = Point(100, 50);
+    PlayButtonSize = Point(130, 60);
     PlayButtonPosition = Point(middle, 300);
     
-    SettingButtonSize = Point(100, 50);
+    SettingButtonSize = Point(130, 60);
     SettingButtonPosition = Point(middle, 300 + 1 * 1.2 * PlayButtonSize.y);
 
-    StatisticsButtonSize = Point(100, 50);
+    StatisticsButtonSize = Point(130, 60);
     StatisticsButtonPosition = Point(middle, 300 + 2 * 1.2 * PlayButtonSize.y);
 
-    ExitButtonSize = Point(100, 50);
+    ExitButtonSize = Point(130, 60);
     ExitButtonPosition = Point(middle, 300 + 3 * 1.2 * PlayButtonSize.y);
 
 
@@ -44,12 +44,12 @@ void HomeScreen::handleEvent(const sf::Event& event) {
         PlayButton->setButtonState(ButtonStates::BTN_IDLE);
     }
     if (SettingButton->handleEvent(event)) {
-        // isScreenChange = true;
-        // nextScreen = ScreenType::SettingScreen;
+        isScreenChange = true;
+        nextScreen = ScreenType::SettingScreen;
     }
     if (StatisticsButton->handleEvent(event)) {
-        // isScreenChange = true;
-        // nextScreen = ScreenType::StatisticsScreen;
+        isScreenChange = true;
+        nextScreen = ScreenType::StatisticsScreen;
     }
     if (ExitButton->handleEvent(event)) {
         isScreenChange = true;
@@ -62,7 +62,6 @@ void HomeScreen::update(sf::Time deltaTime) {
 }
 
 void HomeScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
-    // TitleScreen->updateRender();
     PlayButton->updateRender();
     SettingButton->updateRender();
     StatisticsButton->updateRender();

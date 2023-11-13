@@ -4,15 +4,15 @@
 #include <SFML/Graphics.hpp>
 #include <ctime>
 #include "DataControl/Theme.hpp"
+#include "DataControl/FileInit.hpp"
 
 enum class ScreenType {
     IngameScreen,
     HomeScreen,
     // MenuScreen,
     // LoadingScreen,
-    // SettingScreen,
-    // PauseScreen,
-    // EndScreen,
+    SettingScreen,
+    StatisticsScreen,
     None
 };
 
@@ -33,7 +33,7 @@ public:
 
 protected:
     sf::Shader shader;
-    sf::RenderStates state;
+    sf::RenderStates states;
     Theme* theme;
 
     ScreenType currentScreen;

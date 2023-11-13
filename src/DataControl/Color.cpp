@@ -53,7 +53,7 @@ const ColorButMulti Color::ColorButMultiLight = ColorButMulti(std::vector<ColorB
 const ColorButMulti Color::ColorButMultiDark = ColorButMulti(std::vector<ColorButton>{ColorButtonBlack, ColorButtonLightYellow, ColorButtonRed, ColorButtonBlue});
 const ColorButMulti Color::ColorButMultiTextDefault = ColorButMulti(std::vector<ColorButton>{ColorButtonTextDefault, ColorButtonTextGreen, ColorButtonTextYellow, ColorButtonTextLavenderBush});
 const ColorButMulti Color::ColorButMultiTextStatic = ColorButMulti(std::vector<ColorButton>{ColorButtonTextDefault, ColorButtonTextDefault, ColorButtonTextDefault, ColorButtonTextDefault});
-const ColorButMulti Color::ColorButMultiTextFullColor = ColorButMulti(std::vector<ColorButton>{ColorButtonTextRed, ColorButtonTextGreen, ColorButtonTextBlue, ColorButtonTextBlack, ColorButtonTextWhite, ColorButtonTextOrange, ColorButtonTextYellow, ColorButtonTextLightGreen, ColorButtonTextLightYellow, ColorButtonTextLavenderBush});
+const ColorButMulti Color::ColorButMultiTextFullColor = ColorButMulti(std::vector<ColorButton>{ColorButtonTextRed, ColorButtonTextGreen, ColorButtonTextBlue, ColorButtonTextWhite, ColorButtonTextOrange, ColorButtonTextYellow, ColorButtonTextLightGreen, ColorButtonTextLightYellow, ColorButtonTextLavenderBush});
 
 ColorButton::ColorButton() {
     FillColor = sf::Color::White;
@@ -79,4 +79,8 @@ ColorButton ColorButMulti::get(int statusColor) {
     } else {
         return ColorButton();
     }
+}
+
+int ColorButMulti::getSize() const {
+    return listColor.size();
 }

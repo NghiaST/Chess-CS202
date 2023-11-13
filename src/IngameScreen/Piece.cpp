@@ -63,5 +63,5 @@ void Piece::update(const Theme* theme) {
 void Piece::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     if (!isPrint) return;
-    target.draw(sprite);
+    target.draw(sprite, states);
 }

@@ -196,6 +196,6 @@ void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     target.draw(*redoButton);
     target.draw(*newgameButton);
     target.draw(*backButton);
-    timeButton->draw(target, states);
+    timeButton->draw(target);
     boardManager->draw(target, states);
 }

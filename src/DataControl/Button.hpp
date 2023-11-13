@@ -50,6 +50,11 @@ private:
     ColorButMulti colorButMulti;
     int buttonState;
     double timer;
+    
+private:
+    int velocity;
+    int limit;
+    double timeMove;
 };
 
 #endif

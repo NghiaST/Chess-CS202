@@ -20,6 +20,7 @@ public :
     ColorButMulti();
     ColorButMulti(std::vector<ColorButton> listColor);
     ColorButton get(int statusColor);
+    int getSize() const;
 };
 
 class Color {

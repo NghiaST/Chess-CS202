@@ -26,7 +26,7 @@ public:
 
 public:
     int startSquare, targetSquare;
-    FLAG flag;
+    int flag;
 };
 
 // class GeneralMove {

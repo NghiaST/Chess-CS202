@@ -1,14 +1,14 @@
-#ifndef __SettingScreen_hpp__
-#define __SettingScreen_hpp__
+#ifndef __StatisticsScreen_hpp__
+#define __StatisticsScreen_hpp__
 
 #include <iostream>
 #include "../Screen.hpp"
 #include "../DataControl/Image.hpp"
 
-class SettingScreen : public Screen {
+class StatisticsScreen : public Screen {
 public:
-    SettingScreen();
-    ~SettingScreen();
+    StatisticsScreen();
+    ~StatisticsScreen();
     void handleEvent(const sf::Event &event);
     void update(sf::Time deltaTime);
     void render(sf::RenderTarget &target, sf::RenderStates states) override;

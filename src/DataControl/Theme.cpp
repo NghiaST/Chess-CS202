@@ -59,6 +59,14 @@ std::unique_ptr<sf::Texture> TextureMaking::Make(Point size, sf::Color sfColor) 
 ///-----------------------------------------------------------------
 ///-----------------------------ThemeIndex--------------------------
 
+ThemeIndex::ThemeIndex() {
+    this->BackgroundIndex = 0;
+    this->PieceIndex = 0;
+    this->BoardIndex = 0;
+    this->ButtonIndex = 0;
+    this->TextIndex = 0;
+}
+
 ThemeIndex::ThemeIndex(int BackgroundIndex, int PieceIndex, int BoardIndex, int ButtonIndex, int TextIndex)
 {
     this->BackgroundIndex = BackgroundIndex;

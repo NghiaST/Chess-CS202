@@ -1,8 +1,10 @@
 #include "Chess.hpp"
 
 Chess::Chess() {
-    ingameScreen = new IngameScreen();
     homeScreen = new HomeScreen();
+    settingScreen = new SettingScreen();
+    ingameScreen = new IngameScreen();
+    statisticsScreen = new StatisticsScreen();
     mScreen = homeScreen;
     clock.restart();
 
@@ -17,10 +19,10 @@ Chess::Chess() {
 }
 
 Chess::~Chess() {
-    // exit(0);
     delete homeScreen;
-    // delete ingameScreen;
-    // delete mScreen;
+    delete settingScreen;
+    delete ingameScreen;
+    delete statisticsScreen;
 }
 
 void Chess::run() {
@@ -63,6 +65,12 @@ void Chess::changeScreen(ScreenType screenType) {
             break;
         case ScreenType::HomeScreen:
             mScreen = homeScreen;
+            break;
+        case ScreenType::SettingScreen:
+            mScreen = settingScreen;
+            break;
+        case ScreenType::StatisticsScreen:
+            mScreen = statisticsScreen;
             break;
         case ScreenType::None:
             mWindow.close();

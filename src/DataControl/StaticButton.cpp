@@ -56,7 +56,11 @@ int StaticButton::getSizeText() const {
 std::string StaticButton::getText() const {
     return text;
 }
-float StaticButton::getThickness() const {
+Point StaticButton::getRenderOffsetText() const {
+    return renderOffsetText;
+}
+float StaticButton::getThickness() const
+{
     return thickness;
 }
 const ColorButton& StaticButton::getColorButton() const {

@@ -100,7 +100,7 @@ void BoardManager::freshState() {
 void BoardManager::NewGame() {
     board->LoadBasicPosition();
     isBot[0] = true;
-    isBot[1] = true;
+    isBot[1] = false;
     gameStatus = GAMESTATUS::NEWGAME;
     gameResult = CHESS::None;
     isPieceSelected = false;
@@ -313,12 +313,12 @@ void BoardManager::updateRender() {
 
 void BoardManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(*boardPrint);
+    target.draw(*boardPrint, this->state);
     std::vector<std::pair<int, int>> piecePriority;
     for(int i = 0; i < 64; i++)
         piecePriority.emplace_back(piecePrintList[i]->getPriorityPrint(), i);
     std::sort(piecePriority.begin(), piecePriority.end());
     for(std::pair<int, int> data : piecePriority) {
-        piecePrintList[data.second]->draw(target, this->state);
+        piecePrintList[data.second]->draw(target);
     }
 }
