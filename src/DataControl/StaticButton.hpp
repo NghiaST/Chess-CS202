@@ -13,7 +13,7 @@
 
 enum BUTTON_ID { Undefined = -1, ButtonHome = 1000, ButtonStart = 2000 };
 
-class StaticButton : public Graphic, public sf::Drawable {
+class StaticButton : public Graphic {
 public:
     typedef std::unique_ptr<StaticButton> Ptr;
 
@@ -44,8 +44,7 @@ public:
 public:
     // Functions
     void updateStaticRender();
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates = sf::RenderStates::Default) const;
-    virtual void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const override;
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates = sf::RenderStates::Default) const override;
 
 private:
     sf::RectangleShape shape;

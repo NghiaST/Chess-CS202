@@ -30,11 +30,26 @@ public:
     /// handleEvent: return 0 if no event, 1 if event
     bool handleEvent(const sf::Event& event);
     virtual void updateRender();
-    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const override;
     
 private:
     ColorButMulti colorButMulti;
     ButtonStates buttonState;
+};
+
+class FreeButton : public StaticButton {
+public:
+    FreeButton(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, 
+            const sf::Font* sfFont, const ColorButMulti& colorButMulti, unsigned int sizeText = 12, 
+            std::string text = "", float thickness = -1, Point renderOffsetText = Point(0, 0));
+    ~FreeButton();
+    void changeButtonState();
+    void update(sf::Time deltaTime);
+    int getButtonState() const;
+
+private:
+    ColorButMulti colorButMulti;
+    int buttonState;
+    double timer;
 };
 
 #endif

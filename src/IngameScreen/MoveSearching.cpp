@@ -70,17 +70,26 @@ int MoveSearching::Searching(NewBoard& board, int timeSearchingMs, int searchDep
     }
 
     if (isChange) {
-        bestMove = moveSelections[0];
         analysisPoint = moveScore[0];
+        int cnt = 1;
         for(int i = 1; i < id_search; i++) {
             if (moveScore[i] > analysisPoint) {
                 analysisPoint = moveScore[i];
-                bestMove = moveSelections[i];
+                cnt = 1;
             }
             else if (moveScore[i] == analysisPoint) {
-                if (rand() % 2) {
-                    analysisPoint = moveScore[i];
+                cnt++;
+            }
+        }
+        int id = rand() % cnt;
+        for(int i = 0; i < id_search; i++) {
+            if (moveScore[i] == analysisPoint) {
+                if (id == 0) {
                     bestMove = moveSelections[i];
+                    break;
+                }
+                else {
+                    id--;
                 }
             }
         }

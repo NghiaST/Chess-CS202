@@ -78,6 +78,7 @@ bool Button::handleEvent(const sf::Event& event) {
     else {
         // do nothing
     }
+    updateRender();
     return isEvent;
 }
 
@@ -86,6 +87,32 @@ void Button::updateRender() {
     updateStaticRender();
 }
 
-void Button::render(sf::RenderTarget& target, sf::RenderStates state) const {
-    StaticButton::draw(target, state);
+FreeButton::FreeButton(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, const sf::Font *sfFont, const ColorButMulti &colorButMulti, unsigned int sizeText, std::string text, float thickness, Point renderOffsetText) 
+    : StaticButton(buttonID, renderPosition, renderSize, isPositionCenter, isRenderTextOrigin, sfFont, Color::ColorButtonDefault, sizeText, text, thickness, renderOffsetText)
+{
+    this->colorButMulti = colorButMulti;
+    this->buttonState = BTN_IDLE;
+    changeButtonState();
+    timer = 0;
+}
+
+FreeButton::~FreeButton() {
+}
+
+void FreeButton::changeButtonState() {
+    buttonState = (buttonState + 1) % 10;
+    setColorButton(colorButMulti.get(buttonState));
+    updateStaticRender();
+}
+
+void FreeButton::update(sf::Time deltaTime) {
+    timer += deltaTime.asSeconds();
+    if (timer > 1) {
+        timer -= 1;
+        changeButtonState();
+    }
+}
+
+int FreeButton::getButtonState() const {
+    return buttonState;
 }

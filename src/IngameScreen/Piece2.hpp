@@ -39,7 +39,7 @@ public:
 
 public: // front-end
     void update(const Theme* theme);
-    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const override;
+    void render(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) override override;
 };
 
 #endif

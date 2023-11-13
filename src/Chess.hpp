@@ -5,6 +5,7 @@
 #include "DataControl/Include.hpp"
 #include "DataControl/Theme.hpp"
 #include "IngameScreen/IngameScreen.hpp"
+#include "HomeScreen/HomeScreen.hpp"
 
 class Chess {
 public:
@@ -18,8 +19,13 @@ private:
     void render();
 
 private:
+    void changeScreen(ScreenType screenType);
+
+private:
     sf::RenderWindow mWindow;
+    Screen* mScreen;
     IngameScreen* ingameScreen;
+    HomeScreen* homeScreen;
 
     Point windowSize;
     Point renderPosition;

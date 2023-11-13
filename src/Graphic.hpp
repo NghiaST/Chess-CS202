@@ -4,10 +4,9 @@
 #include "DataControl/Include.hpp"
 
 class Theme;
-class Graphic {
+class Graphic : public sf::Drawable {
 public:
     Graphic(Point renderPosition = Point(0, 0), Point renderSize = Point(0, 0), bool isPrint = true, int priorityPrint = 0);
-    ~Graphic();
     void setPriorityPrint(int priorityPrint);
     void setRenderPosition(Point renderPosition);
     void setRenderPosition(double x, double y);
@@ -19,7 +18,7 @@ public:
     bool isMouseOn(Point mousePos) const;
 
 public:
-    virtual void render(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const = 0;
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const = 0;
 
 protected:
     bool isPrint;

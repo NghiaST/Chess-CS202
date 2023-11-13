@@ -7,11 +7,12 @@ const std::string ThemeData::BackgroundDirectory = "asset/image/background/";
 const std::string ThemeData::PieceDirectory = "asset/image/piece/";
 const std::string ThemeData::BoardDirectory = "asset/image/board/";
 const std::string ThemeData::FontDirectory = "asset/font/";
+const std::string ThemeData::FontTitleName = "asset/font/KeeponTruckin.ttf";
 
 const std::vector<std::string> ThemeData::BackgroundNameList = {"cherry-blossom.jpg", "haibara-1.jpg", "universe-boom.jpg", "lightdark.jpg", "surface_earth.jpg", "beautiful_image.jfif", "modern-futuristic-neon.jpg", "brown-wooden-wall.jpg", "wall.jpg", "palace.jpg"};
 const std::vector<std::string> ThemeData::PieceNameList = {"caliente", "cburnett", "celtic", "dubrovny", "fresca", "frugale", "gioco", "governor", "kiwen-suwi", "maestro", "usual"};
 const std::vector<std::string> ThemeData::BoardNameList = {"pink-pyramid.png", "blue.png",  "blue-marble.png", "canvas.png", "green-plastic.png", "leather.png", "maple.png", "ncf-board.png", "purple-diag.png", "wood.png", "wood2.png"};
-const std::vector<std::string> ThemeData::FontNameList = {"Arial-bold.ttf", "Arial.ttf", "ShortBaby.ttf", "CarryYou.ttf", "ChristmasJumper.ttf", "CuteMonster.ttf", "DailyBold.ttf", "Debrosee.ttf", "Hippiemods.otf", "MouldyCheese.ttf", "TimesNewRoman-bold.ttf", "TimesNewRoman.ttf", "Vni-times-bold.ttf", "Vni-times.ttf"};
+const std::vector<std::string> ThemeData::FontNameList = {"Arial-bold.ttf", "Arial.ttf", "ShortBaby.ttf", "CarryYou.ttf", "ChristmasJumper.ttf", "CuteMonster.ttf", "Hippiemods.otf", "MouldyCheese.ttf", "TimesNewRoman-bold.ttf", "TimesNewRoman.ttf", "Vni-times-bold.ttf", "Vni-times.ttf", "KeeponTruckin.ttf"};
 const std::vector<int> ThemeData::FontSizeList = {8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
 const int ThemeData::ThemeCount = 10;
 const ThemeIndex ThemeData::ThemeIndexDefault = ThemeIndex(0, 0, 0, 0, 0);
@@ -27,6 +28,33 @@ const std::vector<ThemeIndex> ThemeData::themeIndexList = {
     ThemeIndex(8, 8, 8, 8, 8),
     ThemeIndex(9, 9, 9, 9, 9)
 };
+
+///-----------------------------------------------------------------
+///-----------------------------TextureMaking-----------------------
+
+std::unique_ptr<sf::Texture> TextureMaking::Make(Point size, sf::Color sfColor) {
+    // Create a render texture
+    sf::RenderTexture renderTexture;
+    renderTexture.create(size.x, size.y);
+
+    // Clear the render texture
+    renderTexture.clear();
+
+    // Create a rectangle shape
+    sf::RectangleShape rectangleShape(sf::Vector2f(size.x, size.y));
+    rectangleShape.setFillColor(sfColor);
+    rectangleShape.setPosition(0, 0);
+
+    // Draw the rectangle shape to the render texture
+    renderTexture.draw(rectangleShape);
+
+    // Update the render texture
+    renderTexture.display();
+
+    // Create a texture from the render texture
+    std::unique_ptr<sf::Texture> texture = std::make_unique<sf::Texture>(renderTexture.getTexture());
+    return texture;
+}
 
 ///-----------------------------------------------------------------
 ///-----------------------------ThemeIndex--------------------------
@@ -54,9 +82,9 @@ void ThemeIndex::setThemeIndex(const ThemeIndex themeIndex)
 }
 
 ///-----------------------------------------------------------------
-///-----------------------------ThemePiece--------------------------
+///-----------------------------TexturePieces--------------------------
 
-ThemePiece::ThemePiece()
+TexturePieces::TexturePieces()
 {
     PieceTexture.resize(24);
     for(auto it = PieceTexture.begin(); it != PieceTexture.end(); ++it)
@@ -65,15 +93,13 @@ ThemePiece::ThemePiece()
     }
 }
 
-ThemePiece::~ThemePiece()
+TexturePieces::~TexturePieces()
 {
-    for(auto it = PieceTexture.begin(); it != PieceTexture.end(); ++it)
-    {
-        *it = nullptr;
-    }
+    for(auto& it : PieceTexture)
+        it = nullptr;
 }
 
-void ThemePiece::buildTexture(std::string PieceName)
+void TexturePieces::buildTexture(std::string PieceDir)
 {
     const static std::string makeColor = " wb";
     const static std::string makeName = " PNBRQK";
@@ -82,17 +108,63 @@ void ThemePiece::buildTexture(std::string PieceName)
     {
         for (int i = 1; i <= 6; i++)
         {
-            std::string FileName = PieceName + makeColor.substr(chesscolor, 1) + makeName.substr(i, 1) + suffix;
-            if (!this->PieceTexture[chesscolor*8 + i]->loadFromFile(FileName)) {
-                printf("Error loading piece texture: %s\n", FileName.c_str());
-            }
+            std::string FileName = PieceDir + "/" + makeColor.substr(chesscolor, 1) + makeName.substr(i, 1) + suffix;
+            if (!this->PieceTexture[chesscolor*8 + i]->loadFromFile(FileName)) printf("Error loading piece texture: %s\n", FileName.c_str());
         }
     }
 }
 
-const sf::Texture& ThemePiece::getTexture(int pieceData) const
+const sf::Texture& TexturePieces::getTexture(int piece) const
 {
-    return *this->PieceTexture[pieceData];
+    return *this->PieceTexture[piece];
+}
+
+TextureBoard::TextureBoard() {
+    this->BoardTexture = std::make_unique<sf::Texture>();
+    this->HoverTexture     = TextureMaking::Make(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(123, 23, 44));
+    this->SelectedTexture  = TextureMaking::Make(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(255, 255, 0));
+    this->PreMoveStartTexture = TextureMaking::Make(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(41, 235, 20));
+    this->PreMoveTargetTexture = TextureMaking::Make(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(51, 245, 30));
+    this->PossibleTexture  = TextureMaking::Make(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(0, 255, 0));
+    this->PossibleCaptureTexture   = TextureMaking::Make(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(220, 0, 0));
+    this->CheckTexture     = TextureMaking::Make(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color::Red);
+    this->CheckMateTexture = TextureMaking::Make(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(255, 0, 255));
+    this->StaleMateTexture = TextureMaking::Make(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(200, 100, 200));
+}
+
+TextureBoard::~TextureBoard() {
+    this->BoardTexture = nullptr;
+    this->HoverTexture = nullptr;
+    this->SelectedTexture = nullptr;
+    this->PreMoveStartTexture = nullptr;
+    this->PreMoveTargetTexture = nullptr;
+    this->PossibleTexture = nullptr;
+    this->PossibleCaptureTexture = nullptr;
+    this->CheckTexture = nullptr;
+    this->CheckMateTexture = nullptr;
+    this->StaleMateTexture = nullptr;
+}
+
+void TextureBoard::buildTexture(std::string URL) {
+    if (!this->BoardTexture->loadFromFile(URL)) printf("Error loading board texture: %s\n", URL.c_str());
+}
+
+const sf::Texture& TextureBoard::getTexture(TYPE type) const {
+    switch(type) {
+        case Board: return *this->BoardTexture;
+        case Hover: return *this->HoverTexture;
+        case Selected: return *this->SelectedTexture;
+        case PreMoveStart: return *this->PreMoveStartTexture;
+        case PreMoveTarget: return *this->PreMoveTargetTexture;
+        case Possible: return *this->PossibleTexture;
+        case PossibleCapture: return *this->PossibleCaptureTexture;
+        case Check: return *this->CheckTexture;
+        case CheckMate: return *this->CheckMateTexture;
+        case StaleMate: return *this->StaleMateTexture;
+        default: 
+            printf("TextureBoard ERROR\n"); 
+            return *this->BoardTexture;
+    }
 }
 
 ///-----------------------------------------------------------------
@@ -100,36 +172,27 @@ const sf::Texture& ThemePiece::getTexture(int pieceData) const
 
 Theme::Theme() : ThemeIndex(ThemeData::ThemeIndexDefault)
 {
+    this->TitleScreenTexture = std::make_unique<sf::Texture>();
     this->BackgroundTexture = std::make_unique<sf::Texture>();
-    this->PieceTextureList = new ThemePiece();
-    this->BoardTexture          = std::make_unique<sf::Texture>();
-    this->BoardSelectedTexture  = std::make_unique<sf::Texture>();
-    this->BoardPreMoveTexture   = std::make_unique<sf::Texture>();
-    this->BoardMoveTexture      = std::make_unique<sf::Texture>();
-    this->BoardCaptureTexture   = std::make_unique<sf::Texture>();
-    this->BoardCheckTexture     = std::make_unique<sf::Texture>();
-    this->BoardCheckMateTexture = std::make_unique<sf::Texture>();
-    this->ColorButton = new ColorButMulti(Color::ColorButMultiDefault);
-    this->ColorText = new ColorButMulti(Color::ColorButMultiNoButton);
-    this->FontText = new sf::Font();
+    this->texturePieces = new TexturePieces();
+    this->textureBoard = new TextureBoard();
+    this->ColorBM_Default = Color::ColorButMultiDefault;
+    this->ColorBM_Static = Color::ColorButMultiStatic;
+    this->ColorBM_Title = Color::ColorButMultiTextFullColor;
+    this->ColorBM_Text = Color::ColorButMultiTextStatic;
+    this->ColorBM_Home = Color::ColorButMultiLight;
+    this->ColorBM_Ingame = Color::ColorButMultiDefault;
+
+    if (!this->TitleScreenTexture->loadFromFile("asset/image/home/TitleImage.png")) printf("Error loading title screen texture\n");
+    if (!this->FontTitle.loadFromFile(ThemeData::FontTitleName)) printf("Error loading fonttitle texture\n");
     this->setTheme(ThemeData::ThemeIndexDefault);
 }
 
-Theme::~Theme()
-{
-    delete this->PieceTextureList;
+Theme::~Theme() {
+    this->TitleScreenTexture = nullptr;
     this->BackgroundTexture = nullptr;
-    this->PieceTextureList = nullptr;
-    this->BoardTexture = nullptr;
-    this->BoardSelectedTexture = nullptr;
-    this->BoardPreMoveTexture = nullptr;
-    this->BoardMoveTexture = nullptr;
-    this->BoardCaptureTexture = nullptr;
-    this->BoardCheckTexture = nullptr;
-    this->BoardCheckMateTexture = nullptr;
-    delete this->ColorButton;
-    delete this->ColorText;
-    delete this->FontText;
+    delete texturePieces;
+    delete textureBoard;
 }
 
 void Theme::loadFile()
@@ -145,32 +208,30 @@ void Theme::loadFile()
 
     setThemeIndex(ThemeIndex(newBackgroundIndex, newPieceIndex, newBoardIndex, newButtonIndex, newTextIndex));
 }
+#include <iostream>
+void Theme::freshNameURL() {
+    BackgroundName = ThemeData::BackgroundNameList[BackgroundIndex];
+    PieceDir = ThemeData::PieceNameList[PieceIndex];
+    BoardName = ThemeData::BoardNameList[BoardIndex];
+    FontName = ThemeData::FontNameList[TextIndex];
+
+    BackgroundURL = ThemeData::BackgroundDirectory + BackgroundName;
+    PieceDir = ThemeData::PieceDirectory + PieceDir;
+    BoardURL = ThemeData::BoardDirectory + BoardName;
+    FontURL = ThemeData::FontDirectory + FontName;
+    std::cout << FontName << std::endl;
+}   
 
 void Theme::setTheme(const ThemeIndex themeIndex)
 {
-    this->setThemeIndex(themeIndex);
-    this->BackgroundName = ThemeData::BackgroundDirectory + ThemeData::BackgroundNameList[themeIndex.BackgroundIndex];
-    this->PieceName = ThemeData::PieceDirectory + ThemeData::PieceNameList[themeIndex.PieceIndex] + "/";
-    this->BoardName = ThemeData::BoardDirectory + ThemeData::BoardNameList[themeIndex.BoardIndex];
-    this->FontName = ThemeData::FontDirectory + ThemeData::FontNameList[themeIndex.TextIndex];
+    setThemeIndex(themeIndex);
+    freshNameURL();
 
-    this->FontSize = 20;
-    if (!this->BackgroundTexture->loadFromFile(this->BackgroundName)) 
-        printf("Error loading background texture: %s\n", BackgroundName.c_str());
-    this->PieceTextureList->buildTexture(this->PieceName);
-    if (!this->BoardTexture->loadFromFile(this->BoardName))
-        printf("Error loading board texture: %s\n", BoardName.c_str());
-    this->BoardSelectedTexture  = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(255, 255, 0));
-    this->BoardPreMoveTexture   = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(41, 235, 20));
-    this->BoardMoveTexture      = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(100, 100, 255));
-    this->BoardCaptureTexture   = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(220, 0, 0));
-    this->BoardCheckTexture     = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color::Red);
-    this->BoardCheckMateTexture = makeTexture(Point(INTERFACE::BoardLength, INTERFACE::BoardLength), sf::Color(255, 0, 255));
-    if (!this->FontText->loadFromFile(this->FontName))
-        printf("Error loading fonttext texture: %s\n", FontName.c_str());
-    
-    this->ColorButton = new ColorButMulti(Color::ColorButMultiDefault);
-    this->ColorText = new ColorButMulti(Color::ColorButMultiDefault);
+    FontSize = 20;
+    if (!BackgroundTexture->loadFromFile(this->BackgroundURL)) printf("Error loading background texture: %s\n", BackgroundName.c_str());
+    texturePieces->buildTexture(this->PieceDir);
+    textureBoard->buildTexture(BoardURL);
+    if (!FontText.loadFromFile(this->FontURL)) printf("Error loading fonttext texture: %s\n", FontName.c_str());
 }
 
 void Theme::setTheme(const int themeIndex)
@@ -182,92 +243,62 @@ void Theme::setTheme(const int themeIndex)
     this->setTheme(index);
 }
 
-const sf::Texture& Theme::getBackgroundTexture() const
-{
+const sf::Texture& Theme::getTitleScreenTexture() const {
+    return *this->TitleScreenTexture;
+}
+
+const sf::Texture& Theme::getBackgroundTexture() const {
     return *this->BackgroundTexture;
 }
 
-const sf::Texture& Theme::getPieceTexture(int pieceData) const
-{
-    return this->PieceTextureList->getTexture(pieceData);
+const TexturePieces& Theme::getTexturePieces() const {
+    return *this->texturePieces;
 }
 
-const sf::Texture& Theme::getBoardTexture() const
-{
-    return *this->BoardTexture;
+const TextureBoard& Theme::getTextureBoard() const {
+    return *this->textureBoard;
 }
 
-const sf::Texture& Theme::getBoardSelectedTexture() const
-{
-    return *this->BoardSelectedTexture;
+const sf::Texture& Theme::getPieceTexture(int piece) const {
+    return this->texturePieces->getTexture(piece);
 }
 
-const sf::Texture& Theme::getBoardPreMoveTexture() const
-{
-    return *this->BoardPreMoveTexture;
+const sf::Texture& Theme::getBoardTexture(TextureBoard::TYPE type) const {
+    return this->textureBoard->getTexture(type);
 }
 
-const sf::Texture& Theme::getBoardMoveTexture() const
-{
-    return *this->BoardMoveTexture;
+const ColorButMulti &Theme::getColorDefault() const {
+    return this->ColorBM_Default;
 }
 
-const sf::Texture& Theme::getBoardCaptureTexture() const
-{
-    return *this->BoardCaptureTexture;
+const ColorButMulti &Theme::getColorStatic() const {
+    return this->ColorBM_Static;
 }
 
-const sf::Texture& Theme::getBoardCheckTexture() const
-{
-    return *this->BoardCheckTexture;
+const ColorButMulti &Theme::getColorTitle() const {
+    return this->ColorBM_Title;
 }
 
-const sf::Texture& Theme::getBoardCheckMateTexture() const
-{
-    return *this->BoardCheckMateTexture;
+const ColorButMulti &Theme::getColorText() const {
+    return this->ColorBM_Text;
 }
 
-const ColorButMulti& Theme::getButtonColorMulti() const
-{
-    return *this->ColorButton;
+const ColorButMulti &Theme::getColorHome() const {
+    return this->ColorBM_Home;
 }
 
-const ColorButMulti& Theme::getTextColorMulti() const
-{
-    return *this->ColorText;
+const ColorButMulti &Theme::getColorIngame() const {
+    return this->ColorBM_Ingame;
 }
 
-const sf::Font& Theme::getFont() const
-{
-    return *this->FontText;
+const sf::Font& Theme::getFont() const {
+    return this->FontText;
 }
 
-const int Theme::getFontSize() const
-{
+const sf::Font &Theme::getFontTitle() const {
+    return this->FontTitle;
+}
+
+const int Theme::getFontSize() const {
     return this->FontSize;
-}
-
-std::unique_ptr<sf::Texture> Theme::makeTexture(Point size, sf::Color sfColor)
-{
-    // Create a render texture
-    sf::RenderTexture renderTexture;
-    renderTexture.create(size.x, size.y);
-
-    // Clear the render texture
-    renderTexture.clear();
-
-    // Create a rectangle shape
-    sf::RectangleShape rectangleShape(sf::Vector2f(size.x, size.y));
-    rectangleShape.setFillColor(sfColor);
-    rectangleShape.setPosition(0, 0);
-
-    // Draw the rectangle shape to the render texture
-    renderTexture.draw(rectangleShape);
-
-    // Update the render texture
-    renderTexture.display();
-
-    // Create a texture from the render texture
-    std::unique_ptr<sf::Texture> texture = std::make_unique<sf::Texture>(renderTexture.getTexture());
-    return texture;
 }

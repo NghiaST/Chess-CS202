@@ -38,6 +38,7 @@ void NewBoard::LoadPosition(PositionInfo posInfo) {
     cntMove = posInfo.fullmoveNumber * 2 - (isWhiteTurn ? 2 : 1);
 
     presentGameState = GameState(PIECE::None, posInfo.enPassantFile, posInfo.castlingRights, posInfo.fiftyMoveCounter);
+    gameStateHistory.push_back(presentGameState);
 }
 
 void NewBoard::LoadPosition(std::string FEN_notation) {

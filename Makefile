@@ -1,5 +1,7 @@
 NAME = Chess
 CXX = g++
+CXXFLAGS = -Wall -std=c++17 -MMD -MP
+# -Wextra -Werror
 ASSETDIR = asset
 BINDIR = bin
 DATDIR = dat
@@ -14,18 +16,30 @@ SFMLLIBDIR = SFML-2.5.1/lib
 ICON = $(OBJDIR)/Other/resource.res
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
-FILE_ORIGIN = main Graphic Chess
+SUBFOLDER = IngameScreen DataControl HomeScreen SettingScreen Other
+
+FILE_ORIGIN = main Graphic Chess Screen
 FILE_INGAMESCREEN = BoardManager BoardPrint GameState Move Piece IngameScreen TimeButton Fen NewBoard Bitboard BitboardProcess Bot MoveSearching
-FILE_DATACONTROL = Button Color GameSettings Include Settings StaticButton Theme
-FILE = $(FILE_ORIGIN) $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%)
-FILE_O = $(FILE_ORIGIN:%=%.o) $(FILE_INGAMESCREEN:%=IngameScreen/%.o) $(FILE_DATACONTROL:%=DataControl/%.o)
-FILE_CPP = $(FILE_ORIGIN:%=/%.cpp) $(FILE_INGAMESCREEN:%=IngameScreen/%.cpp) $(FILE_DATACONTROL:%=DataControl/%.cpp)
+FILE_DATACONTROL = Button Color GameSettings Include Settings StaticButton Theme Image
+FILE_HOMESCREEN = HomeScreen
+FILE_SETTINGSCREEN = SettingScreen
+
+ifeq ($(OS),Windows_NT)
+	DIRECTORIES = $(OBJDIR) $(SUBFOLDER:%=$(OBJDIR)\\%)
+else
+	DIRECTORIES = $(OBJDIR) $(SUBFOLDER:%=$(OBJDIR)/%)
+endif
+
+FILE = $(FILE_ORIGIN) $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%) $(FILE_HOMESCREEN:%=HomeScreen/%) $(FILE_SETTINGSCREEN:%=SettingScreen/%)
+
+FILE_O = $(FILE:%=%.o)
+FILE_CPP = $(FILE:%=%.cpp)
 
 SOURCES = $(FILE_CPP:%=$(SRCDIR)/%)
 OBJS = $(FILE_O:%=$(OBJDIR)/%)
 OBJDEL = $(wildcard $(OBJDIR)/*)
 DEPS = $(OBJS:$(OBJDIR)/%.o=$(OBJDIR)/%.d)
-FFF = $(ICON:$(OBJDIR)/%.res=$(SRCDIR)/%.rc)
+RCICON = $(ICON:$(OBJDIR)/%.res=$(SRCDIR)/%.rc)
 
 FILENAME = $(notdir $(wildcard src/*))
 
@@ -38,43 +52,11 @@ endif
 
 all: dir build run
 
-dir:
-ifeq ($(wildcard $(OBJDIR)),)
-	${HIDE} echo create folder "${OBJDIR}"
-	${HIDE} mkdir ${OBJDIR}
-endif
+.PHONY: clean all
 
-ifeq ($(wildcard $(OBJDIR)\IngameScreen),)
-	${HIDE} echo create folder "${OBJDIR}\IngameScreen"
-	${HIDE} mkdir $(OBJDIR)\IngameScreen
-endif
+dir: $(DIRECTORIES)
 
-ifeq ($(wildcard $(OBJDIR)\DataControl),)
-	${HIDE} echo create folder "${OBJDIR}\DataControl"
-	${HIDE} mkdir $(OBJDIR)\DataControl
-endif
-
-ifeq ($(wildcard $(OBJDIR)\Other),)
-	${HIDE} echo create folder "${OBJDIR}\Other"
-	${HIDE} mkdir $(OBJDIR)\Other
-endif
-
-build: ${OBJS} ${ICON}
-	${HIDE} echo linking .o file to -*_*- ${NAME}.exe
-	${HIDE} ${CXX} $^ -o ${NAME}.exe -L ${FLAGS}
-
-${OBJDIR}/Other/%.res: ${SRCDIR}/Other/%.rc
-	${HIDE} echo compile $*.res
-	${HIDE} windres $< -I ${IMAGEDIR} -O coff -o $@
-
-# *.o: *.cpp
-# 	echo asdsfgh
-# 	${HIDE} echo compile $*.o
-# 	${HIDE} ${CXX} -I ${SFMLINCDIR} -c $< -o $@
-
-${OBJDIR}/%.o: ${SRCDIR}/%.cpp
-	${HIDE} echo compile $(notdir $*.o)
-	${HIDE} ${CXX} -I ${SFMLINCDIR} -c $< -o $@
+build: ${NAME}.exe
 
 clean:
 ifeq (${OBJDEL},)
@@ -88,18 +70,38 @@ endif
 
 run:
 	${HIDE} echo ${NAME}.exe
+	${HIDE} echo ------------------
 	${HIDE} ${NAME}.exe
 
 rebuild: clean all
 
-test: 
-	g++ -I SFML-2.5.1/include -c src/IngameScreen/Bitboard.cpp -o obj/IngameScreen/Bitboard.o
-	g++ -I SFML-2.5.1/include -c src/IngameScreen/Fen.cpp -o obj/IngameScreen/Fen.o
-	g++ -I SFML-2.5.1/include -c src/main.cpp -o obj/main.o
-	g++ -I SFML-2.5.1/include -c src/DataControl/Include.cpp -o obj/DataControl/Include.o
-	g++ obj/main.o obj/IngameScreen/fen.o obj/DataControl/Include.o obj/IngameScreen/Bitboard.o -o test
-	test.exe
+test: ${OBJS} test.exe
+	${HIDE} echo test.exe
+	${HIDE} test.exe
 
 neww:
-	echo $(FFF)
+	echo $(RCICON)
 	echo $(ICON)
+
+ifeq ($(OS),Windows_NT)
+$(DIRECTORIES):
+	$(HIDE) echo create folder "$@"
+	$(HIDE) mkdir $@
+else
+$(DIRECTORIES):
+	mkdir -p $@
+endif
+
+%.exe: ${OBJS} ${ICON}
+	${HIDE} echo linking .o file to -*_*- $@
+	${HIDE} ${CXX} ${CXXFLAGS} $^ -o $@ -L ${FLAGS}
+
+${OBJDIR}/Other/%.res: ${SRCDIR}/Other/%.rc
+	${HIDE} echo compile $*.res
+	${HIDE} windres $< -I ${IMAGEDIR} -O coff -o $@
+
+-include $(DEPS)
+${OBJDIR}/%.o: ${SRCDIR}/%.cpp
+	${HIDE} echo compile $(notdir $*.o)
+	${HIDE} ${CXX} ${CXXFLAGS} -I ${SFMLINCDIR} -c $< -o $@
+-include $(DEPS)

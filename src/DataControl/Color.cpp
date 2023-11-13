@@ -24,7 +24,6 @@ const sf::Color Color::TeaRoseColor = sf::Color(255, 209, 209);
 const sf::Color Color::BrightPinkColor = sf::Color(238, 75, 106);
 const sf::Color Color::TransparentColor = sf::Color(0, 0, 0, 0);
 
-const ColorButton Color::ColorButtonNoButton = ColorButton(TransparentColor, BlackColor, TransparentColor);
 const ColorButton Color::ColorButtonDefault = ColorButton(WhiteColor, BlackColor, BlackColor);
 const ColorButton Color::ColorButtonRed = ColorButton(RedColor, WhiteColor, BlackColor);
 const ColorButton Color::ColorButtonGreen = ColorButton(GreenColor, WhiteColor, BlackColor);
@@ -36,15 +35,25 @@ const ColorButton Color::ColorButtonYellow = ColorButton(YellowColor, BlackColor
 const ColorButton Color::ColorButtonLightGreen = ColorButton(LightGreenColor, BlackColor, BlackColor);
 const ColorButton Color::ColorButtonLightYellow = ColorButton(LightYellowColor, BlackColor, BlackColor);
 const ColorButton Color::ColorButtonLavenderBush = ColorButton(LavenderBushColor, BlackColor, BlackColor);
+const ColorButton Color::ColorButtonTextDefault = ColorButton(TransparentColor, BlackColor, TransparentColor);
+const ColorButton Color::ColorButtonTextRed = ColorButton(TransparentColor, RedColor, TransparentColor);
+const ColorButton Color::ColorButtonTextGreen = ColorButton(TransparentColor, GreenColor, TransparentColor);
+const ColorButton Color::ColorButtonTextBlue = ColorButton(TransparentColor, BlueColor, TransparentColor);
+const ColorButton Color::ColorButtonTextBlack = ColorButton(TransparentColor, BlackColor, TransparentColor);
+const ColorButton Color::ColorButtonTextWhite = ColorButton(TransparentColor, WhiteColor, TransparentColor);
+const ColorButton Color::ColorButtonTextOrange = ColorButton(TransparentColor, OrangeColor, TransparentColor);
+const ColorButton Color::ColorButtonTextYellow = ColorButton(TransparentColor, YellowColor, TransparentColor);
+const ColorButton Color::ColorButtonTextLightGreen = ColorButton(TransparentColor, LightGreenColor, TransparentColor);
+const ColorButton Color::ColorButtonTextLightYellow = ColorButton(TransparentColor, LightYellowColor, TransparentColor);
+const ColorButton Color::ColorButtonTextLavenderBush = ColorButton(TransparentColor, LavenderBushColor, TransparentColor);
 
-const ColorButMulti Color::ColorButMultiNoButton = ColorButMulti(std::vector<ColorButton>{ColorButtonNoButton, ColorButtonNoButton, ColorButtonNoButton, ColorButtonNoButton});
 const ColorButMulti Color::ColorButMultiDefault = ColorButMulti(std::vector<ColorButton>{ColorButtonDefault, ColorButtonGreen, ColorButtonYellow, ColorButtonLavenderBush});
-const ColorButMulti Color::ColorButMultiRed = ColorButMulti(std::vector<ColorButton>{ColorButtonRed, ColorButtonRed, ColorButtonRed, ColorButtonRed});
-const ColorButMulti Color::ColorButMultiGreen = ColorButMulti(std::vector<ColorButton>{ColorButtonGreen, ColorButtonGreen, ColorButtonGreen, ColorButtonGreen});
-const ColorButMulti Color::ColorButMultiBlue = ColorButMulti(std::vector<ColorButton>{ColorButtonBlue, ColorButtonBlue, ColorButtonBlue, ColorButtonBlue});
-const ColorButMulti Color::ColorButMultiBlack = ColorButMulti(std::vector<ColorButton>{ColorButtonBlack, ColorButtonBlack, ColorButtonBlack, ColorButtonBlack});
-const ColorButMulti Color::ColorButMultiWhite = ColorButMulti(std::vector<ColorButton>{ColorButtonWhite, ColorButtonWhite, ColorButtonWhite, ColorButtonWhite});
-const ColorButMulti Color::ColorButMultiOrange = ColorButMulti(std::vector<ColorButton>{ColorButtonOrange, ColorButtonOrange, ColorButtonOrange, ColorButtonOrange});
+const ColorButMulti Color::ColorButMultiStatic = ColorButMulti(std::vector<ColorButton>{ColorButtonDefault, ColorButtonDefault, ColorButtonDefault, ColorButtonDefault});
+const ColorButMulti Color::ColorButMultiLight = ColorButMulti(std::vector<ColorButton>{ColorButtonLightGreen, ColorButtonOrange, ColorButtonRed, ColorButtonLavenderBush});
+const ColorButMulti Color::ColorButMultiDark = ColorButMulti(std::vector<ColorButton>{ColorButtonBlack, ColorButtonLightYellow, ColorButtonRed, ColorButtonBlue});
+const ColorButMulti Color::ColorButMultiTextDefault = ColorButMulti(std::vector<ColorButton>{ColorButtonTextDefault, ColorButtonTextGreen, ColorButtonTextYellow, ColorButtonTextLavenderBush});
+const ColorButMulti Color::ColorButMultiTextStatic = ColorButMulti(std::vector<ColorButton>{ColorButtonTextDefault, ColorButtonTextDefault, ColorButtonTextDefault, ColorButtonTextDefault});
+const ColorButMulti Color::ColorButMultiTextFullColor = ColorButMulti(std::vector<ColorButton>{ColorButtonTextRed, ColorButtonTextGreen, ColorButtonTextBlue, ColorButtonTextBlack, ColorButtonTextWhite, ColorButtonTextOrange, ColorButtonTextYellow, ColorButtonTextLightGreen, ColorButtonTextLightYellow, ColorButtonTextLavenderBush});
 
 ColorButton::ColorButton() {
     FillColor = sf::Color::White;

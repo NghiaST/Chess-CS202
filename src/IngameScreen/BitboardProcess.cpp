@@ -11,7 +11,6 @@ std::vector<Move> BitboardProcess::getPseudoMoves(int startSquare, int piece) {
     if (piece == PIECE::None) return std::vector<Move>();
     bool isWhiteTurn = PIECE::isWhite(piece);
     int pieceType = PIECE::PieceType(piece);
-    BitboardUtility::Initialize();
     switch (pieceType) {
         case 1:
             return getPawnMoves(startSquare, isWhiteTurn);

@@ -14,7 +14,7 @@ Piece::~Piece()
 {
 }
 
-const int Piece::getPiece() const {
+int Piece::getPiece() const {
     return piece;
 }
 void Piece::setPiece(int piece) {
@@ -60,7 +60,7 @@ void Piece::update(const Theme* theme) {
     sprite.setPosition(printPos.x, printPos.y);
 }
 
-void Piece::render(sf::RenderTarget& target, sf::RenderStates state) const
+void Piece::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     if (!isPrint) return;
     target.draw(sprite);

@@ -51,7 +51,6 @@ public:
     static const sf::Color BrightPinkColor;
     static const sf::Color TransparentColor;
 
-    static const ColorButton ColorButtonNoButton;
     static const ColorButton ColorButtonDefault;
     static const ColorButton ColorButtonRed;
     static const ColorButton ColorButtonGreen;
@@ -63,15 +62,25 @@ public:
     static const ColorButton ColorButtonLightGreen;
     static const ColorButton ColorButtonLightYellow;
     static const ColorButton ColorButtonLavenderBush;
+    static const ColorButton ColorButtonTextDefault;
+    static const ColorButton ColorButtonTextRed;
+    static const ColorButton ColorButtonTextGreen;
+    static const ColorButton ColorButtonTextBlue;
+    static const ColorButton ColorButtonTextBlack;
+    static const ColorButton ColorButtonTextWhite;
+    static const ColorButton ColorButtonTextOrange;
+    static const ColorButton ColorButtonTextYellow;
+    static const ColorButton ColorButtonTextLightGreen;
+    static const ColorButton ColorButtonTextLightYellow;
+    static const ColorButton ColorButtonTextLavenderBush;
 
-    static const ColorButMulti ColorButMultiNoButton;
     static const ColorButMulti ColorButMultiDefault;
-    static const ColorButMulti ColorButMultiRed;
-    static const ColorButMulti ColorButMultiGreen;
-    static const ColorButMulti ColorButMultiBlue;
-    static const ColorButMulti ColorButMultiBlack;
-    static const ColorButMulti ColorButMultiWhite;
-    static const ColorButMulti ColorButMultiOrange;
+    static const ColorButMulti ColorButMultiStatic;
+    static const ColorButMulti ColorButMultiLight;
+    static const ColorButMulti ColorButMultiDark;
+    static const ColorButMulti ColorButMultiTextDefault;
+    static const ColorButMulti ColorButMultiTextStatic;
+    static const ColorButMulti ColorButMultiTextFullColor;
 };
 
 #endif

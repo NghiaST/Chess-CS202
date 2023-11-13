@@ -84,12 +84,8 @@ void StaticButton::updateStaticRender() {
     sfText.setOutlineColor(colorButton.TextColor);
 }
 
-void StaticButton::draw(sf::RenderTarget &target, sf::RenderStates state) const {
+void StaticButton::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     if (!isPrint) return;
-    target.draw(shape, state);
-    target.draw(sfText, state);
-}
-
-void StaticButton::render(sf::RenderTarget &target, sf::RenderStates state) const {
-    draw(target, state);
+    target.draw(shape, states);
+    target.draw(sfText, states);
 }

@@ -4,14 +4,16 @@
 #include <SFML/Graphics.hpp>
 #include "BoardManager.hpp"
 #include "TimeButton.hpp"
+#include "../Screen.hpp"
+#include "../DataControl/Image.hpp"
 
-class IngameScreen {
+class IngameScreen : public Screen {
 public:
     IngameScreen();
     ~IngameScreen();
     void handleEvent(const sf::Event& event);
     void update(sf::Time deltaTime);
-    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const;
+    void render(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) override;
 
 private:
     // Process
@@ -21,24 +23,22 @@ private:
     Point undoButtonPosition;
     Point redoButtonPosition;
     Point newgameButtonPosition;
-    Point exitButtonPosition;
+    Point backButtonPosition;
 
     Point boardSize;
     Point buttonSize;
     Point timeButtonSize;
 
 private:
-    sf::Shader shader;
-    sf::RenderStates state;
-    Theme* theme;
-
     BoardManager* boardManager;
     TimeButton* timeButton;
+    
+    Image Background;
     Button* saveButton;
     Button* undoButton;
     Button* redoButton;
     Button* newgameButton;
-    Button* exitButton;
+    Button* backButton;
 
     bool isPieceHold;
     Point mousePosition;

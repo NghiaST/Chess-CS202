@@ -55,7 +55,7 @@ void TimeButton::updateRender() {
     buttonBlack->updateRender();
 }
 
-void TimeButton::render(sf::RenderTarget& target, sf::RenderStates state) const {
+void TimeButton::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.draw(*buttonWhite);
     target.draw(*buttonBlack);
 }

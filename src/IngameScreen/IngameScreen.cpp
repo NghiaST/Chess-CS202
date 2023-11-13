@@ -1,40 +1,34 @@
 #include "IngameScreen.hpp"
 
-IngameScreen::IngameScreen() {
-    shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment);
-    state.shader = &shader;
-    theme = new Theme();
-    // theme->loadFile();
-    srand(time(NULL));
-    theme->setTheme(1);
-    // theme->setTheme(rand() % 10);
-
+IngameScreen::IngameScreen() : Screen() {
+    currentScreen = ScreenType::IngameScreen;
+    BitboardUtility::Initialize();
+    
     boardSize = Point(64, 64) * 8;
     buttonSize = Point(150, 70);
     timeButtonSize = Point(80, 40);
     boardPosition = Point(100, INTERFACE::WindowSize.y / 2 - boardSize.y / 2);
 
     timeButtonPosition = Point(boardPosition.x / 2, boardPosition.y + boardSize.y / 2);
-    
     int leftPositionButton = INTERFACE::WindowSize.x - buttonSize.x - 2;
+    
+    Background = Image(theme->getBackgroundTexture(), Point(0, 0), INTERFACE::WindowSize, true, 0);
     saveButtonPosition    = Point(leftPositionButton, 1.05 * buttonSize.y);
     undoButtonPosition    = Point(leftPositionButton, 2.10 * buttonSize.y);
     redoButtonPosition    = Point(leftPositionButton, 3.15 * buttonSize.y);
     newgameButtonPosition = Point(leftPositionButton, 4.20 * buttonSize.y);
-    exitButtonPosition    = Point(leftPositionButton, 5.25 * buttonSize.y);
+    backButtonPosition    = Point(leftPositionButton, 5.25 * buttonSize.y);
 
     Point timeButtonPositionWhite = boardPosition + boardSize - Point(timeButtonSize.x, 0) + Point(0, 5);
     Point timeButtonPositionBlack = boardPosition + Point(boardSize.x, 0) - timeButtonSize - Point(0, 5);
 
     boardManager = new BoardManager(boardPosition, boardSize, theme);
-    timeButton = new TimeButton(50, timeButtonPositionWhite, timeButtonPositionBlack, timeButtonSize, &theme->getFont(), theme->getTextColorMulti());
-    // timeButton    = new TimeButton(50, timeButtonPosition, Point(40, 40), true , true, &theme->getFont(), Color::ColorButMultiGreen, 20, "Time");
-    //(50, timeButtonPosition   , Point(40, 40), true , true, &theme->getFont(), Color::ColorButMultiGreen, 20, "Time");
-    saveButton    = new Button(51, saveButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getButtonColorMulti(), 20, "Save");
-    undoButton    = new Button(52, undoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getButtonColorMulti(), 20, "Undo");
-    redoButton    = new Button(53, redoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getButtonColorMulti(), 20, "Redo");
-    newgameButton = new Button(54, newgameButtonPosition, buttonSize   , false, true, &theme->getFont(), theme->getButtonColorMulti(), 20, "New Game");
-    exitButton    = new Button(55, exitButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getButtonColorMulti(), 20, "Exit"); 
+    timeButton = new TimeButton(50, timeButtonPositionWhite, timeButtonPositionBlack, timeButtonSize, &theme->getFont(), theme->getColorStatic());
+    saveButton    = new Button(51, saveButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Save");
+    undoButton    = new Button(52, undoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Undo");
+    redoButton    = new Button(53, redoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Redo");
+    newgameButton = new Button(54, newgameButtonPosition, buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "New Game");
+    backButton    = new Button(55, backButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Back"); 
 
     isPieceHold = false;
     mousePosition = Point(0, 0);
@@ -46,7 +40,7 @@ IngameScreen::IngameScreen() {
         {"undo", 3},
         {"redo", 4},
         {"newgame", 5},
-        {"exit", 6}
+        {"back", 6}
     };
     priority = defaultPriority;
     handleOrder = {
@@ -56,7 +50,7 @@ IngameScreen::IngameScreen() {
         "undo",
         "redo",
         "newgame",
-        "exit"
+        "back"
     };
 }
 
@@ -68,7 +62,7 @@ IngameScreen::~IngameScreen() {
     delete undoButton;
     delete redoButton;
     delete newgameButton;
-    delete exitButton;
+    delete backButton;
 }
 
 void IngameScreen::handleEvent(const sf::Event& event) {
@@ -134,8 +128,12 @@ void IngameScreen::handleEvent(const sf::Event& event) {
                 timeButton->reset();
             }
         }
-        else if (name == "exit") {
-            status = exitButton->handleEvent(event) ? "exit" : "";
+        else if (name == "back") {
+            status = backButton->handleEvent(event) ? "back" : "";
+            if (status == "back") {
+                isScreenChange = true;
+                nextScreen = ScreenType::HomeScreen;
+            }
             // if (status == "newgame") {
             //     boardManager->NewGame();
             //     timeButton->reset();
@@ -147,7 +145,7 @@ void IngameScreen::handleEvent(const sf::Event& event) {
 void IngameScreen::update(sf::Time deltaTime) {
     std::string status = "";
     std::vector<std::string> updateOrder = {
-        "boardManager", "time", "save", "undo", "redo", "newgame", "exit"
+        "boardManager", "time", "save", "undo", "redo", "newgame", "back"
     };
 
     for(std::string name : updateOrder) {
@@ -183,20 +181,21 @@ void IngameScreen::update(sf::Time deltaTime) {
     }
 }
 
-void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates state) const {
+void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     boardManager->updateRender();
     timeButton->updateRender();
     saveButton->updateRender();
     undoButton->updateRender();
     redoButton->updateRender();
     newgameButton->updateRender();
-    exitButton->updateRender();
+    backButton->updateRender();
     
+    target.draw(Background);
     target.draw(*saveButton);
     target.draw(*undoButton);
     target.draw(*redoButton);
     target.draw(*newgameButton);
-    target.draw(*exitButton);
-    boardManager->render(target, state);
-    timeButton->render(target);
+    target.draw(*backButton);
+    timeButton->draw(target, states);
+    boardManager->draw(target, states);
 }

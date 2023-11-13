@@ -3,7 +3,7 @@
 Bot::Bot() {
     board = new NewBoard();
     searchDepth = 2;
-    timeThinkingMs = 2000;
+    timeThinkingMs = 2500;
     isThinkingDone = false;
     moveSearching = new MoveSearching(searchDepth);
 }

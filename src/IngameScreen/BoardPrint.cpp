@@ -16,7 +16,7 @@ void BoardPrint::setStateBoard(const std::vector<int>& stateBoard) {
     this->stateBoard = stateBoard;
 }
 
-void BoardPrint::setStateCell(int index, int state) {
+void BoardPrint::setStateCell(int index, STATUS state) {
     this->stateBoard[index] = state;
 }
 
@@ -29,23 +29,17 @@ void BoardPrint::update(const Theme* theme) {
     Point cellSize = renderSize / 8;
     spriteBoardList.clear();
     spriteBoardShaderList.clear();
-    const sf::Texture& boardTexture = theme->getBoardTexture();
-    const sf::Texture& boardSelectedTexture = theme->getBoardSelectedTexture();
-    const sf::Texture& boardPreMoveTexture = theme->getBoardPreMoveTexture();
-    const sf::Texture& boardMoveTexture = theme->getBoardMoveTexture();
-    const sf::Texture& boardCaptureTexture = theme->getBoardCaptureTexture();
-    const sf::Texture& boardCheckTexture = theme->getBoardCheckTexture();
-    const sf::Texture& boardCheckMateTexture = theme->getBoardCheckMateTexture();
+    const TextureBoard& textureBoard = theme->getTextureBoard();
 
     // if no texture, return
-    sf::Vector2u size = boardTexture.getSize();
-    sf::Vector2u sizeOther = boardSelectedTexture.getSize();
+    sf::Vector2u size = textureBoard.getTexture(TextureBoard::Board).getSize();
+    sf::Vector2u sizeCell = textureBoard.getTexture(TextureBoard::Selected).getSize();
     if (size == sf::Vector2u(0, 0)) return;
 
     // calculate size and index of square
     {
         sf::Sprite sprite;
-        sprite.setTexture(boardTexture);
+        sprite.setTexture(textureBoard.getTexture(TextureBoard::Board));
         
         sprite.setScale(renderSize.x / size.x, renderSize.y / size.y);
         sprite.setPosition(renderPosition.to2f());
@@ -60,52 +54,51 @@ void BoardPrint::update(const Theme* theme) {
         float printPosx = renderPosition.x + file * cellSize.x;
         float printPosy = renderPosition.y + (7 - rank) * cellSize.y;
 
-        // add boardPrint, common
-        // if (false) {
-        //     sf::Sprite sprite;
-        //     sprite.setTexture(boardTexture);
-        //     sprite.setTextureRect(sf::IntRect(color * size.x / 2, 0, size.x / 2, size.y));
-
-        //     sprite.setScale(cellSize.x / size.x * 2, cellSize.y / size.y);
-        //     sprite.setPosition(printPosx, printPosy);
-        //     spriteBoardList.push_back(sprite);
-        // }
-
-        // add boardPrint if state is: selected, move, capture, check, checkmate
         if (stateBoard[index]) {
             sf::Sprite sprite;
             switch(stateBoard[index]) {
-                case STATUS::SELECTED:
-                    sprite.setTexture(boardSelectedTexture);
+                case STATUS::Selected:
+                    sprite.setTexture(textureBoard.getTexture(TextureBoard::Selected));
                     break;
-                case STATUS::PREMOVE:
-                    sprite.setTexture(boardPreMoveTexture);
+                case STATUS::Hover:
+                    sprite.setTexture(textureBoard.getTexture(TextureBoard::Hover));
                     break;
-                case STATUS::POSSIBLE:
-                    sprite.setTexture(boardMoveTexture);
+                case STATUS::PreMoveStart:
+                    sprite.setTexture(textureBoard.getTexture(TextureBoard::PreMoveStart));
                     break;
-                case STATUS::CHECK:
-                    sprite.setTexture(boardCheckTexture);
+                case STATUS::PreMoveTarget:
+                    sprite.setTexture(textureBoard.getTexture(TextureBoard::PreMoveTarget));
                     break;
-                case STATUS::CHECKMATE:
-                    sprite.setTexture(boardCheckMateTexture);
+                case STATUS::Possible:  
+                    sprite.setTexture(textureBoard.getTexture(TextureBoard::Possible));
+                    break;
+                case STATUS::PossibleCapture:
+                    sprite.setTexture(textureBoard.getTexture(TextureBoard::PossibleCapture));
+                    break;
+                case STATUS::Check:
+                    sprite.setTexture(textureBoard.getTexture(TextureBoard::Check));
+                    break;
+                case STATUS::CheckMate:
+                    sprite.setTexture(textureBoard.getTexture(TextureBoard::CheckMate));
+                    break;
+                case STATUS::StaleMate:
+                    sprite.setTexture(textureBoard.getTexture(TextureBoard::StaleMate));
                     break;
                 default:
-                    sprite.setTexture(boardSelectedTexture);
                     break;
             }
-            sprite.setScale(cellSize.x / sizeOther.x, cellSize.y / sizeOther.y);
+            sprite.setScale(cellSize.x / sizeCell.x, cellSize.y / sizeCell.y);
             sprite.setPosition(printPosx, printPosy);
             spriteBoardShaderList.push_back(sprite);
         }
     }
 }
 
-void BoardPrint::render(sf::RenderTarget& target, sf::RenderStates state) const {
+void BoardPrint::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     for(sf::Sprite sprite : spriteBoardList) {
         target.draw(sprite);
     }
     for(sf::Sprite sprite : spriteBoardShaderList) {
-        target.draw(sprite, state);
+        target.draw(sprite, states);
     }
 }

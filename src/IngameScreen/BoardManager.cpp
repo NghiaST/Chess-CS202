@@ -81,6 +81,7 @@ void BoardManager::freshState() {
     isCheckMate = board->ifCheckMate();
     isStaleMate = board->ifStaleMate();
     isWhiteTurn = board->ifWhiteTurn();
+    isBotRunning = false;
 
     if (isCheckMate) {
         gameStatus = ENDGAME;
@@ -99,7 +100,7 @@ void BoardManager::freshState() {
 void BoardManager::NewGame() {
     board->LoadBasicPosition();
     isBot[0] = true;
-    isBot[1] = false;
+    isBot[1] = true;
     gameStatus = GAMESTATUS::NEWGAME;
     gameResult = CHESS::None;
     isPieceSelected = false;
@@ -274,29 +275,33 @@ void BoardManager::updateRender() {
     for(int i = 0; i < 64; i++) {
         piecePrintList[i]->setPiece(board->getPiece(i));
         piecePrintList[i]->setMouseStatus(MOUSE::NONE);
-        boardPrint->setStateCell(i, BoardPrint::COMMON);
+        boardPrint->setStateCell(i, BoardPrint::Common);
     }
     if (isCheck) {
-        boardPrint->setStateCell(board->getKingSquareIndex(isWhiteTurn), BoardPrint::CHECK);
+        boardPrint->setStateCell(board->getKingSquareIndex(isWhiteTurn), BoardPrint::Check);
     }
     if (isCheckMate) {
-        boardPrint->setStateCell(board->getKingSquareIndex(isWhiteTurn), BoardPrint::CHECKMATE);
+        boardPrint->setStateCell(board->getKingSquareIndex(isWhiteTurn), BoardPrint::CheckMate);
     }
     if (isStaleMate) {
-        boardPrint->setStateCell(board->getKingSquareIndex(isWhiteTurn), BoardPrint::CHECKMATE);
+        boardPrint->setStateCell(board->getKingSquareIndex(isWhiteTurn), BoardPrint::StaleMate);
     }
     if (board->isHistoryEmpty() == false) {
         Move lastMove = board->getLastMove();
-        boardPrint->setStateCell(lastMove.startSquare, BoardPrint::PREMOVE);
-        boardPrint->setStateCell(lastMove.targetSquare, BoardPrint::PREMOVE);
+        boardPrint->setStateCell(lastMove.startSquare, BoardPrint::PreMoveStart);
+        boardPrint->setStateCell(lastMove.targetSquare, BoardPrint::PreMoveTarget);
     }
     if (isPieceSelected | isPieceHold) {
-        boardPrint->setStateCell(selectedPieceIndex, BoardPrint::SELECTED);
-        for(int u : possibleIndexList) 
-            boardPrint->setStateCell(u, BoardPrint::POSSIBLE);
+        boardPrint->setStateCell(selectedPieceIndex, BoardPrint::Selected);
+        for(int u : possibleIndexList) {
+            if (board->getPiece(u) == PIECE::None)
+                boardPrint->setStateCell(u, BoardPrint::Possible);
+            else
+                boardPrint->setStateCell(u, BoardPrint::PossibleCapture);
+        }
     }
     if (isPieceHold) {
-        boardPrint->setStateCell(holdPieceIndex, BoardPrint::SELECTED);
+        boardPrint->setStateCell(holdPieceIndex, BoardPrint::Selected);
         piecePrintList[holdPieceIndex]->setMouseStatus(MOUSE::HOLD, mousePosition);
     }
 
@@ -306,15 +311,14 @@ void BoardManager::updateRender() {
     }
 }
 
-void BoardManager::render(sf::RenderTarget& target, sf::RenderStates state) const
+void BoardManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    state = this->state;
-    boardPrint->render(target, state);
+    target.draw(*boardPrint);
     std::vector<std::pair<int, int>> piecePriority;
     for(int i = 0; i < 64; i++)
         piecePriority.emplace_back(piecePrintList[i]->getPriorityPrint(), i);
     std::sort(piecePriority.begin(), piecePriority.end());
     for(std::pair<int, int> data : piecePriority) {
-        piecePrintList[data.second]->render(target, state);
+        piecePrintList[data.second]->draw(target, this->state);
     }
 }

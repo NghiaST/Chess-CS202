@@ -20,7 +20,7 @@ private:
 public:
     Piece(int index, int pieceData, int status = 0);
     ~Piece();
-    const int getPiece() const;
+    int getPiece() const;
     void setPiece(int piece);
     void setPiece(int pieceColor, int pieceType);
     void setMouseStatus(int mousestatus, Point mousePosition = Point(0, 0));
@@ -28,7 +28,7 @@ public:
 
 public: // front-end
     void update(const Theme* theme);
-    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const override;
+    void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 };
 
 #endif

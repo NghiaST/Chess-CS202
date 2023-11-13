@@ -3,12 +3,18 @@
 
 #include <cstring>
 #include <fstream>
+#include <memory>
 
 #include <SFML/Graphics.hpp>
 #include "Include.hpp"
 #include "Color.hpp"
 
-class ThemeIndex {
+class TextureMaking {
+public:
+    static std::unique_ptr<sf::Texture> Make(Point size, sf::Color sfColor);
+};
+
+struct ThemeIndex {
 public:
     int BackgroundIndex;
     int PieceIndex;
@@ -23,14 +29,48 @@ public:
     void setThemeIndex(const ThemeIndex themeIndex);
 };
 
-class ThemePiece {
+class TexturePieces {
+public:
+    TexturePieces();
+    ~TexturePieces();
+    void buildTexture(std::string PieceName);
+    const sf::Texture& getTexture(int piece) const;
 private:
     std::vector<std::unique_ptr<sf::Texture>> PieceTexture;
+};
+
+class TextureBoard {
 public:
-    ThemePiece();
-    ~ThemePiece();
-    void buildTexture(std::string PieceName);
-    const sf::Texture& getTexture(int pieceData) const;
+    enum TYPE {
+        Board = 0,
+        Hover,
+        Selected,
+        PreMoveStart,
+        PreMoveTarget,
+        Possible,
+        PossibleCapture,
+        Check,
+        CheckMate,
+        StaleMate
+    };
+
+public:
+    TextureBoard();
+    ~TextureBoard();
+    void buildTexture(std::string URL);
+    const sf::Texture& getTexture(TYPE type) const;
+
+private:
+    std::unique_ptr<sf::Texture> BoardTexture;  // 8x8 board
+    std::unique_ptr<sf::Texture> HoverTexture;
+    std::unique_ptr<sf::Texture> SelectedTexture;
+    std::unique_ptr<sf::Texture> PreMoveStartTexture;
+    std::unique_ptr<sf::Texture> PreMoveTargetTexture;
+    std::unique_ptr<sf::Texture> PossibleTexture;
+    std::unique_ptr<sf::Texture> PossibleCaptureTexture;
+    std::unique_ptr<sf::Texture> CheckTexture;
+    std::unique_ptr<sf::Texture> StaleMateTexture;
+    std::unique_ptr<sf::Texture> CheckMateTexture;
 };
 
 class Theme : private ThemeIndex {
@@ -40,48 +80,58 @@ public:
     void loadFile();
     void setTheme(const ThemeIndex themeIndex);
     void setTheme(const int themeIndex);
+
+    const sf::Texture& getTitleScreenTexture() const;
     const sf::Texture& getBackgroundTexture() const;
-    const sf::Texture& getPieceTexture(int pieceData) const;
+    const TexturePieces& getTexturePieces() const;
+    const TextureBoard& getTextureBoard() const;
 
-    const sf::Texture& getBoardTexture() const;
-    const sf::Texture& getBoardSelectedTexture() const;
-    const sf::Texture& getBoardPreMoveTexture() const;
-    const sf::Texture& getBoardMoveTexture() const;
-    const sf::Texture& getBoardCaptureTexture() const;
-    const sf::Texture& getBoardCheckTexture() const;
-    const sf::Texture& getBoardCheckMateTexture() const;
+    const sf::Texture& getPieceTexture(int piece) const;
+    const sf::Texture& getBoardTexture(TextureBoard::TYPE type) const;
 
-    const ColorButMulti& getButtonColorMulti() const;
-    const ColorButMulti& getTextColorMulti() const;
+    const ColorButMulti& getColorDefault() const;
+    const ColorButMulti& getColorStatic() const;
+    const ColorButMulti& getColorTitle() const;
+    const ColorButMulti& getColorText() const;
+    const ColorButMulti& getColorHome() const;
+    const ColorButMulti& getColorIngame() const;
     const sf::Font& getFont() const;
+    const sf::Font& getFontTitle() const;
     const int getFontSize() const;
 
-public: // default
-    std::unique_ptr<sf::Texture> makeTexture(Point size, sf::Color sfColor);
+private:
+    void freshNameURL();
 
 private:
     std::string BackgroundName;
     std::string PieceName;
     std::string BoardName;
     std::string FontName;
+
+    std::string BackgroundURL;
+    std::string PieceDir;
+    std::string BoardURL;
+    std::string FontURL;
+
 private:
+    // Home screen
+    std::unique_ptr<sf::Texture> TitleScreenTexture;
+
+    // Ingame screen
     std::unique_ptr<sf::Texture> BackgroundTexture;
-    ThemePiece* PieceTextureList;
-
-    // board texture list
-    std::unique_ptr<sf::Texture> BoardTexture;
-    std::unique_ptr<sf::Texture> BoardSelectedTexture;
-    std::unique_ptr<sf::Texture> BoardPreMoveTexture;
-    std::unique_ptr<sf::Texture> BoardMoveTexture;
-    std::unique_ptr<sf::Texture> BoardCaptureTexture;
-    std::unique_ptr<sf::Texture> BoardCheckTexture;
-    std::unique_ptr<sf::Texture> BoardCheckMateTexture;
+    TexturePieces* texturePieces;
+    TextureBoard* textureBoard;
     
-    ColorButMulti* ColorButton;
-    ColorButMulti* ColorText;
-    ColorButMulti* ColorMText;
+    // Button
+    ColorButMulti ColorBM_Default;
+    ColorButMulti ColorBM_Static;
+    ColorButMulti ColorBM_Title;
+    ColorButMulti ColorBM_Text;
+    ColorButMulti ColorBM_Home;
+    ColorButMulti ColorBM_Ingame;
 
-    sf::Font* FontText;
+    sf::Font FontTitle;
+    sf::Font FontText;
     int FontSize;
 };
 
@@ -93,10 +143,13 @@ public:
     static const std::string BoardDirectory;
     static const std::string FontDirectory;
 
+    static const std::string FontTitleName;
+
     static const std::vector<std::string> BackgroundNameList;
     static const std::vector<std::string> PieceNameList;
     static const std::vector<std::string> BoardNameList;
     static const std::vector<std::string> FontNameList;
+
 
     static const std::vector<int> FontSizeList;
     static const int ThemeCount;

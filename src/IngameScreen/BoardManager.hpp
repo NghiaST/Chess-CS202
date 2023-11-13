@@ -11,14 +11,14 @@
 #include "Bot.hpp"
 #include <vector>
 
-class BoardManager {
+class BoardManager : public sf::Drawable {
 public:
     BoardManager(Point renderPosition, Point renderSize, Theme* theme);
     ~BoardManager();
     std::string handleEvent(const sf::Event& event);
     std::string update(sf::Time deltaTime);
     void updateRender();
-    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const;
+    void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 
 public:
     // Accessors

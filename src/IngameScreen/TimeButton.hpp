@@ -4,14 +4,14 @@
 #include <SFML/Graphics.hpp>
 #include "../DataControl/Button.hpp"
 
-class TimeButton {
+class TimeButton : sf::Drawable {
 public:
     TimeButton(int id, Point renderPositionWhite, Point renderPositionBlack, Point renderSize, const sf::Font* font, const ColorButMulti& colorButMulti);
     ~TimeButton();
 
     std::string update(sf::Time deltaTime);
     void updateRender();
-    void render(sf::RenderTarget& target, sf::RenderStates state = sf::RenderStates::Default) const;
+    void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 
     void setTime(int time);
     void setTurn(bool isWhiteTurn);
