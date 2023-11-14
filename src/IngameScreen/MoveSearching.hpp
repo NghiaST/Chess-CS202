@@ -1,7 +1,7 @@
 #ifndef __MoveSearching_hpp__   
 #define __MoveSearching_hpp__
 
-#include "NewBoard.hpp"
+#include "Board.hpp"
 #include "Move.hpp"
 #include <ctime>
 #include <cmath>
@@ -12,8 +12,8 @@ public:
     MoveSearching(int depth);
     ~MoveSearching();
 
-    int Searching(NewBoard& board, int timeSearchingMs, int searchDepth); //, int alpha, int beta, bool isMaximizingPlayer);
-    int CalculateScore(const NewBoard& board);
+    int Searching(Board& board, int timeSearchingMs, int searchDepth); //, int alpha, int beta, bool isMaximizingPlayer);
+    int CalculateScore(const Board& board);
     std::vector<Move> getRankMove(int numberMoves); // get some best moves
     bool IsSearchCompleted() const;
     Move GetBestMove() const;

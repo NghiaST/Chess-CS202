@@ -8,6 +8,7 @@
 #include "HomeScreen/HomeScreen.hpp"
 #include "SettingScreen/SettingScreen.hpp"
 #include "StatisticsScreen/StatisticsScreen.hpp"
+#include "OptionScreen/OptionScreen.hpp"
 
 class Chess {
 public:
@@ -30,9 +31,10 @@ private:
     HomeScreen* homeScreen;
     SettingScreen* settingScreen;
     StatisticsScreen* statisticsScreen;
+    OptionScreen* optionScreen;
 
     Point windowSize;
-    Point renderPosition;
+    Point windowPosition;
     sf::Clock clock;
 };
 

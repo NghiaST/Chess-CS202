@@ -7,7 +7,7 @@
 #include "../DataControl/Button.hpp"
 #include "Piece.hpp"
 #include "BoardPrint.hpp"
-#include "NewBoard.hpp"
+#include "Board.hpp"
 #include "Bot.hpp"
 #include "../DataControl/Arrow.hpp"
 #include "../DataControl/Circle.hpp"
@@ -25,6 +25,7 @@ public:
 
 public:
     // Accessors
+    bool ifBoardRotate() const;
     int getGameStatus() const;
     CHESS::COLOR getTurn() const;
     int getResult() const;
@@ -32,7 +33,7 @@ public:
     bool ifCheckMate() const;
     bool ifStaleMate() const;
     bool ifEndGame() const;
-    const NewBoard& getBoard() const;
+    const Board& getBoard() const;
 
     // Modifiers
     void NewGame();
@@ -50,7 +51,7 @@ public:
     };
 
 private:
-    bool ManagerMove(int startSquare, int targetSquare);
+    bool ManagerMove(int startSquare, int targetSquare, bool isBotMove = false);
     std::vector<int> getLegalIndexAt(int squareIndex);
 
 private:
@@ -58,7 +59,7 @@ private:
     void setBoardRotate(bool isBoardRotate);
 
 private:
-    NewBoard* board;
+    Board* board;
 
     sf::Shader shader;
     sf::RenderStates state;
@@ -93,8 +94,9 @@ private:
 
     bool isNoteHold;
     bool isBoardRotate;
-    bool isBotHelp;
     int mode;   /// PvE, EvP, PvP, EvE
+    int level;
+    bool isBotHelp;
 
     std::vector<int> possibleIndexList; // all squareIndex is prepared to move
     // std::vector<int> noteCircleList;   /// all squareIndex which is right clicked

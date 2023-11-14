@@ -3,19 +3,27 @@
 
 #include <string>
 #include <filesystem>
-#include "../IngameScreen/NewBoard.hpp"
+#include "../IngameScreen/Board.hpp"
 #include "../IngameScreen/Move.hpp"
 #include "Theme.hpp"
 
 class FileInit {
 public:
     static void Init();
-    static void Save(std::vector<Move> movesHistory, int mode, int level, int color, int timeWhite, int timeBlack);
-    static bool Load(std::vector<Move>& movesHistory, int& mode, int& level, int& color, int& timeWhite, int& timeBlack);
+
+    // Save
+    // static void ExtractGame(std::string filename);
+    static void SaveGame(const std::vector<Move>& movesHistory, int mode, int level, int timeWhite, int timeBlack);
+    static void SaveTheme(const ThemeIndex& themeIndex);
+    static void SaveOptions(int mode, int level, bool isBotHelp);
+    static void SaveConfig(const ThemeIndex& themeIndex, int mode, int level, bool isBotHelp);
+
+    // Load
+    static bool LoadGame(std::vector<Move>& movesHistory, int& mode, int& level, int& timeWhite, int& timeBlack);
     static ThemeIndex LoadTheme();
+    static void LoadOptions(int& mode, int& level, bool& isBotHelp);
+    static void LoadConfig(ThemeIndex& themeIndex, int& mode, int& level, bool& isBotHelp);
     static int LoadMode();
-    static void SaveConfig(const ThemeIndex& themeIndex);
-    // static void Load();
 
     static const std::string datConfig;
     static const std::string datGame;

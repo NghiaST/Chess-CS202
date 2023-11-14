@@ -7,7 +7,7 @@ SettingScreen::SettingScreen() : Screen() {
     boardPosition = Point(100, INTERFACE::WindowSize.y / 2 - boardSize.y / 2);
 
     BackButtonSize = Point(130, 60);
-    BackButtonPosition = Point(900, 500);
+    BackButtonPosition = Point(810, 500);
 
     Background = Image(theme->getBackgroundTexture(), Point(0, 0), INTERFACE::WindowSize, true, 0);
     BackButton = new Button(4, BackButtonPosition, BackButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "Back");
@@ -23,11 +23,11 @@ SettingScreen::SettingScreen() : Screen() {
 
     ThemeIndex themeIndex = theme->getThemeIndex();
 
-    BackgroundOption = new ButtonOption(5, Point(800, 100 + 0 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::BackgroundNameList, themeIndex.BackgroundIndex, 2);
-    PieceOption      = new ButtonOption(6, Point(800, 100 + 1 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::PieceNameList, themeIndex.PieceIndex, 2);
-    BoardOption      = new ButtonOption(7, Point(800, 100 + 2 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::BoardNameList, themeIndex.BoardIndex, 2);
-    ButOption        = new ButtonOption(8, Point(800, 100 + 3 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::ColorBM_NameList, themeIndex.ButtonIndex, 2);
-    TextOption       = new ButtonOption(9, Point(800, 100 + 4 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::FontNameList, themeIndex.TextIndex, 2);
+    BackgroundOption = new ButtonOption(5, Point(810, 100 + 0 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::BackgroundNameList, themeIndex.BackgroundIndex, 2);
+    PieceOption      = new ButtonOption(6, Point(810, 100 + 1 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::PieceNameList, themeIndex.PieceIndex, 2);
+    BoardOption      = new ButtonOption(7, Point(810, 100 + 2 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::BoardNameList, themeIndex.BoardIndex, 2);
+    ButOption        = new ButtonOption(8, Point(810, 100 + 3 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::ColorBM_NameList, themeIndex.ButtonIndex, 2);
+    TextOption       = new ButtonOption(9, Point(810, 100 + 4 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::FontNameList, themeIndex.TextIndex, 2);
 }
 
 SettingScreen::~SettingScreen() {
@@ -66,7 +66,7 @@ void SettingScreen::handleEvent(const sf::Event& event) {
         isChange = true;
     }
     if (isChange) {
-        FileInit::SaveConfig(theme->getThemeIndex());
+        FileInit::SaveTheme(theme->getThemeIndex());
         formatTheme();
     }
 }

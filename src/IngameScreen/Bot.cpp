@@ -1,7 +1,7 @@
 #include "Bot.hpp"
 
 Bot::Bot() {
-    board = new NewBoard();
+    board = new Board();
     searchDepth = 2;
     timeThinkingMs = 2500;
     isThinkingDone = false;
@@ -13,10 +13,10 @@ Bot::~Bot() {
     delete moveSearching;
 }
 
-void Bot::LoadBoard(const NewBoard& board) {
+void Bot::LoadBoard(const Board& board) {
     delete this->board;
     delete moveSearching;
-    this->board = new NewBoard(board);
+    this->board = new Board(board);
     moveSearching = new MoveSearching(searchDepth);
     isThinkingDone = false;
     clock.restart();

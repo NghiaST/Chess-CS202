@@ -40,8 +40,7 @@ HomeScreen::~HomeScreen() {
 void HomeScreen::handleEvent(const sf::Event& event) {
     if (PlayButton->handleEvent(event)) {
         isScreenChange = true;
-        nextScreen = ScreenType::IngameScreen;
-        PlayButton->setButtonState(ButtonStates::BTN_IDLE);
+        nextScreen = ScreenType::OptionScreen;
     }
     if (SettingButton->handleEvent(event)) {
         isScreenChange = true;
@@ -60,7 +59,7 @@ void HomeScreen::handleEvent(const sf::Event& event) {
 void HomeScreen::update(sf::Time deltaTime) {
     TitleScreen->update(deltaTime);
 }
-#include "../DataControl/Circle.hpp"
+
 void HomeScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     PlayButton->updateRender();
     SettingButton->updateRender();

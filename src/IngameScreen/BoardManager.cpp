@@ -7,7 +7,7 @@
 #include <bits.h>
 
 BoardManager::BoardManager(Point renderPosition, Point renderSize, Theme* theme) {
-    board = new NewBoard();
+    board = new Board();
     bot = new Bot();
     if (!shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment)) {
         printf("Error loading shader\n");
@@ -44,6 +44,10 @@ BoardManager::~BoardManager() {
     }
 }
 
+bool BoardManager::ifBoardRotate() const {
+    return isBoardRotate;
+}
+
 // Accessors
 int BoardManager::getGameStatus() const {
     return gameStatus;
@@ -71,7 +75,7 @@ bool BoardManager::ifEndGame() const {
     return gameStatus == ENDGAME;
 }
 
-const NewBoard &BoardManager::getBoard() const {
+const Board &BoardManager::getBoard() const {
     return *board;
 }
 
@@ -114,6 +118,7 @@ void BoardManager::setBoardRotate(bool isBoardRotate) {
 void BoardManager::NewGame() {
     board->LoadBasicPosition();
     mode = FileInit::LoadMode();
+    FileInit::LoadOptions(mode, level, isBotHelp);
     if (mode == 0) {
         isBot = {true, false};
     }
@@ -131,7 +136,6 @@ void BoardManager::NewGame() {
     }
 
     setBoardRotate(mode == 1);
-    isBotHelp = true; /// -> bot help, read file ----------------------------------------------
     gameStatus = GAMESTATUS::NEWGAME;
     gameResult = CHESS::None;
     isPieceSelected = false;
@@ -176,9 +180,9 @@ void BoardManager::setBotHelp(bool isBotHelp) {
     isEvent = true;
 }
 
-bool BoardManager::ManagerMove(int startSquare, int targetSquare) {
+bool BoardManager::ManagerMove(int startSquare, int targetSquare, bool isBotMove) {
+    if (!isBotMove && isBot[isWhiteTurn]) return false;
     std::vector<Move> moveList = board->getLegalMoveAt(startSquare);
-    bool ret = false;
     for(Move move : moveList) {
         if (move.targetSquare == targetSquare) {
             board->MakeMove(move);
@@ -188,6 +192,7 @@ bool BoardManager::ManagerMove(int startSquare, int targetSquare) {
             curSquareIndex = move.targetSquare;
             movesUndoList.clear();
             freshState();
+            FileInit::SaveGame(board->getMovesHistory(), mode, level, 100, 100);
             return true;
         }
     }
@@ -327,7 +332,7 @@ std::string BoardManager::update(sf::Time deltaTime) {
             bot->Thinking();
             if (bot->ifThinkingDone()) {
                 Move move = bot->getBestMove();
-                ManagerMove(move.startSquare, move.targetSquare);
+                ManagerMove(move.startSquare, move.targetSquare, true);
                 isBotRunning = false;
                 res = "make move";
             }
@@ -409,7 +414,7 @@ void BoardManager::updateRender() {
         }
     }
 
-    for(int i = 0; i < suggestMoves.size(); i++) {
+    for(int i = 0; i < (int) suggestMoves.size(); i++) {
         Move move = suggestMoves[i];
         int start = move.startSquare;
         int target = move.targetSquare;
@@ -428,25 +433,6 @@ void BoardManager::updateRender() {
 
         noteArrowRender.emplace_back(Arrow(printPosStart + cellSize / 2, printPosTarget + cellSize / 2, i, theme->getColorDefault()));
     }
-    // for(Move move : board->getLegalMoveList()) {
-    //     int start = move.startSquare;
-    //     int target = move.targetSquare;
-    //     if (isBoardRotate) {
-    //         start = 63 - start;
-    //         target = 63 - target;
-    //     }
-
-    //     Point start2D = Point(start / 8, start % 8);
-    //     Point target2D = Point(target / 8, target % 8);
-    //     Point printPosStart, printPosTarget;
-    //     printPosStart.x = boardPosition.x + cellSize.x * start2D.y;
-    //     printPosStart.y = boardPosition.y + cellSize.y * (7 - start2D.x);
-
-    //     printPosTarget.x = boardPosition.x + cellSize.x * target2D.y;
-    //     printPosTarget.y = boardPosition.y + cellSize.y * (7 - target2D.x);
-
-    //     noteArrowRender.emplace_back(Arrow(printPosStart + cellSize / 2, printPosTarget + cellSize / 2, 4, theme->getColorDefault()));
-    // }
 
     boardPrint->update();
     for(int i = 0; i < 64; i++) {

@@ -29,6 +29,7 @@ IngameScreen::IngameScreen() : Screen() {
     redoButton    = new Button(53, redoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Redo");
     newgameButton = new Button(54, newgameButtonPosition, buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "New Game");
     backButton    = new Button(55, backButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Back"); 
+    timeButton->setReverseTable(boardManager->ifBoardRotate());
 
     isPieceHold = false;
     mousePosition = Point(0, 0);
@@ -125,6 +126,7 @@ void IngameScreen::handleEvent(const sf::Event& event) {
             if (status == "newgame") {
                 boardManager->NewGame();
                 timeButton->reset();
+                timeButton->setReverseTable(boardManager->ifBoardRotate());
             }
         }
         else if (name == "back") {

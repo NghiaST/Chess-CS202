@@ -15,7 +15,7 @@ MoveSearching::~MoveSearching() {
     }
 }
 
-int MoveSearching::Searching(NewBoard& board, int timeSearchingMs, int searchDepth) {
+int MoveSearching::Searching(Board& board, int timeSearchingMs, int searchDepth) {
     sf::Clock clock;
     clock.restart();
 
@@ -44,6 +44,9 @@ int MoveSearching::Searching(NewBoard& board, int timeSearchingMs, int searchDep
                 analysisPoint = 0;
             }
             isSearchComplete = true;
+        }
+        else {
+            bestMove = moveSelections[0];
         }
     }
 
@@ -115,21 +118,10 @@ int MoveSearching::Searching(NewBoard& board, int timeSearchingMs, int searchDep
         return score;
     }
 
-    // while (id_search < cntMoves && timeSearching < 0.5) {
-    //     Move move = moveSelections[id_search];
-    //     NewBoard newBoard = board;
-    //     newBoard.makeMove(move);
-    //     MoveSearching* moveSearch = new MoveSearching(this->maxDepth);
-    //     moveSearches.push_back(moveSearch);
-    //     int score = moveSearch->Searching(newBoard, timeSearching, searchDepth - 1);
-    //     moveScores.push_back(std::make_pair(move, score));
-    //     id_search++;
-    // }
-
     return analysisPoint;
 }
 
-int MoveSearching::CalculateScore(const NewBoard& board) {
+int MoveSearching::CalculateScore(const Board& board) {
     int score = 0;
     std::vector<int> pieces = board.getAllPieces();
     for(int piece : pieces) {
@@ -139,11 +131,11 @@ int MoveSearching::CalculateScore(const NewBoard& board) {
 }
 
 std::vector<Move> MoveSearching::getRankMove(int numberMoves) {
-    std::vector<std::pair<int, Move>> moveSelectionsSorted;
+    std::vector<std::pair<float, Move>> moveSelectionsSorted;
     for(int i = 0; i < cntMoves; i++) {
         moveSelectionsSorted.push_back(std::make_pair(moveScore[i], moveSelections[i]));
     }
-    std::sort(moveSelectionsSorted.begin(), moveSelectionsSorted.end(), [] (const std::pair<int, Move>& a, const std::pair<int, Move>& b) {
+    std::sort(moveSelectionsSorted.begin(), moveSelectionsSorted.end(), [] (const std::pair<float, Move>& a, const std::pair<float, Move>& b) {
         return a.first > b.first;
     });
     std::vector<Move> rankMoves;

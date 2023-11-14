@@ -5,17 +5,19 @@ Chess::Chess() {
     settingScreen = new SettingScreen();
     ingameScreen = new IngameScreen();
     statisticsScreen = new StatisticsScreen();
+    optionScreen = new OptionScreen();
+
     mScreen = homeScreen;
     clock.restart();
 
     windowSize = INTERFACE::WindowSize;
-    renderPosition = Point(sf::VideoMode::getDesktopMode().width / 2 - windowSize.x / 2, 10);
+    windowPosition = Point(sf::VideoMode::getDesktopMode().width / 2 - windowSize.x / 2, 10);
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8.0;
     mWindow.create(sf::VideoMode(windowSize.x, windowSize.y), "ChessLion", sf::Style::Close, settings);
     mWindow.setFramerateLimit(60);
-    mWindow.setPosition(renderPosition.to2i());
+    mWindow.setPosition(windowPosition.to2i());
 }
 
 Chess::~Chess() {
@@ -66,18 +68,27 @@ void Chess::render() {
 }
 
 void Chess::changeScreen(ScreenType screenType) {
+    delete mScreen;
     switch (screenType) {
         case ScreenType::IngameScreen:
+            ingameScreen = new IngameScreen();
             mScreen = ingameScreen;
             break;
         case ScreenType::HomeScreen:
+            homeScreen = new HomeScreen();
             mScreen = homeScreen;
             break;
         case ScreenType::SettingScreen:
+            settingScreen = new SettingScreen();
             mScreen = settingScreen;
             break;
         case ScreenType::StatisticsScreen:
+            statisticsScreen = new StatisticsScreen();
             mScreen = statisticsScreen;
+            break;
+        case ScreenType::OptionScreen:
+            optionScreen = new OptionScreen();
+            mScreen = optionScreen;
             break;
         case ScreenType::None:
             mWindow.close();

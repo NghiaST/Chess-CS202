@@ -1,7 +1,7 @@
 #ifndef __Bot_hpp__
 #define __Bot_hpp__
 
-#include "NewBoard.hpp"
+#include "Board.hpp"
 #include "MoveSearching.hpp"
 #include <SFML/System/Clock.hpp>
 
@@ -11,7 +11,7 @@ public:
     ~Bot();
 
 private:
-    NewBoard* board;
+    Board* board;
     const int limitThinkingTimeMs = 30;
     int searchDepth;
     int timeThinkingMs;
@@ -27,7 +27,7 @@ private:
     sf::Clock clock;
     
 public:
-    void LoadBoard(const NewBoard& board);
+    void LoadBoard(const Board& board);
     void LoadFEN(std::string fen);
     void setSearchDepth(int searchDepth);
     void setTimeThinkingMs(double timeThinkingMs);

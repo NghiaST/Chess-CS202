@@ -1,6 +1,10 @@
 #include "TimeButton.hpp"
 
 TimeButton::TimeButton(int id, Point renderPositionWhite, Point renderPositionBlack, Point renderSize, const sf::Font* font, const ColorButMulti& colorButMulti) {
+    this->renderPositionWhite = renderPositionWhite;
+    this->renderPositionBlack = renderPositionBlack;
+
+    isReverseTable = false;
     isWhiteTurn = true;
     isCountDown = false;
     isOutOfTime = false;
@@ -15,6 +19,18 @@ TimeButton::TimeButton(int id, Point renderPositionWhite, Point renderPositionBl
 TimeButton::~TimeButton() {
     delete buttonWhite;
     delete buttonBlack;
+}
+
+void TimeButton::setReverseTable(bool isReverseTable) {
+    this->isReverseTable = isReverseTable;
+    if (isReverseTable) {
+        buttonWhite->setRenderPosition(renderPositionBlack);
+        buttonBlack->setRenderPosition(renderPositionWhite);
+    }
+    else {
+        buttonWhite->setRenderPosition(renderPositionWhite);
+        buttonBlack->setRenderPosition(renderPositionBlack);
+    }
 }
 
 std::string TimeButton::update(sf::Time deltaTime) {

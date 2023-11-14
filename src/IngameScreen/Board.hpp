@@ -1,5 +1,5 @@
-#ifndef __NewBoard_hpp__
-#define __NewBoard_hpp__
+#ifndef __Board_hpp__
+#define __Board_hpp__
 
 #include <SFML/Graphics.hpp>
 #include "../DataControl/Include.hpp"
@@ -12,12 +12,12 @@
 #include "Fen.hpp"
 #include "BitboardProcess.hpp"
 
-class NewBoard {
+class Board {
 public:
     // Constructors and Destructor
-    NewBoard();
-    NewBoard(const NewBoard &board);
-    ~NewBoard();
+    Board();
+    Board(const Board &board);
+    ~Board();
     
     // Accessors
     bool ifWhiteTurn() const;

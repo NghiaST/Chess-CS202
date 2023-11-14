@@ -10,7 +10,7 @@ enum class ScreenType {
     IngameScreen,
     HomeScreen,
     // MenuScreen,
-    // LoadingScreen,
+    OptionScreen,
     SettingScreen,
     StatisticsScreen,
     None

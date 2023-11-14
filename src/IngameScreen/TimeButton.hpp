@@ -13,6 +13,7 @@ public:
     void updateRender();
     void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 
+    void setReverseTable(bool isReverseTable);
     void setColorBM(const ColorButMulti& colorButMulti);
     void setTime(int time);
     void setTurn(bool isWhiteTurn);
@@ -21,12 +22,16 @@ public:
     void reset();
 
 private:
+    Point renderPositionWhite;
+    Point renderPositionBlack;
+
     bool isWhiteTurn;
     bool isCountDown;
     bool isOutOfTime;
     double totalTime;
     double timeWhite;
     double timeBlack;
+    bool isReverseTable;
 
     Button* buttonWhite;
     Button* buttonBlack;

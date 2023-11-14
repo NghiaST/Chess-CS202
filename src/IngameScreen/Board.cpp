@@ -1,4 +1,4 @@
-#include "NewBoard.hpp"
+#include "Board.hpp"
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -8,14 +8,14 @@
 
 // Constructor and Destructor
 
-NewBoard::NewBoard() {
+Board::Board() {
     isWhiteTurn = true;
     int cntMove = 0;
     int score = 0;
     Reset();
 }
 
-NewBoard::NewBoard(const NewBoard &board) {
+Board::Board(const Board &board) {
     pieces = board.pieces;
     isWhiteTurn = board.isWhiteTurn;
     cntMove = board.cntMove;
@@ -24,11 +24,11 @@ NewBoard::NewBoard(const NewBoard &board) {
     movesHistory = board.movesHistory;
 }
 
-NewBoard::~NewBoard() {}
+Board::~Board() {}
 
 // Loading Positions
 
-void NewBoard::LoadPosition(PositionInfo posInfo) {
+void Board::LoadPosition(PositionInfo posInfo) {
     Reset();
     pieces = posInfo.squarePieces;
     isWhiteTurn = posInfo.whiteToMove;
@@ -41,16 +41,16 @@ void NewBoard::LoadPosition(PositionInfo posInfo) {
     gameStateHistory.push_back(presentGameState);
 }
 
-void NewBoard::LoadPosition(std::string FEN_notation) {
+void Board::LoadPosition(std::string FEN_notation) {
     PositionInfo posInfo = Fen::FenToPosition(FEN_notation);
     LoadPosition(posInfo);
 }
 
-void NewBoard::LoadBasicPosition() {
+void Board::LoadBasicPosition() {
     LoadPosition(Fen::StartPosition);
 }
 
-void NewBoard::Reset() {
+void Board::Reset() {
     gameStateHistory.clear();
     movesHistory.clear();
     presentGameState = GameState();
@@ -62,27 +62,27 @@ void NewBoard::Reset() {
 
 // More Validation
 
-bool NewBoard::ifCheck() const {
+bool Board::ifCheck() const {
     int kingPos = getKingSquareIndex(isWhiteTurn);
     ulong attackedSquares = getAttackedSquares(isWhiteTurn ^ 1);
     return Bits::GetBit(attackedSquares, kingPos);
 }
 
-bool NewBoard::ifCheckMate() {
+bool Board::ifCheckMate() {
     return ifCheck() && getLegalMoveList().size() == 0;
 }
 
-bool NewBoard::ifStaleMate() {
+bool Board::ifStaleMate() {
     return !ifCheck() && getLegalMoveList().size() == 0;
 }
 
-bool NewBoard::isBoardLegal() {
+bool Board::isBoardLegal() {
     int kingPos = getKingSquareIndex(isWhiteTurn ^ 1);
     ulong attackedSquares = getAttackedSquares(isWhiteTurn);
     return !Bits::GetBit(attackedSquares, kingPos);
 }
 
-bool NewBoard::isPseudoMoveLegal(Move move) {
+bool Board::isPseudoMoveLegal(Move move) {
     if (!isPseudoMoveLegalWithoutCheck(move)) return false;
     std::vector<int> tmppieces = pieces;
     MakeMove(move, true);
@@ -99,35 +99,35 @@ bool NewBoard::isPseudoMoveLegal(Move move) {
 }
 
 // Move History
-bool NewBoard::isHistoryEmpty() const {
+bool Board::isHistoryEmpty() const {
     return movesHistory.size() == 0;
 }
 
-Move NewBoard::getLastMove() const
+Move Board::getLastMove() const
 {
     return movesHistory.back();
 }
 
-std::vector<Move> NewBoard::getMovesHistory() const {
+std::vector<Move> Board::getMovesHistory() const {
     return movesHistory;
 }
 
 // Accessors
 
-bool NewBoard::ifWhiteTurn() const {
+bool Board::ifWhiteTurn() const {
     return isWhiteTurn;
 }
-std::vector<int> NewBoard::getAllPieces() const {
+std::vector<int> Board::getAllPieces() const {
     return this->pieces;
 }
 
 // Game Functions
 
-void NewBoard::NewGame() {
+void Board::NewGame() {
     LoadBasicPosition();
 }
 
-void NewBoard::MakeMove(Move move, bool inSearch) {
+void Board::MakeMove(Move move, bool inSearch) {
     int startSquare = move.startSquare;
     int targetSquare = move.targetSquare;
     int flag = move.flag;
@@ -211,7 +211,7 @@ void NewBoard::MakeMove(Move move, bool inSearch) {
     }
 }
 
-void NewBoard::UnmakeMove(Move move, bool inSearch) {
+void Board::UnmakeMove(Move move, bool inSearch) {
     isWhiteTurn ^= 1;
     cntMove--;
 
@@ -267,23 +267,23 @@ void NewBoard::UnmakeMove(Move move, bool inSearch) {
     }
 }
 
-void NewBoard::UndoMove() {
+void Board::UndoMove() {
     UnmakeMove(getLastMove(), false);
 }
 
-void NewBoard::MovePiece(int piece, int startSquare, int targetSquare) {
+void Board::MovePiece(int piece, int startSquare, int targetSquare) {
     pieces[startSquare] = PIECE::None;
     pieces[targetSquare] = piece;
 }
 
 // Private Helper Functions
 
-bool NewBoard::isSquareUnderAttack(int targetSquare, bool isWhiteTurn) const {
+bool Board::isSquareUnderAttack(int targetSquare, bool isWhiteTurn) const {
     ulong attackedSquares = getAttackedSquares(isWhiteTurn);
     return Bits::GetBit(attackedSquares, targetSquare);
 }
 
-bool NewBoard::isPseudoMoveLegalWithoutCheck(Move move) const {
+bool Board::isPseudoMoveLegalWithoutCheck(Move move) const {
 /// assert that startPiece is the same color with isWhiteTurn
     int startSquare = move.startSquare;
     int targetSquare = move.targetSquare;
@@ -376,17 +376,17 @@ bool NewBoard::isPseudoMoveLegalWithoutCheck(Move move) const {
     return false;
 }
 
-int NewBoard::getPiece(int rank, int file) const
+int Board::getPiece(int rank, int file) const
 {
     return pieces[rank * 8 + file];
 }
 
-int NewBoard::getPiece(int square) const
+int Board::getPiece(int square) const
 {
     return pieces[square];
 }
 
-int NewBoard::getKingSquareIndex(bool colorTurn) const {
+int Board::getKingSquareIndex(bool colorTurn) const {
     for(int i = 0; i < 64; i++) {
         if (pieces[i] == (PIECE::King + PIECE::boolToColor(colorTurn))) {
             return i;
@@ -395,7 +395,7 @@ int NewBoard::getKingSquareIndex(bool colorTurn) const {
     return -1;
 }
 
-std::vector<Move> NewBoard::getPseudoLegalMoveList() {
+std::vector<Move> Board::getPseudoLegalMoveList() {
     std::vector<Move> moves;
     for(int i = 0; i < 64; i++) 
     if (PIECE::PieceColor(pieces[i]) == PIECE::boolToColor(isWhiteTurn)) {
@@ -408,7 +408,7 @@ std::vector<Move> NewBoard::getPseudoLegalMoveList() {
     return moves;
 }
 
-std::vector<Move> NewBoard::getPseudoLegalMoveAt(int startSquare)
+std::vector<Move> Board::getPseudoLegalMoveAt(int startSquare)
 {
     std::vector<Move> moves;
     std::vector<Move> tmpMoves = BitboardProcess::getPseudoMoves(startSquare, pieces[startSquare]);
@@ -419,7 +419,7 @@ std::vector<Move> NewBoard::getPseudoLegalMoveAt(int startSquare)
     return moves;
 }
 
-std::vector<Move> NewBoard::getLegalMoveAt(int startSquare) {
+std::vector<Move> Board::getLegalMoveAt(int startSquare) {
     std::vector<Move> legalMoves;
     std::vector<Move> pseudoMoves = getPseudoLegalMoveAt(startSquare);
 
@@ -430,7 +430,7 @@ std::vector<Move> NewBoard::getLegalMoveAt(int startSquare) {
     return legalMoves;
 }
 
-std::vector<Move> NewBoard::getLegalMoveList() {
+std::vector<Move> Board::getLegalMoveList() {
     std::vector<Move> legalMoves;
     std::vector<Move> pseudoMoves = getPseudoLegalMoveList();
 
@@ -441,7 +441,7 @@ std::vector<Move> NewBoard::getLegalMoveList() {
     return legalMoves;
 }
 
-ulong NewBoard::getAttackedSquares(bool isYourTurn) const {
+ulong Board::getAttackedSquares(bool isYourTurn) const {
     ulong attackedSquares = 0;
     for(int startSquare = 0; startSquare < 64; startSquare++) {
         if (PIECE::PieceColor(pieces[startSquare]) == PIECE::boolToColor(isYourTurn)) {
@@ -456,7 +456,7 @@ ulong NewBoard::getAttackedSquares(bool isYourTurn) const {
     return attackedSquares;
 }
 
-bool NewBoard::isPreventPiece(int startSquare, int targetSquare) const {
+bool Board::isPreventPiece(int startSquare, int targetSquare) const {
     Point startIndex2D(startSquare / 8, startSquare % 8);
     Point endIndex2D(targetSquare / 8, targetSquare % 8);
     Point diff = endIndex2D - startIndex2D;
