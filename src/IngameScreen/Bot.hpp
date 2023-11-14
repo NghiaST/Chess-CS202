@@ -33,6 +33,8 @@ public:
     void setTimeThinkingMs(double timeThinkingMs);
     void Thinking();
 
+    // Accessors
+    std::vector<Move> getRankMove(int numberMoves);
     bool ifThinkingDone();
     Move getBestMove();
 };

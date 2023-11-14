@@ -12,6 +12,10 @@ Move::Move(int startSquare, int targetSquare, FLAG flag) {
     this->flag = flag;
 }
 
+bool Move::operator==(const Move &move) const {
+    return (startSquare == move.startSquare && targetSquare == move.targetSquare && flag == move.flag);
+}
+
 bool Move::isPromotion() {
     return (flag >= Move::PromotionQueen);
 }

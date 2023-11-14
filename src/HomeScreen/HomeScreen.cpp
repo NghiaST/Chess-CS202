@@ -60,7 +60,7 @@ void HomeScreen::handleEvent(const sf::Event& event) {
 void HomeScreen::update(sf::Time deltaTime) {
     TitleScreen->update(deltaTime);
 }
-#include "../DataControl/Arrow.hpp"
+#include "../DataControl/Circle.hpp"
 void HomeScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     PlayButton->updateRender();
     SettingButton->updateRender();

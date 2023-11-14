@@ -10,7 +10,7 @@ const std::string FileInit::datUsers = "dat/users.dat";
 /*
     About datConfig:
         1st line: themeIndex: Background, Piece, Board, Button, Text
-        2nd line: mode (PvE, PvP, EvE), level (1,2,3,etc)
+        2nd line: mode (PvE, EvP, PvP, EvE), level (1,2,3,etc)
 //        more: soundIndex: Sound, Music
     
     About datUsers:
@@ -97,6 +97,20 @@ ThemeIndex FileInit::LoadTheme() {
     file >> themeIndex.BackgroundIndex >> themeIndex.PieceIndex >> themeIndex.BoardIndex >> themeIndex.ButtonIndex >> themeIndex.TextIndex;
     file.close();
     return themeIndex;
+}
+
+int FileInit::LoadMode() {
+    if (!std::filesystem::exists(datConfig)) {
+        std::ofstream file(datConfig);
+        file << "0 0 0 0 0\n0 0";
+        file.close();
+    }
+    int mode;
+    std::ifstream file(datConfig);
+    int x;
+    file >> x >> x >> x >> x >> x >> mode;
+    file.close();
+    return mode;
 }
 
 void FileInit::SaveConfig(const ThemeIndex& themeIndex) {

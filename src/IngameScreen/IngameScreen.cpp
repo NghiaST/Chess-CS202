@@ -55,7 +55,6 @@ IngameScreen::IngameScreen() : Screen() {
 }
 
 IngameScreen::~IngameScreen() {
-    delete theme;
     delete boardManager;
     delete timeButton;
     delete saveButton;

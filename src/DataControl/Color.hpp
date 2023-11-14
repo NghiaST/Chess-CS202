@@ -19,7 +19,7 @@ protected :
 public :
     ColorButMulti();
     ColorButMulti(std::vector<ColorButton> listColor);
-    ColorButton get(int statusColor);
+    ColorButton get(int statusColor) const;
     int getSize() const;
 };
 

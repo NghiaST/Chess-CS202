@@ -10,9 +10,9 @@ const std::string ThemeData::BoardDirectory = "asset/image/board/";
 const std::string ThemeData::FontDirectory = "asset/font/";
 const std::string ThemeData::FontTitleName = "asset/font/KeeponTruckin.ttf";
 
-const std::vector<std::string> ThemeData::BackgroundNameList = {"cherry-blossom.jpg", "haibara-1.jpg", "universe-boom.jpg", "lightdark.jpg", "surface_earth.jpg", "beautiful_image.jfif", "modern-futuristic-neon.jpg", "brown-wooden-wall.jpg", "wall.jpg", "palace.jpg"};
+const std::vector<std::string> ThemeData::BackgroundNameList = {"nature_morning.png", "cherry-blossom.jpg", "haibara-1.png", "universe-boom.jpg", "lightdark.jpg", "surface_earth.jpg", "space.jfif", "futuristic-neon.jpg", "wooden-wall.jpg", "wall.jpg", "palace.jpg", "anime-girl-1.png"};
 const std::vector<std::string> ThemeData::PieceNameList = {"caliente", "cburnett", "celtic", "dubrovny", "fresca", "frugale", "gioco", "governor", "kiwen-suwi", "maestro", "usual"};
-const std::vector<std::string> ThemeData::BoardNameList = {"pink-pyramid.png", "blue.png",  "blue-marble.png", "canvas.png", "green-plastic.png", "leather.png", "maple.png", "ncf-board.png", "purple-diag.png", "wood.png", "wood2.png"};
+const std::vector<std::string> ThemeData::BoardNameList = {"pink-pyramid.png", "blue.png",  "blue-marble.png", "canvas.png", "green-plastic.png", "leather.png", "maple.png", "ncf-board.png", "purple-diag.png", "wood.png", "wood2.png", "wood3.jpg", "metal.jpg", "olive.jpg"};
 const std::vector<std::string> ThemeData::FontNameList = {"Arial-bold.ttf", "Arial.ttf", "ShortBaby.ttf", "CarryYou.ttf", "ChristmasJumper.ttf", "CuteMonster.ttf", "Hippiemods.otf", "MouldyCheese.ttf", "TimesNewRoman-bold.ttf", "TimesNewRoman.ttf", "Vni-times-bold.ttf", "Vni-times.ttf", "KeeponTruckin.ttf"};
 const std::vector<std::string> ThemeData::ColorBM_NameList = {"Default", "Light", "Dark"};
 const std::vector<const ColorButMulti*> ThemeData::ColorBM_DefaultList = {&Color::ColorButMultiDefault, &Color::ColorButMultiLight, &Color::ColorButMultiDark};

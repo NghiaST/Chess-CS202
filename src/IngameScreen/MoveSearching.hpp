@@ -14,6 +14,7 @@ public:
 
     int Searching(NewBoard& board, int timeSearchingMs, int searchDepth); //, int alpha, int beta, bool isMaximizingPlayer);
     int CalculateScore(const NewBoard& board);
+    std::vector<Move> getRankMove(int numberMoves); // get some best moves
     bool IsSearchCompleted() const;
     Move GetBestMove() const;
 

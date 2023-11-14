@@ -19,6 +19,7 @@ public:
 public:
     Move();
     Move(int startSquare, int targetSquare, FLAG flag);
+    bool operator == (const Move& move) const;
 
 public:
     bool isPromotion();

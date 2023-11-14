@@ -47,6 +47,10 @@ void Bot::Thinking() {
     }
 }
 
+std::vector<Move> Bot::getRankMove(int number) {
+    return moveSearching->getRankMove(number);
+}
+
 Move Bot::getBestMove() {
     return bestMove;
 }

@@ -39,7 +39,7 @@ public:
     ~Arrow();
 
 public:
-    const int SIZELEVEL[6] = { 50, 40, 30, 20, 10 };
+    const int SIZELEVEL[6] = { 35, 25, 20, 15, 10 };
 
 private:
     int sizeLevel;

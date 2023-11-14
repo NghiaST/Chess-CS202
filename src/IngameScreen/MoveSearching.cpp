@@ -138,6 +138,21 @@ int MoveSearching::CalculateScore(const NewBoard& board) {
     return score;
 }
 
+std::vector<Move> MoveSearching::getRankMove(int numberMoves) {
+    std::vector<std::pair<int, Move>> moveSelectionsSorted;
+    for(int i = 0; i < cntMoves; i++) {
+        moveSelectionsSorted.push_back(std::make_pair(moveScore[i], moveSelections[i]));
+    }
+    std::sort(moveSelectionsSorted.begin(), moveSelectionsSorted.end(), [] (const std::pair<int, Move>& a, const std::pair<int, Move>& b) {
+        return a.first > b.first;
+    });
+    std::vector<Move> rankMoves;
+    for(int i = 0; i < numberMoves && i < cntMoves; i++) {
+        rankMoves.push_back(moveSelectionsSorted[i].second);
+    }
+    return rankMoves;
+}
+
 bool MoveSearching::IsSearchCompleted() const {
     return isSearchComplete;
 }

@@ -9,6 +9,9 @@
 #include "BoardPrint.hpp"
 #include "NewBoard.hpp"
 #include "Bot.hpp"
+#include "../DataControl/Arrow.hpp"
+#include "../DataControl/Circle.hpp"
+#include "../DataControl/FileInit.hpp"
 #include <vector>
 
 class BoardManager : public sf::Drawable {
@@ -36,6 +39,8 @@ public:
     void Undo();
     void Redo();
 
+    void setBotHelp(bool isBotHelp);
+
 public:
     enum GAMESTATUS {
         NONE = 0,
@@ -50,6 +55,7 @@ private:
 
 private:
     void freshState();
+    void setBoardRotate(bool isBoardRotate);
 
 private:
     NewBoard* board;
@@ -69,13 +75,14 @@ private:
     int gameStatus; // 0: none, 1: newgame, 2: ongoing, 3: endgame
     CHESS::COLOR gameResult; // 0: none, 1: white win, 2: black win, 3: draw
 
-    bool isBot[2];
+    std::vector<bool> isBot;
     bool isCheck;
     bool isCheckMate;
     bool isStaleMate;
     bool isWhiteTurn;
 
     bool isBotRunning;
+    bool isEvent;
 
     bool isPieceSelected;
     bool isPieceHold;
@@ -83,9 +90,21 @@ private:
     int holdPieceIndex;
     int preSquareIndex, curSquareIndex;
     Point mousePosition;
+
+    bool isNoteHold;
+    bool isBoardRotate;
+    bool isBotHelp;
+    int mode;   /// PvE, EvP, PvP, EvE
+
     std::vector<int> possibleIndexList; // all squareIndex is prepared to move
-    std::vector<int> noteViewIndexList;   /// all squareIndex which is right clicked
+    // std::vector<int> noteCircleList;   /// all squareIndex which is right clicked
+    std::vector<std::pair<int, int>> noteList; // all arrow from start to target
     std::vector<Move> movesUndoList;
+
+    std::vector<Circle> noteCircleRender;
+    std::vector<Arrow> noteArrowRender;
+
+    std::vector<Move> suggestMoves;
 };
 
 #endif

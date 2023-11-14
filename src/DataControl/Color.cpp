@@ -73,7 +73,7 @@ ColorButMulti::ColorButMulti(std::vector<ColorButton> listColor) {
     this->listColor = listColor;
 }
 
-ColorButton ColorButMulti::get(int statusColor) {
+ColorButton ColorButMulti::get(int statusColor) const {
     if (statusColor >= 0 && statusColor < listColor.size()) {
         return listColor[statusColor];
     } else {

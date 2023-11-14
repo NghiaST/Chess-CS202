@@ -83,6 +83,10 @@ void BoardManager::freshState() {
     isStaleMate = board->ifStaleMate();
     isWhiteTurn = board->ifWhiteTurn();
     isBotRunning = false;
+    isEvent = true;
+    isNoteHold = false;
+    noteList.clear();
+    suggestMoves.clear();
 
     if (isCheckMate) {
         gameStatus = ENDGAME;
@@ -98,10 +102,36 @@ void BoardManager::freshState() {
     }
 }
 
+void BoardManager::setBoardRotate(bool isBoardRotate) {
+    this->isBoardRotate = isBoardRotate;
+    boardPrint->setBoardRotate(isBoardRotate);
+    for(int i = 0; i < 64; i++) {
+        int index = isBoardRotate ? 63 - i : i;
+        piecePrintList[i]->setIndex(index);
+    }
+}
+
 void BoardManager::NewGame() {
     board->LoadBasicPosition();
-    isBot[0] = true;
-    isBot[1] = false;
+    mode = FileInit::LoadMode();
+    if (mode == 0) {
+        isBot = {true, false};
+    }
+    else if (mode == 1) {
+        isBot = {false, true};
+    }
+    else if (mode == 2) {
+        isBot = {false, false};
+    }
+    else if (mode == 3) {
+        isBot = {true, true};
+    }
+    else {
+        isBot = {false, false};
+    }
+
+    setBoardRotate(mode == 1);
+    isBotHelp = true; /// -> bot help, read file ----------------------------------------------
     gameStatus = GAMESTATUS::NEWGAME;
     gameResult = CHESS::None;
     isPieceSelected = false;
@@ -140,6 +170,12 @@ void BoardManager::Redo() {
     freshState();
 }
 
+void BoardManager::setBotHelp(bool isBotHelp) {
+    this->isBotHelp = isBotHelp;
+    suggestMoves.clear();
+    isEvent = true;
+}
+
 bool BoardManager::ManagerMove(int startSquare, int targetSquare) {
     std::vector<Move> moveList = board->getLegalMoveAt(startSquare);
     bool ret = false;
@@ -167,19 +203,34 @@ std::vector<int> BoardManager::getLegalIndexAt(int squareIndex) {
 }
 
 std::string BoardManager::handleEvent(const sf::Event& event) {
+    isEvent = true;
     std::string res = "";
     if (event.type == sf::Event::MouseMoved) {
         mousePosition = Point(event.mouseMove.x, event.mouseMove.y);
+        if (isNoteHold) { 
+            if (boardPrint->isMouseOn(mousePosition)) {
+                sf::Vector2i coordChess;
+                coordChess.x = 7 - (int) (mousePosition.y - boardPosition.y) / (int)cellSize.y;
+                coordChess.y = (int) (mousePosition.x - boardPosition.x) / (int)cellSize.x;
+                int squareIndex = coordChess.x * 8 + coordChess.y;
+                noteList.back().second = squareIndex;
+            }
+        }
     }
     if (event.type == sf::Event::MouseButtonPressed) {
         mousePosition = Point(event.mouseButton.x, event.mouseButton.y);
         if (event.mouseButton.button == sf::Mouse::Left) {
-            if (gameStatus == NEWGAME || gameStatus == ONGOING) {
-                if (boardPrint->isMouseOn(mousePosition)) {
-                    noteViewIndexList.clear();
+            if (boardPrint->isMouseOn(mousePosition)) {
+                noteList.clear();
+                isNoteHold = false;
+                if (gameStatus == NEWGAME || gameStatus == ONGOING) {
                     sf::Vector2i coordChess;
                     coordChess.x = 7 - (int) (mousePosition.y - boardPosition.y) / (int)cellSize.y;
                     coordChess.y = (int) (mousePosition.x - boardPosition.x) / (int)cellSize.x;
+                    if (isBoardRotate) {
+                        coordChess.x = 7 - coordChess.x;
+                        coordChess.y = 7 - coordChess.y;
+                    }
                     int squareIndex = coordChess.x * 8 + coordChess.y;
                     if (!isPieceSelected) {
                         if (PIECE::isPieceYourTurn(board->getPiece(squareIndex), isWhiteTurn)) {
@@ -213,6 +264,17 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
                 }
             }
         }
+        else if (event.mouseButton.button == sf::Mouse::Right) {
+            if (boardPrint->isMouseOn(mousePosition)) {
+                isPieceSelected = false;
+                sf::Vector2i coordChess;
+                coordChess.x = 7 - (int) (mousePosition.y - boardPosition.y) / (int)cellSize.y;
+                coordChess.y = (int) (mousePosition.x - boardPosition.x) / (int)cellSize.x;
+                int squareIndex = coordChess.x * 8 + coordChess.y;
+                noteList.emplace_back(squareIndex, squareIndex);
+                isNoteHold =  true;
+            }
+        }
     }
     else if (event.type == sf::Event::MouseButtonReleased) {
         if (event.mouseButton.button == sf::Mouse::Left) {
@@ -221,6 +283,10 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
                     sf::Vector2i coordChess;
                     coordChess.x = 7 - (int) (mousePosition.y - boardPosition.y) / (int)cellSize.y;
                     coordChess.y = (int) (mousePosition.x - boardPosition.x) / (int)cellSize.x;
+                    if (isBoardRotate) {
+                        coordChess.x = 7 - coordChess.x;
+                        coordChess.y = 7 - coordChess.y;
+                    }
                     int squareIndex = coordChess.x * 8 + coordChess.y;
                     if (isPieceHold) {
                         isPieceHold = false;
@@ -234,35 +300,50 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
                 }
             }
         }
+        else if (event.mouseButton.button == sf::Mouse::Right) {
+            if (isNoteHold) {
+                auto it = std::find(noteList.begin(), noteList.end(), noteList.back());
+                if (it != noteList.end() - 1) {
+                    noteList.erase(it);
+                    noteList.pop_back();
+                }   
+                isNoteHold = false;
+            }
+        }
     }
-    // if (gameStatus != ENDGAME && isWhiteTurn == false) {
-    //     std::vector<Move> legalMoveList = NewBoard::getLegalMoveList();
-    //     if (legalMoveList.size() == 0) {
-    //         printf("End game\n");
-    //     }
-    //     else {
-    //         Move move = legalMoveList[rand() % legalMoveList.size()];
-    //         ManagerMove(move.startSquare, move.targetSquare);
-    //     }
-    // }
-    // sf::sleep(sf::milliseconds(100));
 
     return res;
 }
 
 std::string BoardManager::update(sf::Time deltaTime) {
     std::string res = "";
-    if (gameStatus != ENDGAME && isBot[isWhiteTurn]) {
-        if (!isBotRunning) {
-            isBotRunning = true;
-            bot->LoadBoard(*board);
+    if (gameStatus != ENDGAME) {
+        if (isBot[isWhiteTurn]) {
+            if (!isBotRunning) {
+                isBotRunning = true;
+                bot->setTimeThinkingMs(2500);
+                bot->LoadBoard(*board);
+            }
+            bot->Thinking();
+            if (bot->ifThinkingDone()) {
+                Move move = bot->getBestMove();
+                ManagerMove(move.startSquare, move.targetSquare);
+                isBotRunning = false;
+                res = "make move";
+            }
         }
-        bot->Thinking();
-        if (bot->ifThinkingDone()) {
-            Move move = bot->getBestMove();
-            ManagerMove(move.startSquare, move.targetSquare);
-            isBotRunning = false;
-            res = "make move";
+        else if (isBotHelp) {
+            if (!isBotRunning) {
+                isBotRunning = true;
+                bot->setTimeThinkingMs(10000);
+                bot->LoadBoard(*board);
+            }
+            bot->Thinking();
+            std::vector<Move> newSuggestMoves = bot->getRankMove(5);
+            if (newSuggestMoves != suggestMoves) {
+                suggestMoves = newSuggestMoves;
+                isEvent = true;
+            }
         }
     }
     /// logic (time)
@@ -273,6 +354,8 @@ std::string BoardManager::update(sf::Time deltaTime) {
 }
 
 void BoardManager::updateRender() {
+    if (!isEvent) return;
+    isEvent = false;
     for(int i = 0; i < 64; i++) {
         piecePrintList[i]->setPiece(board->getPiece(i));
         piecePrintList[i]->setMouseStatus(MOUSE::NONE);
@@ -306,6 +389,65 @@ void BoardManager::updateRender() {
         piecePrintList[holdPieceIndex]->setMouseStatus(MOUSE::HOLD, mousePosition);
     }
 
+    noteCircleRender.clear();
+    noteArrowRender.clear();
+    for(auto [start, target] : noteList) {
+        Point start2D = Point(start / 8, start % 8);
+        Point target2D = Point(target / 8, target % 8);
+        Point printPosStart, printPosTarget;
+        printPosStart.x = boardPosition.x + cellSize.x * start2D.y;
+        printPosStart.y = boardPosition.y + cellSize.y * (7 - start2D.x);
+
+        printPosTarget.x = boardPosition.x + cellSize.x * target2D.y;
+        printPosTarget.y = boardPosition.y + cellSize.y * (7 - target2D.x);
+
+        if (start == target) {
+            noteCircleRender.push_back(Circle(printPosStart));
+        }
+        else {
+            noteArrowRender.emplace_back(Arrow(printPosStart + cellSize / 2, printPosTarget + cellSize / 2, 3, theme->getColorDefault()));
+        }
+    }
+
+    for(int i = 0; i < suggestMoves.size(); i++) {
+        Move move = suggestMoves[i];
+        int start = move.startSquare;
+        int target = move.targetSquare;
+        if (isBoardRotate) {
+            start = 63 - start;
+            target = 63 - target;
+        }
+        Point start2D = Point(start / 8, start % 8);
+        Point target2D = Point(target / 8, target % 8);
+        Point printPosStart, printPosTarget;
+        printPosStart.x = boardPosition.x + cellSize.x * start2D.y;
+        printPosStart.y = boardPosition.y + cellSize.y * (7 - start2D.x);
+
+        printPosTarget.x = boardPosition.x + cellSize.x * target2D.y;
+        printPosTarget.y = boardPosition.y + cellSize.y * (7 - target2D.x);
+
+        noteArrowRender.emplace_back(Arrow(printPosStart + cellSize / 2, printPosTarget + cellSize / 2, i, theme->getColorDefault()));
+    }
+    // for(Move move : board->getLegalMoveList()) {
+    //     int start = move.startSquare;
+    //     int target = move.targetSquare;
+    //     if (isBoardRotate) {
+    //         start = 63 - start;
+    //         target = 63 - target;
+    //     }
+
+    //     Point start2D = Point(start / 8, start % 8);
+    //     Point target2D = Point(target / 8, target % 8);
+    //     Point printPosStart, printPosTarget;
+    //     printPosStart.x = boardPosition.x + cellSize.x * start2D.y;
+    //     printPosStart.y = boardPosition.y + cellSize.y * (7 - start2D.x);
+
+    //     printPosTarget.x = boardPosition.x + cellSize.x * target2D.y;
+    //     printPosTarget.y = boardPosition.y + cellSize.y * (7 - target2D.x);
+
+    //     noteArrowRender.emplace_back(Arrow(printPosStart + cellSize / 2, printPosTarget + cellSize / 2, 4, theme->getColorDefault()));
+    // }
+
     boardPrint->update();
     for(int i = 0; i < 64; i++) {
         piecePrintList[i]->update(theme);
@@ -321,5 +463,11 @@ void BoardManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
     std::sort(piecePriority.begin(), piecePriority.end());
     for(std::pair<int, int> data : piecePriority) {
         piecePrintList[data.second]->draw(target);
+    }
+    for(auto circle : noteCircleRender) {
+        target.draw(circle, this->state);
+    }
+    for(auto arrow : noteArrowRender) {
+        target.draw(arrow, this->state);
     }
 }

@@ -5,6 +5,7 @@ BoardPrint::BoardPrint(Point boardPosition, Point boardSize, const TextureBoard*
 {
     stateBoard.resize(64, 0);
     this->textureBoard = textureBoard;
+    this->isBoardRotate = false;
 }
 
 BoardPrint::~BoardPrint() {
@@ -13,6 +14,10 @@ BoardPrint::~BoardPrint() {
 void BoardPrint::setStateBoard(const std::vector<int> &stateBoard)
 {
     this->stateBoard = stateBoard;
+}
+
+void BoardPrint::setBoardRotate(bool isBoardRotate) {
+    this->isBoardRotate = isBoardRotate;
 }
 
 void BoardPrint::setTextureBoard(const TextureBoard *TextureBoard) {
@@ -54,8 +59,10 @@ void BoardPrint::update() {
         int index = rank * 8 + file;
         int colorBoard = (rank + file) % 2;
         
-        float printPosx = renderPosition.x + file * cellSize.x;
-        float printPosy = renderPosition.y + (7 - rank) * cellSize.y;
+        int row = isBoardRotate ? rank : 7 - rank;
+        int col = isBoardRotate ? 7 - file : file;
+        float printPosx = renderPosition.x + col * cellSize.x;
+        float printPosy = renderPosition.y + row * cellSize.y;
 
         if (stateBoard[index]) {
             sf::Sprite sprite;

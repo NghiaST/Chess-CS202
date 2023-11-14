@@ -23,11 +23,11 @@ SettingScreen::SettingScreen() : Screen() {
 
     ThemeIndex themeIndex = theme->getThemeIndex();
 
-    BackgroundOption = new ButtonOption(5, Point(900, 100 + 0 * 70), Point(200, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::BackgroundNameList, themeIndex.BackgroundIndex, 2);
-    PieceOption      = new ButtonOption(6, Point(900, 100 + 1 * 70), Point(200, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::PieceNameList, themeIndex.PieceIndex, 2);
-    BoardOption      = new ButtonOption(7, Point(900, 100 + 2 * 70), Point(200, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::BoardNameList, themeIndex.BoardIndex, 2);
-    ButOption        = new ButtonOption(8, Point(900, 100 + 3 * 70), Point(200, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::ColorBM_NameList, themeIndex.ButtonIndex, 2);
-    TextOption       = new ButtonOption(9, Point(900, 100 + 4 * 70), Point(200, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::FontNameList, themeIndex.TextIndex, 2);
+    BackgroundOption = new ButtonOption(5, Point(800, 100 + 0 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::BackgroundNameList, themeIndex.BackgroundIndex, 2);
+    PieceOption      = new ButtonOption(6, Point(800, 100 + 1 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::PieceNameList, themeIndex.PieceIndex, 2);
+    BoardOption      = new ButtonOption(7, Point(800, 100 + 2 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::BoardNameList, themeIndex.BoardIndex, 2);
+    ButOption        = new ButtonOption(8, Point(800, 100 + 3 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::ColorBM_NameList, themeIndex.ButtonIndex, 2);
+    TextOption       = new ButtonOption(9, Point(800, 100 + 4 * 70), Point(300, 50), true, true, &theme->getFont(), theme->getColorDefault(), 20, ThemeData::FontNameList, themeIndex.TextIndex, 2);
 }
 
 SettingScreen::~SettingScreen() {

@@ -20,7 +20,7 @@ SUBFOLDER = IngameScreen DataControl HomeScreen SettingScreen StatisticsScreen O
 
 FILE_ORIGIN = main Graphic Chess Screen
 FILE_INGAMESCREEN = BoardManager BoardPrint GameState Move Piece IngameScreen TimeButton Fen NewBoard Bitboard BitboardProcess Bot MoveSearching
-FILE_DATACONTROL = Button Color GameSettings Include Settings StaticButton Theme Image FileInit ButtonOption Arrow
+FILE_DATACONTROL = Button Color GameSettings Include Settings StaticButton Theme Image FileInit ButtonOption Arrow Circle
 FILE_HOMESCREEN = HomeScreen
 FILE_SETTINGSCREEN = SettingScreen
 FILE_STATISTICSSCREEN = StatisticsScreen
