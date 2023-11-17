@@ -1,5 +1,4 @@
 #include "Bitboard.hpp"
-#include <cmath>
 
 std::vector<ulong> BitboardUtility::KnightMoves = std::vector<ulong>(64);
 std::vector<ulong> BitboardUtility::BishopMoves = std::vector<ulong>(64);
@@ -14,10 +13,10 @@ std::vector<ulong> BitboardUtility::WhitePawnEnpassant = std::vector<ulong>(64);
 std::vector<ulong> BitboardUtility::BlackPawnEnpassant = std::vector<ulong>(64);
 
 int Bits::PopBit(ulong& iBit) {
-    if (iBit == 0) return -1;
+    if (!iBit) return -1;
     ulong ret = iBit & (~iBit + 1);
     iBit ^= ret;
-    return (int)log2(ret);// __builtin_ctzll(ret);
+    return __builtin_ctzll(ret);
 }
 
 void Bits::OnBit(ulong& iBit, int index) {

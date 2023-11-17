@@ -1,5 +1,6 @@
 #include "Theme.hpp"
 #include "FileInit.hpp"
+#include <iostream>
 
 ///-----------------------------------------------------------------
 ///-----------------------------TextureMaking-----------------------
@@ -155,7 +156,6 @@ Theme::Theme() : ThemeIndex(ThemeData::ThemeIndexDefault)
     this->ColorBM_Text      = Color::ButMultiTextStatic;
     this->ColorBM_Home      = Color::ButMultiDefault;
     this->ColorBM_Ingame    = Color::ButMultiDefault;
-    std::cout << (int) ColorBM_Default.get(0).FillColor.r << " " << (int) ColorBM_Default.get(0).FillColor.g << " " << (int) ColorBM_Default.get(0).FillColor.b << std::endl;
 
     if (!this->TitleScreenTexture->loadFromFile(ThemeData::TitleImageFile)) printf("Error loading title screen texture\n");
     if (!this->FontTitle.loadFromFile(ThemeData::FontTitleName)) printf("Error loading fonttitle texture\n");

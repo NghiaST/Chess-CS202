@@ -22,7 +22,7 @@ IngameScreen::IngameScreen() : Screen() {
     Point timeButtonPositionWhite = boardPosition + boardSize - Point(timeButtonSize.x, 0) + Point(0, 5);
     Point timeButtonPositionBlack = boardPosition + Point(boardSize.x, 0) - timeButtonSize - Point(0, 5);
 
-    boardManager = new BoardManager(boardPosition, boardSize, theme);
+    boardManager = new BoardManager(boardPosition, boardSize);
     timeButton = new TimeButton(50, timeButtonPositionWhite, timeButtonPositionBlack, timeButtonSize, &theme->getFont(), theme->getColorDefault());
     saveButton    = new Button(51, saveButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Save");
     undoButton    = new Button(52, undoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Undo");
@@ -180,17 +180,11 @@ void IngameScreen::update(sf::Time deltaTime) {
             // default: do nothing
         }
     }
+    boardManager->updateRender();
 }
 
+#include "PromotionManager.hpp"
 void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
-    boardManager->updateRender();
-    // timeButton->updateRender();
-    // saveButton->updateRender();
-    // undoButton->updateRender();
-    // redoButton->updateRender();
-    // newgameButton->updateRender();
-    // backButton->updateRender();
-    
     target.draw(Background);
     target.draw(*saveButton);
     target.draw(*undoButton);

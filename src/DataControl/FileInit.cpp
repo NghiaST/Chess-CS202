@@ -1,11 +1,16 @@
 #include "FileInit.hpp"
-#include <fstream>
 #include "../Helpers/MoveUtility.hpp"
 #include "../Helpers/FEN.hpp"
+#include "../ChessBoard/Move.hpp"
+#include "../ChessBoard/Board.hpp"
+#include "Theme.hpp"
+#include "GameAttributes.hpp"
+#include <fstream>
+#include <filesystem>
 
+const std::string FileInit::datHistory = "dat/history.dat";
 const std::string FileInit::datConfig = "dat/config.dat";
-const std::string FileInit::saveGame = "dat/save.dat";
-const std::string FileInit::datGame = "dat/game.dat";
+const std::string FileInit::datSave = "dat/save.dat";
 const std::string FileInit::datStatistics = "dat/statistics.dat";
 const std::string FileInit::datOnlineGame = "dat/onlinegame.dat";
 const std::string FileInit::datUsers = "dat/users.dat";
@@ -62,35 +67,66 @@ void FileInit::Init() {
     }
 }
 
-void FileInit::SaveGame(const Board& board, int mode, int level, int timeWhite, int timeBlack) {
+void FileInit::StoreCompletedGame(const Board &board, int mode, int level, int result) {
+    // line 1: number of games
+    // then, each game have 2 lines
+    /*
+        1st line: mode, level, result
+        2nd line: UCI moves
+    */
+    if (!std::filesystem::exists(datHistory)) {
+        std::ofstream file(datHistory);
+        file << "0";
+        file.close();
+    }
+    std::ifstream file(datHistory);
+    int cntGames;
+    file >> cntGames;
+    file.ignore();
+    std::string all, line;
+    while (getline(file, line)) {
+        all += line + "\n";
+    }
+    file.close();
+
+    std::ofstream file2(datHistory);
+    file2 << cntGames + 1 << "\n";
+    file2 << all;
+    file2 << mode << " " << level << " " << result << "\n";
+    std::vector<Move> movesHistory = board.getMovesHistory();
+    for (int i = 0; i < (int)movesHistory.size(); ++i) {
+        std::string moveName = MoveUtility::GetMoveNameUCI(movesHistory[i]);
+        file2 << moveName << " ";
+    }
+    file2.close();
+}
+
+void FileInit::SaveGame(const Board& board, const GameAttributes& gameAttributes) {
     std::vector<Move> movesHistory = board.getMovesHistory();
     int cntMoves = board.getMoveCount();
     if (cntMoves == (int) movesHistory.size()) {
-        SaveGameMoves(movesHistory, mode, level, timeWhite, timeBlack);
+        SaveGameMoves(movesHistory, gameAttributes);
     }
     else {
-        SaveGameFEN(board, mode, level, timeWhite, timeBlack);
+        SaveGameFEN(board, gameAttributes);
     }
 }
 
-void FileInit::SaveGameMoves(const std::vector<Move>& movesHistory, int mode, int level, int timeWhite, int timeBlack) {
-    Board board();
-    std::ofstream file(saveGame);
+void FileInit::SaveGameMoves(const std::vector<Move>& movesHistory, const GameAttributes& gameAttributes) {
+    Board board;
+    std::ofstream file(datSave);
+    file << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.timeWhite << " " << gameAttributes.timeBlack << "\n";
     file << "UCI\n";
     for (int i = 0; i < (int)movesHistory.size(); ++i) {
         std::string moveName = MoveUtility::GetMoveNameUCI(movesHistory[i]);
         file << moveName << " \n"[i & 1];
-
-        // if (!(i & 1)) file << i/2 + 1 << ". ";
-
-        // /// should update to use string to store game
-        // if (i & 1) file << '\n';
     }
     file.close();
 }
 
-void FileInit::SaveGameFEN(const Board& board, int mode, int level, int timeWhite, int timeBlack) {
-    std::ofstream file(saveGame);
+void FileInit::SaveGameFEN(const Board& board, const GameAttributes& gameAttributes) {
+    std::ofstream file(datSave);
+    file << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.timeWhite << " " << gameAttributes.timeBlack << "\n";
     file << "FEN\n";
     std::string FEN = Fen::PositionToFen(PositionInfo::BoardToPosition(board));
     file << FEN;
@@ -117,13 +153,19 @@ void FileInit::SaveConfig(const ThemeIndex& themeIndex, int mode, int level, boo
     file.close();
 }
 
-bool FileInit::LoadGame(Board &board, int &mode, int &level, int &timeWhite, int &timeBlack) {
-    std::ifstream file(saveGame);
-    if (!file.is_open()) return false;
+bool FileInit::LoadGame(Board &board, GameAttributes &gameAttributes) {
+    std::ifstream file(datSave);
+    if (!file.is_open()) {
+        board.LoadBasicPosition();
+        LoadOptions(gameAttributes.mode, gameAttributes.level, gameAttributes.isBotHelp);
+        return false;
+    }
+    file >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.timeWhite >> gameAttributes.timeBlack;
+    file.ignore();
     std::string line;
     getline(file, line);
     if (line == "UCI") {
-        board = Board();
+        board.LoadBasicPosition();
         while (file >> line) {
             Move move = MoveUtility::GetMoveFromNameUCI(line, board);
             board.MakeMove(move);
@@ -133,7 +175,6 @@ bool FileInit::LoadGame(Board &board, int &mode, int &level, int &timeWhite, int
     else if (line == "FEN") {
         std::string FEN;
         getline(file, FEN);
-        board = Board();
         board.LoadPosition(Fen::FenToPosition(FEN));
         return true;
     }
@@ -189,4 +230,8 @@ int FileInit::LoadMode() {
     file >> themeIndex.BackgroundIndex >> themeIndex.PieceIndex >> themeIndex.BoardIndex >> themeIndex.ButtonIndex >> themeIndex.TextIndex >> mode;
     file.close();
     return mode;
+}
+
+void FileInit::RemoveSaveGame() {
+    std::filesystem::remove(datSave);
 }

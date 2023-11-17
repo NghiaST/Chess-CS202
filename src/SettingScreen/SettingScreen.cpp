@@ -1,4 +1,5 @@
 #include "SettingScreen.hpp"
+#include "../Helpers/Fen.hpp"
 
 SettingScreen::SettingScreen() : Screen() {
     currentScreen = ScreenType::SettingScreen;
@@ -75,15 +76,9 @@ void SettingScreen::update(sf::Time deltaTime) {
 }
 
 void SettingScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
-    // BackButton->updateRender();
-    // BackgroundOption->updateRender();
-    // PieceOption->updateRender();
-    // BoardOption->updateRender();
-    // ButOption->updateRender();
-    // TextOption->updateRender();
     boardPrint->update();
     for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
-        (*it)->update(theme);
+        (*it)->updateRender();
     }
     
     Background.draw(target);

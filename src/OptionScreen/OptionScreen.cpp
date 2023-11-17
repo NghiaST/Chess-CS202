@@ -70,7 +70,7 @@ void OptionScreen::handleEvent(const sf::Event& event) {
     if (NewGameButton->handleEvent(event)) {
         isScreenChange = true;
         nextScreen = ScreenType::IngameScreen;
-        // FileInit::SaveGame(std::vector<Move>(), ModeOption->getCurrentSelection(), DifficultyOption->getCurrentSelection(), 0, 0);
+        FileInit::RemoveSaveGame();
     }
     if (BackButton->handleEvent(event)) {
         isScreenChange = true;
@@ -82,13 +82,6 @@ void OptionScreen::update(sf::Time deltaTime) {
 }
 
 void OptionScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
-    // ContinueButton->updateRender();
-    // NewGameButton->updateRender();
-    // BackButton->updateRender();
-    // ModeOption->updateRender();
-    // DifficultyOption->updateRender();
-    // BotHelpOption->updateRender();
-    
     Background.draw(target);
     target.draw(*ContinueButton);
     target.draw(*NewGameButton);

@@ -19,7 +19,7 @@ public:
     const sf::Sprite& getSprite() const;
     void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 
-private:
+protected:
     sf::Sprite sprite;
 };
 

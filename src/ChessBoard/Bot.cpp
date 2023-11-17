@@ -42,7 +42,7 @@ void Bot::Thinking() {
     clock.restart();
     if (moveSearching->IsSearchCompleted() || currentTimeThinkingMs <= 0) {
         if (moveSearching->IsSearchCompleted())
-            printf("Thinking Complete in %d ms\n", currentTimeThinkingMs);
+            printf("Thinking Complete in %d ms\n", timeThinkingMs - currentTimeThinkingMs);
         else 
             printf("Don't think enough\n");
         bestMove = moveSearching->GetBestMove();

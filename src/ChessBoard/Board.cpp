@@ -12,6 +12,7 @@ Board::Board() {
     isWhiteTurn = true;
     cntMoves = 0;
     Reset();
+    LoadBasicPosition();
 }
 
 Board::Board(const Board &board) {
@@ -72,7 +73,7 @@ bool Board::ifCheckMate() {
 }
 
 bool Board::ifStaleMate() {
-    return !ifCheck() && getLegalMoveList().size() == 0;
+    return !ifCheck() && getLegalMoveList().size() == 0 || presentGameState.fiftyMoveCounter >= 100;
 }
 
 bool Board::isBoardLegal() {

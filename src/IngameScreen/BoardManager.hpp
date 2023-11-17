@@ -7,16 +7,19 @@
 #include "../DataControl/Button.hpp"
 #include "PiecePrint.hpp"
 #include "BoardPrint.hpp"
+#include "PromotionManager.hpp"
 #include "../ChessBoard/Bot.hpp"
 #include "../DataControl/Arrow.hpp"
 #include "../DataControl/Circle.hpp"
 #include "../DataControl/FileInit.hpp"
 #include "../ChessBoard/Board.hpp"
+#include "../DataControl/GameSettings.hpp"
+#include "../DataControl/GameAttributes.hpp"
 #include <vector>
 
 class BoardManager : public sf::Drawable {
 public:
-    BoardManager(Point renderPosition, Point renderSize, Theme* theme);
+    BoardManager(Point renderPosition, Point renderSize);
     ~BoardManager();
     std::string handleEvent(const sf::Event& event);
     std::string update(sf::Time deltaTime);
@@ -37,6 +40,7 @@ public:
 
     // Modifiers
     void NewGame();
+    void Reload();
     void Undo();
     void Redo();
 
@@ -45,14 +49,16 @@ public:
 public:
     enum GAMESTATUS {
         NONE = 0,
-        NEWGAME = 1,
+        NONSTART = 1,
         ONGOING = 2,
         ENDGAME = 3
     };
 
 private:
-    bool ManagerMove(int startSquare, int targetSquare, bool isBotMove = false);
+    void MakeCorrectMove(Move move);
+    bool ManageMove(int startSquare, int targetSquare, bool isBotMove = false);
     std::vector<int> getLegalIndexAt(int squareIndex);
+    bool isMovePromotion(int startSquare, int targetSquare);
 
 private:
     void freshState();
@@ -81,22 +87,25 @@ private:
     bool isCheckMate;
     bool isStaleMate;
     bool isWhiteTurn;
+    bool isOutOfTime;
 
     bool isBotRunning;
     bool isEvent;
 
     bool isPieceSelected;
     bool isPieceHold;
+    bool isPiecePromotion;
     int selectedPieceIndex;
     int holdPieceIndex;
     int preSquareIndex, curSquareIndex;
+    Move movePromotion;
     Point mousePosition;
 
     bool isNoteHold;
     bool isBoardRotate;
-    int mode;   /// PvE, EvP, PvP, EvE
-    int level;
-    bool isBotHelp;
+
+    GameAttributes attributes;
+    PromotionManager* promotionManager;
 
     std::vector<int> possibleIndexList; // all squareIndex is prepared to move
     // std::vector<int> noteCircleList;   /// all squareIndex which is right clicked

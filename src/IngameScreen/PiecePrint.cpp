@@ -4,10 +4,13 @@
 PiecePrint::PiecePrint(int index, int piece, int status)
     : Graphic(Point(0, 0), Point(0, 0), true, 0)
 {
+    this->isPrint = false;
     setIndex(index);
     setPiece(piece);
     setMouseStatus(MOUSE::None);
     this->status = status;
+    this->isPrint = true;
+    updateRender();
 }
 
 PiecePrint::~PiecePrint()
@@ -20,27 +23,31 @@ int PiecePrint::getPiece() const {
 void PiecePrint::setPiece(int piece) {
     this->piece = piece;
     setIsPrint(piece != PIECE::None);
+    updateRender();
 }
 void PiecePrint::setPiece(int pieceColor, int pieceType) {
     this->piece = pieceColor | pieceType;
     setIsPrint(piece != PIECE::None);
+    updateRender();
 }
 void PiecePrint::setMouseStatus(int mousestatus, Point mousePosition)
 {
     this->mousestatus = (MOUSE::STATUS) mousestatus;
     this->mousePosition = mousePosition;
+    updateRender();
 }
 void PiecePrint::setIndex(int index)
 {
     this->index = index;
     this->rank = index / 8;
     this->file = index % 8;
+    updateRender();
 }
 
-void PiecePrint::update(const Theme* theme) {
+void PiecePrint::updateRender() {
     if (!isPrint) return;
     double size_pBoard = renderSize.x;
-    const sf::Texture& texture = theme->getPieceTexture(piece);
+    const sf::Texture& texture = Theme::getInstance()->getPieceTexture(piece);
     Point size = texture.getSize();
     if (size == Point(0, 0)) return;
 

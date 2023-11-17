@@ -30,6 +30,15 @@ int Move::getPromotionType() {
     }
 }
 
+void Move::setPromotionType(int promotionType) {
+    switch (promotionType) {
+        case PIECE::Queen: flag = Move::PromotionQueen; break;
+        case PIECE::Knight: flag = Move::PromotionKnight; break;
+        case PIECE::Bishop: flag = Move::PromotionBishop; break;
+        case PIECE::Rook: flag = Move::PromotionRook; break;
+        default: printf("Promotion Bug\n"); exit(12); break;
+    }
+}
 
 // GeneralMove::GeneralMove() {
 //     startSquare = -1;

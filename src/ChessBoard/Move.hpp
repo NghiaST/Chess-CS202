@@ -23,6 +23,7 @@ public:
 public:
     bool isPromotion();
     int getPromotionType();
+    void setPromotionType(int promotionType);
 
 public:
     int startSquare, targetSquare;
