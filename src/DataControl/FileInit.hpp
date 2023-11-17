@@ -39,8 +39,6 @@ private:
     static const std::string datStatistics;
     static const std::string datOnlineGame;
     static const std::string datUsers;
-
-    friend class GameAttributes;
 };
 
 #endif

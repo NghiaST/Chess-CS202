@@ -1,7 +1,9 @@
 #include "BoardManager.hpp"
 #include "../Helpers/MoveUtility.hpp"
 
-BoardManager::BoardManager(Point renderPosition, Point renderSize) {
+BoardManager::BoardManager(Point renderPosition, Point renderSize) 
+    : GameAttributes()
+{
     board = new Board();
     bot = new Bot();
     theme = Theme::getInstance();
@@ -31,10 +33,10 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize) {
     }
 
     // load game
-    attributes.Loading();
-    if (FileInit::LoadGame(*board, attributes)) {
-        attributes.Loading();
-        Reload();
+    if (FileInit::LoadGame(*board, *this)) {
+        Loading();
+        Reload();    
+        setCountDown(true);
     }
     else {
         NewGame();
@@ -42,6 +44,7 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize) {
 }
 
 BoardManager::~BoardManager() {
+    FileInit::SaveGame(*board, *this);
     delete board;
     delete bot;
     delete boardPrint;
@@ -56,7 +59,7 @@ bool BoardManager::ifBoardRotate() const {
 
 // Accessors
 int BoardManager::getGameStatus() const {
-    return gameStatus;
+    return (int) gameStatus;
 }
 CHESS::COLOR BoardManager::getTurn() const {
     return CHESS::COLOR(isWhiteTurn);
@@ -92,7 +95,6 @@ void BoardManager::freshState() {
     isCheckMate = board->ifCheckMate();
     isStaleMate = board->ifStaleMate();
     isWhiteTurn = board->ifWhiteTurn();
-    isOutOfTime = attributes.IsOutOfTime(isWhiteTurn);
     isBotRunning = false;
     isEvent = true;
     isPieceSelected = false;
@@ -101,17 +103,16 @@ void BoardManager::freshState() {
     noteList.clear();
     suggestMoves.clear();
     promotionManager->setPromotionFile(-1);
+    setTurn(isWhiteTurn);
 
-    if (isCheckMate || isOutOfTime) {
-        gameStatus = ENDGAME;
-        gameResult = (CHESS::COLOR) (isWhiteTurn ^ 1);
-    }
-    else if (isStaleMate) {
-        gameStatus = ENDGAME;
-        gameResult = CHESS::COLOR::Both;
-    }
-    else if (gameStatus == NONSTART) {}
-    else {
+    if (isCheckMate) 
+        EndGame(ENDFLAG::CHECKMATE);
+    else if (isOutOfTime()) 
+        EndGame(ENDFLAG::TIMEOUT);
+    else if (isStaleMate)
+        EndGame(ENDFLAG::STALEMATE);
+    
+    if (gameStatus == NONSTART) {
         gameStatus = ONGOING;
     }
 }
@@ -128,14 +129,13 @@ void BoardManager::setBoardRotate(bool isBoardRotate) {
 void BoardManager::NewGame() {
     FileInit::RemoveSaveGame();
     board->LoadBasicPosition();
-    attributes.Loading();
-    attributes.Fresh();
+    NewLoading();
     Reload();
 }
 
 void BoardManager::Reload() {
-    attributes.Fresh();
-    switch (attributes.mode) {
+    Fresh();
+    switch (mode) {
         case 0: 
             isBot = {true, false};
             break;
@@ -153,7 +153,7 @@ void BoardManager::Reload() {
             break;
     }
 
-    setBoardRotate(!attributes.isPlayerWhite);
+    setBoardRotate(!isPlayerWhite);
     gameStatus = GAMESTATUS::NONSTART;
     gameResult = CHESS::None;
     isPieceSelected = false;
@@ -162,6 +162,8 @@ void BoardManager::Reload() {
     preSquareIndex = -1;
     curSquareIndex = -1;
     freshState();
+
+    setCountDown(false);
 }
 
 void BoardManager::Undo() {
@@ -192,23 +194,61 @@ void BoardManager::Redo() {
     freshState();
 }
 
+void BoardManager::EndGame(ENDFLAG endFlag) {
+    gameStatus = GAMESTATUS::ENDGAME;
+    this->endFlag = endFlag;
+    switch (endFlag) {
+        case ENDFLAG::CHECKMATE:
+            gameResult = (CHESS::COLOR) (isWhiteTurn ^ 1);
+            break;
+        case ENDFLAG::STALEMATE:
+            gameResult = CHESS::COLOR::Both;
+            break;
+        case ENDFLAG::AGREEDRAW:
+            gameResult = CHESS::COLOR::Both;
+            break;
+        case ENDFLAG::RESIGN:
+            gameResult = (CHESS::COLOR) (isWhiteTurn ^ 1);
+            break;
+        case ENDFLAG::TIMEOUT:
+            gameResult = (CHESS::COLOR) (isWhiteTurn ^ 1);
+            break;
+        case ENDFLAG::THREEFOLDREP:
+            gameResult = CHESS::COLOR::Both;
+            break;
+        case ENDFLAG::FIFTYMOVE:
+            gameResult = CHESS::COLOR::Both;
+            break;
+        case ENDFLAG::DEADPOSITION:
+            gameResult = CHESS::COLOR::Both;
+            break;
+        default:
+            gameResult = CHESS::COLOR::Both;
+            break;
+    }
+    setCountDown(false);
+}
+
 void BoardManager::setBotHelp(bool isBotHelp) {
-    attributes.isBotHelp = isBotHelp;
+    this->isBotHelp = isBotHelp;
     suggestMoves.clear();
     isEvent = true;
 }
 
 void BoardManager::MakeCorrectMove(Move move) {
+    std::cout << MoveUtility::GetMoveNameSAN(move, *board) << '\n';
     board->MakeMove(move);
+    switchTurn();
     isPieceSelected = false;
     isPieceHold = false;
     preSquareIndex = move.startSquare;
     curSquareIndex = move.targetSquare;
     movesUndoList.clear();
     freshState();
-    FileInit::SaveGame(*board, attributes);
+    FileInit::SaveGame(*board, *this);
     if (gameStatus == ENDGAME) {
-        FileInit::StoreCompletedGame(*board, attributes.mode, attributes.level, gameResult);
+        FileInit::StoreCompletedGame(*board, mode, level, gameResult);
+        setCountDown(false);
     }
 }
 
@@ -225,7 +265,6 @@ bool BoardManager::ManageMove(int startSquare, int targetSquare, bool isBotMove)
                 isPiecePromotion = true;
                 return false;
             }
-            std::cout << MoveUtility::GetMoveNameSAN(move, *board) << '\n';
             MakeCorrectMove(move);
             return true;
         }
@@ -394,6 +433,11 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
 }
 
 std::string BoardManager::update(sf::Time deltaTime) {
+    GameAttributes::UpdateTime();
+    if (isOutOfTime()) {
+        EndGame(ENDFLAG::TIMEOUT);
+    }
+
     std::string res = "";
     if (gameStatus != ENDGAME) {
         if (isBot[isWhiteTurn]) {
@@ -405,12 +449,12 @@ std::string BoardManager::update(sf::Time deltaTime) {
             bot->Thinking();
             if (bot->ifThinkingDone()) {
                 Move move = bot->getBestMove();
-                ManageMove(move.startSquare, move.targetSquare, true);
+                MakeCorrectMove(move);
                 isBotRunning = false;
                 res = "make move";
             }
         }
-        else if (attributes.isBotHelp) {
+        else if (isBotHelp) {
             if (!isBotRunning) {
                 isBotRunning = true;
                 bot->setTimeThinkingMs(10000);

@@ -17,7 +17,26 @@
 #include "../DataControl/GameAttributes.hpp"
 #include <vector>
 
-class BoardManager : public sf::Drawable {
+class BoardManager : public sf::Drawable, public GameAttributes {
+public:
+    enum GAMESTATUS {
+        NONE = 0,
+        NONSTART = 1,
+        ONGOING = 2,
+        ENDGAME = 3
+    };
+    enum ENDFLAG {
+        UNKNOWN = 0,
+        CHECKMATE,
+        STALEMATE,
+        AGREEDRAW,
+        RESIGN,
+        TIMEOUT,
+        THREEFOLDREP,
+        FIFTYMOVE,
+        DEADPOSITION
+    };
+
 public:
     BoardManager(Point renderPosition, Point renderSize);
     ~BoardManager();
@@ -43,16 +62,10 @@ public:
     void Reload();
     void Undo();
     void Redo();
+    void EndGame(ENDFLAG endFlag);
 
     void setBotHelp(bool isBotHelp);
 
-public:
-    enum GAMESTATUS {
-        NONE = 0,
-        NONSTART = 1,
-        ONGOING = 2,
-        ENDGAME = 3
-    };
 
 private:
     void MakeCorrectMove(Move move);
@@ -79,7 +92,7 @@ private:
     std::vector<PiecePrint*> piecePrintList;
     Bot* bot;
     BoardPrint* boardPrint;
-    int gameStatus; // 0: none, 1: newgame, 2: ongoing, 3: endgame
+    GAMESTATUS gameStatus; // 0: none, 1: newgame, 2: ongoing, 3: endgame
     CHESS::COLOR gameResult; // 0: none, 1: white win, 2: black win, 3: draw
 
     std::vector<bool> isBot;
@@ -87,10 +100,10 @@ private:
     bool isCheckMate;
     bool isStaleMate;
     bool isWhiteTurn;
-    bool isOutOfTime;
 
     bool isBotRunning;
     bool isEvent;
+    ENDFLAG endFlag;
 
     bool isPieceSelected;
     bool isPieceHold;
@@ -104,7 +117,7 @@ private:
     bool isNoteHold;
     bool isBoardRotate;
 
-    GameAttributes attributes;
+    // GameAttributes attributes;
     PromotionManager* promotionManager;
 
     std::vector<int> possibleIndexList; // all squareIndex is prepared to move

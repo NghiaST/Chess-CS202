@@ -125,7 +125,6 @@ void IngameScreen::handleEvent(const sf::Event& event) {
             status = newgameButton->handleEvent(event) ? "newgame" : "";
             if (status == "newgame") {
                 boardManager->NewGame();
-                timeButton->reset();
                 timeButton->setReverseTable(boardManager->ifBoardRotate());
             }
         }
@@ -151,16 +150,13 @@ void IngameScreen::update(sf::Time deltaTime) {
 
     for(std::string name : updateOrder) {
         if (name == "time") {
-            timeButton->update(deltaTime);
+            // timeButton->update(deltaTime);
         }
         else if (name == "boardManager") {
             status = boardManager->update(deltaTime);
+
             if (status == "make move") {
-                timeButton->setTurn(boardManager->getTurn());
-                timeButton->setIsCountDown(true);
-                // timeButton->changeTurn();
                 if (boardManager->ifEndGame()) {
-                    timeButton->setIsCountDown(false);
                     if (boardManager->ifCheckMate()) {
                         status = "checkmate";
                     }
@@ -169,6 +165,8 @@ void IngameScreen::update(sf::Time deltaTime) {
                     }
                 }
             }
+
+            timeButton->update(*boardManager);
         }
         if (status == "" || status == "no event") {
             // no event: do nothing
@@ -183,7 +181,6 @@ void IngameScreen::update(sf::Time deltaTime) {
     boardManager->updateRender();
 }
 
-#include "PromotionManager.hpp"
 void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     target.draw(Background);
     target.draw(*saveButton);

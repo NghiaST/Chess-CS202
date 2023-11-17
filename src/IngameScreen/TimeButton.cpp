@@ -7,10 +7,8 @@ TimeButton::TimeButton(int id, Point renderPositionWhite, Point renderPositionBl
     isReverseTable = false;
     isWhiteTurn = true;
     isCountDown = false;
-    isOutOfTime = false;
-    totalTime = 80;
-    timeWhite = totalTime;
-    timeBlack = totalTime;
+    timeWhite = -1;
+    timeBlack = -1;
 
     buttonWhite = new Button(id, renderPositionWhite, renderSize, false, true, font, colorButMulti, 20, "00:00");
     buttonBlack = new Button(id, renderPositionBlack, renderSize, false, true, font, colorButMulti, 20, "00:00");
@@ -34,29 +32,27 @@ void TimeButton::setReverseTable(bool isReverseTable) {
 }
 
 std::string TimeButton::update(sf::Time deltaTime) {
-    std::string result = "";
-    if (isCountDown) {
-        if (isWhiteTurn) {
-            timeWhite -= deltaTime.asSeconds();
-            if (timeWhite <= 0) {
-                timeWhite = 0;
-                isCountDown = false;
-                isOutOfTime = true;
-                result = "outoftime";
-            }
-        }
-        else {
-            timeBlack -= deltaTime.asSeconds();
-            if (timeBlack <= 0) {
-                timeBlack = 0;
-                isCountDown = false;
-                isOutOfTime = true;
-                result = "outoftime";
-            }
-        }
+    return "";
+}
+
+void TimeButton::update(GameAttributes &gameAttributes) {
+    if (gameAttributes.isOutOfTime()) {
+        timeWhite = -1;
+        timeBlack = -1;
     }
+    else {
+        timeWhite = gameAttributes.getTime(true) / 1000.0;
+        timeBlack = gameAttributes.getTime(false) / 1000.0;
+    }
+    isWhiteTurn = gameAttributes.IsWhiteTurn();
+    isCountDown = gameAttributes.IsCountDown();
     updateRender();
-    return result;
+}
+
+void TimeButton::setTime(int timeWhite, int timeBlack) {
+    this->timeWhite = timeWhite / 1000.0;
+    this->timeBlack = timeBlack / 1000.0;
+    updateRender();
 }
 
 void TimeButton::updateRender() {
@@ -65,9 +61,13 @@ void TimeButton::updateRender() {
         if (time < 60) {
             str += "." + std::to_string((int)(time * 10) % 10);
         }
+        if (time < 0) {
+            str = "--:--";
+        }
         buttonSide->setText(str);
         buttonSide->setButtonState((ButtonStates) (isRuntime ? 3 : 0));
     };
+
     ProcessStr(buttonWhite, timeWhite, isCountDown && isWhiteTurn);
     ProcessStr(buttonBlack, timeBlack, isCountDown && !isWhiteTurn);
 }
@@ -80,21 +80,20 @@ void TimeButton::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 void TimeButton::setColorBM(const ColorButMulti &colorButMulti) {
     buttonWhite->setColorBM(colorButMulti);
     buttonBlack->setColorBM(colorButMulti);
-}
 
-void TimeButton::setTime(int time)
-{
-    totalTime = time;
-    timeWhite = totalTime;
-    timeBlack = totalTime;
+    updateRender();
 }
 
 void TimeButton::setTurn(bool isWhiteturn) {
     this->isWhiteTurn = isWhiteturn;
+
+    updateRender();
 }
 
 void TimeButton::setIsCountDown(bool isCountDown) {
     this->isCountDown = isCountDown;
+
+    updateRender();
 }
 
 void TimeButton::changeTurn() {
@@ -105,8 +104,7 @@ void TimeButton::changeTurn() {
 void TimeButton::reset() {
     isWhiteTurn = true;
     isCountDown = false;
-    isOutOfTime = false;
-    timeWhite = totalTime;
-    timeBlack = totalTime;
+    timeWhite = -1;
+    timeBlack = -1;
     updateRender();
 }

@@ -94,5 +94,8 @@
         "xutility": "cpp",
         "filesystem": "cpp",
         "numbers": "cpp"
-    }
+    },
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "master"
+    ]
 }
