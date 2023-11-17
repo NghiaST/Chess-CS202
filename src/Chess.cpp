@@ -1,11 +1,13 @@
 #include "Chess.hpp"
 
 Chess::Chess() {
+    Theme::getInstance()->setThemeID(FileInit::LoadTheme());
+
     homeScreen = new HomeScreen();
-    settingScreen = new SettingScreen();
-    ingameScreen = new IngameScreen();
-    statisticsScreen = new StatisticsScreen();
-    optionScreen = new OptionScreen();
+    // settingScreen = new SettingScreen();
+    // ingameScreen = new IngameScreen();
+    // statisticsScreen = new StatisticsScreen();
+    // optionScreen = new OptionScreen();
 
     mScreen = homeScreen;
     clock.restart();
@@ -21,10 +23,12 @@ Chess::Chess() {
 }
 
 Chess::~Chess() {
-    delete homeScreen;
-    delete settingScreen;
-    delete ingameScreen;
-    delete statisticsScreen;
+    // delete homeScreen;
+    // delete settingScreen;
+    // delete ingameScreen;
+    // delete statisticsScreen;
+    delete mScreen;
+    Theme::destroyInstance();
 }
 
 void Chess::run() {
@@ -68,6 +72,11 @@ void Chess::render() {
 }
 
 void Chess::changeScreen(ScreenType screenType) {
+    if (ScreenType::None == screenType) {
+        mWindow.close();
+        return;
+    }
+
     delete mScreen;
     switch (screenType) {
         case ScreenType::IngameScreen:
@@ -92,7 +101,7 @@ void Chess::changeScreen(ScreenType screenType) {
             break;
         case ScreenType::None:
             mWindow.close();
-            break;
+            return;
         default:
             printf("Bug at Chess::changeScreen\n");
             exit(1);

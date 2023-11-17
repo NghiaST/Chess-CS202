@@ -1,8 +1,5 @@
 #include "Include.hpp"
 
-const sf::Vector2f INTERFACE::WindowSize = sf::Vector2f(1024, 672);
-const double INTERFACE::BoardLength = 64;
-
 int PIECE::MakePiece(int pieceType, int pieceColor) {
     return pieceType | pieceColor;
 }
@@ -58,6 +55,30 @@ int PIECE::SymbolToPiece(char symbol) {
     }
 }
 
+char PIECE::PieceTypeToChar(int pieceType) {
+    switch (pieceType) {
+        case Pawn: return 'P';
+        case Knight: return 'N';
+        case Bishop: return 'B';
+        case Rook: return 'R';
+        case Queen: return 'Q';
+        case King: return 'K';
+        default: return ' ';
+    }
+}
+
+char PIECE::SymbolToPieceType(char symbol) {
+    switch (symbol) {
+        case 'P': return Pawn;
+        case 'N': return Knight;
+        case 'B': return Bishop;
+        case 'R': return Rook;
+        case 'Q': return Queen;
+        case 'K': return King;
+        default: return 0;
+    }
+}
+
 int PIECE::PieceValue(int piece) {
     switch (piece) {
         case WhitePawn: return 100;
@@ -74,42 +95,4 @@ int PIECE::PieceValue(int piece) {
         case BlackKing: return 0;
         default: return 0;
     }
-}
-
-Point::Point() : x(0), y(0) {}
-Point::Point(double x, double y) : x(x), y(y) {}
-Point::Point(const sf::Vector2f& vector) : x(vector.x), y(vector.y) {}
-Point::Point(const sf::Vector2i& vector) : x(vector.x), y(vector.y) {}
-Point::Point(const sf::Vector2u& vector) : x(vector.x), y(vector.y) {}
-Point Point::operator+(const Point& other) const {
-    return Point(x + other.x, y + other.y);
-}
-Point Point::operator-(const Point& other) const {
-    return Point(x - other.x, y - other.y);
-}
-Point Point::operator*(double other) const {
-    return Point(x * other, y * other);
-}
-Point operator*(double other, const Point& p) {
-    return Point(p.x * other, p.y * other);
-}
-Point Point::operator/(double other) const {
-    return Point(x / other, y / other);
-}
-Point Point::div(int other) const
-{
-    return Point((int)x / other, (int)y / other);
-}
-bool Point::operator==(const Point &other) const {
-    return (x == other.x && y == other.y);
-}
-sf::Vector2f Point::to2f() const
-{
-    return sf::Vector2f(x, y);
-}
-sf::Vector2i Point::to2i() const {
-    return sf::Vector2i((int)x, (int)y);
-}
-sf::Vector2u Point::to2u() const {
-    return sf::Vector2u((unsigned int)x, (unsigned int)y);
 }

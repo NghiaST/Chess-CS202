@@ -20,7 +20,7 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize, Theme* theme)
 
     piecePrintList.assign(64, nullptr);
     for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
-        *it = new Piece(std::distance(piecePrintList.begin(), it), PIECE::None);
+        *it = new PiecePrint(std::distance(piecePrintList.begin(), it), PIECE::None);
     }
     boardPrint = new BoardPrint(boardPosition, boardSize, &theme->getTextureBoard());
     gameStatus = GAMESTATUS::NEWGAME;
@@ -180,11 +180,17 @@ void BoardManager::setBotHelp(bool isBotHelp) {
     isEvent = true;
 }
 
+#include "../Helpers/MoveUtility.hpp"
 bool BoardManager::ManagerMove(int startSquare, int targetSquare, bool isBotMove) {
     if (!isBotMove && isBot[isWhiteTurn]) return false;
     std::vector<Move> moveList = board->getLegalMoveAt(startSquare);
     for(Move move : moveList) {
         if (move.targetSquare == targetSquare) {
+            std::string SANname = MoveUtility::GetMoveNameSAN(move, *board);
+            std::cout << SANname << std::endl;
+            Move tmp2 = MoveUtility::GetMoveFromSAN(SANname, *board);
+            std::cout << tmp2.startSquare << " " << tmp2.targetSquare << std::endl;
+            
             board->MakeMove(move);
             isPieceSelected = false;
             isPieceHold = false;
@@ -192,7 +198,8 @@ bool BoardManager::ManagerMove(int startSquare, int targetSquare, bool isBotMove
             curSquareIndex = move.targetSquare;
             movesUndoList.clear();
             freshState();
-            FileInit::SaveGame(board->getMovesHistory(), mode, level, 100, 100);
+            FileInit::SaveGame(*board, mode, level, 100, 100);
+            
             return true;
         }
     }
@@ -363,7 +370,7 @@ void BoardManager::updateRender() {
     isEvent = false;
     for(int i = 0; i < 64; i++) {
         piecePrintList[i]->setPiece(board->getPiece(i));
-        piecePrintList[i]->setMouseStatus(MOUSE::NONE);
+        piecePrintList[i]->setMouseStatus(MOUSE::None);
         boardPrint->setStateCell(i, BoardPrint::Common);
     }
     if (isCheck) {
@@ -391,7 +398,7 @@ void BoardManager::updateRender() {
     }
     if (isPieceHold) {
         boardPrint->setStateCell(holdPieceIndex, BoardPrint::Selected);
-        piecePrintList[holdPieceIndex]->setMouseStatus(MOUSE::HOLD, mousePosition);
+        piecePrintList[holdPieceIndex]->setMouseStatus(MOUSE::Hold, mousePosition);
     }
 
     noteCircleRender.clear();

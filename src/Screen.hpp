@@ -1,10 +1,10 @@
 #ifndef __Screen_hpp__
 #define __Screen_hpp__
 
-#include <SFML/Graphics.hpp>
-#include <ctime>
 #include "DataControl/Theme.hpp"
 #include "DataControl/FileInit.hpp"
+#include <SFML/Graphics.hpp>
+#include <ctime>
 
 enum class ScreenType {
     IngameScreen,

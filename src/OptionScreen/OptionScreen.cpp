@@ -82,12 +82,12 @@ void OptionScreen::update(sf::Time deltaTime) {
 }
 
 void OptionScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
-    ContinueButton->updateRender();
-    NewGameButton->updateRender();
-    BackButton->updateRender();
-    ModeOption->updateRender();
-    DifficultyOption->updateRender();
-    BotHelpOption->updateRender();
+    // ContinueButton->updateRender();
+    // NewGameButton->updateRender();
+    // BackButton->updateRender();
+    // ModeOption->updateRender();
+    // DifficultyOption->updateRender();
+    // BotHelpOption->updateRender();
     
     Background.draw(target);
     target.draw(*ContinueButton);
@@ -99,7 +99,6 @@ void OptionScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
 }
 
 void OptionScreen::formatTheme() {
-    theme->setTheme(FileInit::LoadTheme());
     Background.setTexture(theme->getBackgroundTexture());
     ContinueButton->setColorBM(theme->getColorDefault());
     NewGameButton->setColorBM(theme->getColorDefault());

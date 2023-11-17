@@ -1,13 +1,13 @@
 #ifndef __OptionScreen_hpp__
 #define __OptionScreen_hpp__
 
-#include <iostream>
 #include "../Screen.hpp"
 #include "../DataControl/Image.hpp"
 #include "../IngameScreen/BoardPrint.hpp"
-#include "../IngameScreen/Piece.hpp"
+#include "../IngameScreen/PiecePrint.hpp"
 #include "../DataControl/ButtonOption.hpp"
 #include "../DataControl/Theme.hpp"
+#include <iostream>
 
 class OptionScreen : public Screen {
 public:

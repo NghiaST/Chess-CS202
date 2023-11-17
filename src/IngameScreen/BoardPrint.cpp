@@ -57,7 +57,7 @@ void BoardPrint::update() {
     for(int rank = 0; rank < 8; rank++)
     for(int file = 0; file < 8; file++) {
         int index = rank * 8 + file;
-        int colorBoard = (rank + file) % 2;
+        // int colorBoard = (rank + file) % 2;
         
         int row = isBoardRotate ? rank : 7 - rank;
         int col = isBoardRotate ? 7 - file : file;

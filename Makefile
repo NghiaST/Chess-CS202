@@ -16,15 +16,17 @@ SFMLLIBDIR = SFML-2.5.1/lib
 ICON = $(OBJDIR)/Other/resource.res
 FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
 
-SUBFOLDER = IngameScreen DataControl HomeScreen SettingScreen StatisticsScreen OptionScreen Other
+SUBFOLDER = ChessBoard IngameScreen DataControl HomeScreen SettingScreen StatisticsScreen OptionScreen Other Helpers
 
 FILE_ORIGIN = main Graphic Chess Screen
-FILE_INGAMESCREEN = BoardManager BoardPrint GameState Move Piece IngameScreen TimeButton Fen Board Bitboard BitboardProcess Bot MoveSearching
-FILE_DATACONTROL = Button Color GameSettings Include Settings StaticButton Theme Image FileInit ButtonOption Arrow Circle
+FILE_CHESSBOARD = Bitboard BitboardProcess Board Bot GameState Move MoveSearching
+FILE_HELPERS = BoardHelpers Book Fen MoveUtility
 FILE_HOMESCREEN = HomeScreen
+FILE_INGAMESCREEN = BoardManager BoardPrint IngameScreen PiecePrint TimeButton
+FILE_DATACONTROL = Arrow Button ButtonOption Circle Color FileInit GameSettings Image Include Point RenderPS Settings TextBox Theme
+FILE_OPTIONSCREEN = OptionScreen
 FILE_SETTINGSCREEN = SettingScreen
 FILE_STATISTICSSCREEN = StatisticsScreen
-FILE_OPTIONSCREEN = OptionScreen
 
 ifeq ($(OS),Windows_NT)
 	DIRECTORIES = $(OBJDIR) $(SUBFOLDER:%=$(OBJDIR)\\%)
@@ -32,7 +34,8 @@ else
 	DIRECTORIES = $(OBJDIR) $(SUBFOLDER:%=$(OBJDIR)/%)
 endif
 
-FILE = $(FILE_ORIGIN) $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%) $(FILE_HOMESCREEN:%=HomeScreen/%) $(FILE_SETTINGSCREEN:%=SettingScreen/%) $(FILE_STATISTICSSCREEN:%=StatisticsScreen/%) $(FILE_OPTIONSCREEN:%=OptionScreen/%)
+
+FILE = $(FILE_ORIGIN) $(FILE_CHESSBOARD:%=ChessBoard/%)  $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%) $(FILE_HOMESCREEN:%=HomeScreen/%) $(FILE_SETTINGSCREEN:%=SettingScreen/%) $(FILE_STATISTICSSCREEN:%=StatisticsScreen/%) $(FILE_OPTIONSCREEN:%=OptionScreen/%) $(FILE_HELPERS:%=Helpers/%)
 
 FILE_O = $(FILE:%=%.o)
 FILE_CPP = $(FILE:%=%.cpp)

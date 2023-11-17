@@ -39,7 +39,6 @@ void ArrowShape::setArrowPosition(Point startPoint, Point targetPoint) {
 void ArrowShape::updateRender()
 {
     Point diff = targetPoint - startPoint;
-    double maxLength = sqrt(diff.x * diff.x + diff.y * diff.y);
     double lengthLine = sqrt(diff.x * diff.x + diff.y * diff.y) - radiusTriangle * 1.3333;
     double rad = atan2(diff.y, diff.x);
 

@@ -1,7 +1,6 @@
 #ifndef __Chess_hpp__
 #define __Chess_hpp__
 
-#include <SFML/Graphics.hpp>
 #include "DataControl/Include.hpp"
 #include "DataControl/Theme.hpp"
 #include "IngameScreen/IngameScreen.hpp"
@@ -9,6 +8,7 @@
 #include "SettingScreen/SettingScreen.hpp"
 #include "StatisticsScreen/StatisticsScreen.hpp"
 #include "OptionScreen/OptionScreen.hpp"
+#include <SFML/Graphics.hpp>
 
 class Chess {
 public:

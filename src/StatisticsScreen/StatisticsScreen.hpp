@@ -4,6 +4,8 @@
 #include <iostream>
 #include "../Screen.hpp"
 #include "../DataControl/Image.hpp"
+#include "../DataControl/Button.hpp"
+#include "../IngameScreen/BoardPrint.hpp"
 
 class StatisticsScreen : public Screen {
 public:

@@ -2,25 +2,6 @@
 #include "FileInit.hpp"
 
 ///-----------------------------------------------------------------
-///-----------------------------ThemeData---------------------------
-const std::string ThemeData::ThemeDataFile = "dat/theme.dat";
-const std::string ThemeData::BackgroundDirectory = "asset/image/background/";
-const std::string ThemeData::PieceDirectory = "asset/image/piece/";
-const std::string ThemeData::BoardDirectory = "asset/image/board/";
-const std::string ThemeData::FontDirectory = "asset/font/";
-const std::string ThemeData::FontTitleName = "asset/font/KeeponTruckin.ttf";
-
-const std::vector<std::string> ThemeData::BackgroundNameList = {"nature_morning.png", "cherry-blossom.jpg", "haibara-1.png", "universe-boom.jpg", "lightdark.jpg", "surface_earth.jpg", "space.jfif", "futuristic-neon.jpg", "wooden-wall.jpg", "wall.jpg", "palace.jpg", "anime-girl-1.png"};
-const std::vector<std::string> ThemeData::PieceNameList = {"caliente", "cburnett", "celtic", "dubrovny", "fresca", "frugale", "gioco", "governor", "kiwen-suwi", "maestro", "usual"};
-const std::vector<std::string> ThemeData::BoardNameList = {"pink-pyramid.png", "blue.png",  "blue-marble.png", "canvas.png", "green-plastic.png", "leather.png", "maple.png", "ncf-board.png", "purple-diag.png", "wood.png", "wood2.png", "wood3.jpg", "metal.jpg", "olive.jpg"};
-const std::vector<std::string> ThemeData::FontNameList = {"Arial-bold.ttf", "Arial.ttf", "ShortBaby.ttf", "CarryYou.ttf", "ChristmasJumper.ttf", "CuteMonster.ttf", "Hippiemods.otf", "MouldyCheese.ttf", "TimesNewRoman-bold.ttf", "TimesNewRoman.ttf", "Vni-times-bold.ttf", "Vni-times.ttf", "KeeponTruckin.ttf"};
-const std::vector<std::string> ThemeData::ColorBM_NameList = {"Default", "Light", "Dark"};
-const std::vector<const ColorButMulti*> ThemeData::ColorBM_DefaultList = {&Color::ColorButMultiDefault, &Color::ColorButMultiLight, &Color::ColorButMultiDark};
-const std::vector<int> ThemeData::FontSizeList = {8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
-const int ThemeData::ThemeCount = 10;
-const ThemeIndex ThemeData::ThemeIndexDefault = ThemeIndex(0, 0, 0, 0, 0);
-
-///-----------------------------------------------------------------
 ///-----------------------------TextureMaking-----------------------
 
 std::unique_ptr<sf::Texture> TextureMaking::Make(Point size, sf::Color sfColor) {
@@ -69,15 +50,6 @@ ThemeIndex::ThemeIndex(int BackgroundIndex, int PieceIndex, int BoardIndex, int 
 
 ThemeIndex::~ThemeIndex()
 {
-}
-
-void ThemeIndex::setThemeIndex(const ThemeIndex themeIndex)
-{
-    this->BackgroundIndex = themeIndex.BackgroundIndex;
-    this->PieceIndex = themeIndex.PieceIndex;
-    this->BoardIndex = themeIndex.BoardIndex;
-    this->ButtonIndex = themeIndex.ButtonIndex;
-    this->TextIndex = themeIndex.TextIndex;
 }
 
 ///-----------------------------------------------------------------
@@ -169,22 +141,25 @@ const sf::Texture& TextureBoard::getTexture(TYPE type) const {
 ///-----------------------------------------------------------------
 ///-----------------------------Theme-------------------------------
 
+Theme* Theme::instance = nullptr;
+
 Theme::Theme() : ThemeIndex(ThemeData::ThemeIndexDefault)
 {
     this->TitleScreenTexture = std::make_unique<sf::Texture>();
     this->BackgroundTexture = std::make_unique<sf::Texture>();
     this->texturePieces = new TexturePieces();
     this->textureBoard = new TextureBoard();
-    this->ColorBM_Default = Color::ColorButMultiDefault;
-    this->ColorBM_Static = Color::ColorButMultiStatic;
-    this->ColorBM_Title = Color::ColorButMultiTextFullColor;
-    this->ColorBM_Text = Color::ColorButMultiTextStatic;
-    this->ColorBM_Home = Color::ColorButMultiLight;
-    this->ColorBM_Ingame = Color::ColorButMultiDefault;
+    this->ColorBM_Default   = Color::ButMultiDefault;
+    this->ColorBM_Static    = Color::ButMultiStatic;
+    this->ColorBM_Title     = Color::ButMultiTextFullColor;
+    this->ColorBM_Text      = Color::ButMultiTextStatic;
+    this->ColorBM_Home      = Color::ButMultiDefault;
+    this->ColorBM_Ingame    = Color::ButMultiDefault;
+    std::cout << (int) ColorBM_Default.get(0).FillColor.r << " " << (int) ColorBM_Default.get(0).FillColor.g << " " << (int) ColorBM_Default.get(0).FillColor.b << std::endl;
 
-    if (!this->TitleScreenTexture->loadFromFile("asset/image/home/TitleImage.png")) printf("Error loading title screen texture\n");
+    if (!this->TitleScreenTexture->loadFromFile(ThemeData::TitleImageFile)) printf("Error loading title screen texture\n");
     if (!this->FontTitle.loadFromFile(ThemeData::FontTitleName)) printf("Error loading fonttitle texture\n");
-    this->setTheme(FileInit::LoadTheme());
+    this->setThemeID(FileInit::LoadTheme());
 }
 
 Theme::~Theme() {
@@ -192,6 +167,20 @@ Theme::~Theme() {
     this->BackgroundTexture = nullptr;
     delete texturePieces;
     delete textureBoard;
+}
+
+Theme* Theme::getInstance() {
+    if (Theme::instance == nullptr) {
+        Theme::instance = new Theme();
+    }
+    return instance;
+}
+
+void Theme::destroyInstance() {
+    if (Theme::instance != nullptr) {
+        delete Theme::instance;
+        Theme::instance = nullptr;
+    }
 }
 
 void Theme::freshNameURL() {
@@ -204,11 +193,11 @@ void Theme::freshNameURL() {
     PieceDir = ThemeData::PieceDirectory + PieceDir;
     BoardURL = ThemeData::BoardDirectory + BoardName;
     FontURL = ThemeData::FontDirectory + FontName;
-}   
+}
 
-void Theme::setTheme(const ThemeIndex themeIndex)
+void Theme::setThemeID(const ThemeIndex& themeIndex)
 {
-    setThemeIndex(themeIndex);
+    ThemeIndex::operator=(themeIndex);
     freshNameURL();
 
     FontSize = 20;
@@ -216,7 +205,7 @@ void Theme::setTheme(const ThemeIndex themeIndex)
     texturePieces->buildTexture(this->PieceDir);
     textureBoard->buildTexture(BoardURL);
     
-    this->ColorBM_Default = *ThemeData::ColorBM_DefaultList[ButtonIndex];
+    this->ColorBM_Default = ThemeData::ColorBM_DefaultList[ButtonIndex];
     if (!FontText.loadFromFile(this->FontURL)) printf("Error loading fonttext texture: %s\n", FontName.c_str());
 }
 
@@ -240,7 +229,7 @@ void Theme::setBoard(int BoardIndex) {
 
 void Theme::setButton(int ButtonIndex) {
     this->ButtonIndex = ButtonIndex;
-    this->ColorBM_Default = *ThemeData::ColorBM_DefaultList[ButtonIndex];
+    this->ColorBM_Default = ThemeData::ColorBM_DefaultList[ButtonIndex];
 }
 
 void Theme::setText(int TextIndex) {

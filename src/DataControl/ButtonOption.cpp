@@ -43,11 +43,11 @@ void ButtonOption::update(sf::Time deltaTime) {
     // do nothing
 }
 
-void ButtonOption::updateRender() {
-    mainButton->updateRender();
-    rollLeft->updateRender();
-    rollRight->updateRender();
-}
+// void ButtonOption::updateRender() {
+//     // mainButton->updateRender();
+//     // rollLeft->updateRender();
+//     // rollRight->updateRender();
+// }
 
 void ButtonOption::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(*mainButton, states);
@@ -67,7 +67,7 @@ void ButtonOption::setCurrentSelection(int currentSelection)
     if (this->currentSelection < 0) {
         this->currentSelection = (int) textOptions.size() - 1;
     }
-    else if (this->currentSelection >= textOptions.size()) {
+    else if (this->currentSelection >= (int) textOptions.size()) {
         this->currentSelection = 0;
     }
     mainButton->setText(textOptions[this->currentSelection]);

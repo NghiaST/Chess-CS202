@@ -3,12 +3,11 @@
 Button::Button(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, 
         const sf::Font* sfFont, const ColorButMulti& colorButMulti, unsigned int sizeText, 
         std::string text, float thickness, Point renderOffsetText)
-    : StaticButton(buttonID, renderPosition, renderSize, isPositionCenter, isRenderTextOrigin, 
-            sfFont, Color::ColorButtonDefault, sizeText, text, thickness, renderOffsetText)
+    : TextBox(buttonID, renderPosition, renderSize, isPositionCenter, isRenderTextOrigin, 
+            sfFont, Color::ButtonDefault, sizeText, text, thickness, renderOffsetText)
 {
     this->colorButMulti = colorButMulti;
-    this->buttonState = BTN_IDLE;
-    updateRender();
+    setButtonState(BTN_IDLE);
 }
 
 Button::~Button() {
@@ -17,12 +16,12 @@ Button::~Button() {
 // Mutators
 void Button::setButtonState(ButtonStates buttonState) {
     this->buttonState = buttonState;
-    setColorButton(colorButMulti.get(buttonState));
+    setColorButton(colorButMulti.get((int) buttonState));
 }
 
 void Button::setColorBM(const ColorButMulti &colorButMulti) {
     this->colorButMulti = colorButMulti;
-    updateRender();
+    setColorButton(colorButMulti.get((int) buttonState));
 }
 
 // Accessors
@@ -83,57 +82,5 @@ bool Button::handleEvent(const sf::Event& event) {
     else {
         // do nothing
     }
-    updateRender();
     return isEvent;
-}
-
-void Button::updateRender() {
-    setColorButton(colorButMulti.get(buttonState));
-    updateStaticRender();
-}
-
-FreeButton::FreeButton(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, const sf::Font *sfFont, const ColorButMulti &colorButMulti, unsigned int sizeText, std::string text, float thickness, Point renderOffsetText) 
-    : StaticButton(buttonID, renderPosition, renderSize, isPositionCenter, isRenderTextOrigin, sfFont, Color::ColorButtonDefault, sizeText, text, thickness, renderOffsetText)
-{
-    this->colorButMulti = colorButMulti;
-    this->buttonState = BTN_IDLE;
-    changeButtonState();
-    timer = 0;
-
-    velocity = 20;
-    limit = 5;
-    timeMove = 0;
-    setRenderOffsetText(Point(0, 400));
-}
-
-FreeButton::~FreeButton() {
-}
-
-void FreeButton::changeButtonState() {
-    buttonState = (buttonState + 1) % colorButMulti.getSize();
-    setColorButton(colorButMulti.get(buttonState));
-    updateStaticRender();
-}
-
-void FreeButton::update(sf::Time deltaTime) {
-    timeMove += abs(velocity) * deltaTime.asSeconds();
-    while (timeMove > 0.1) {
-        timeMove -= 0.1;
-        Point tmp = getRenderOffsetText();
-        tmp.y += velocity / abs(velocity);
-        if (tmp.y > limit) velocity = -abs(velocity);
-        else if (tmp.y < -limit) velocity = abs(velocity);
-        else velocity /= abs(velocity);
-        setRenderOffsetText(tmp);
-        updateStaticRender();
-    }
-    timer += deltaTime.asSeconds();
-    if (timer > 1) {
-        timer -= 1;
-        changeButtonState();
-    }
-}
-
-int FreeButton::getButtonState() const {
-    return buttonState;
 }

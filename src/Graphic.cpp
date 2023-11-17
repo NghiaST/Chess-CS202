@@ -8,6 +8,13 @@ Graphic::Graphic(Point renderPosition, Point renderSize, bool isPrint, int prior
     this->priorityPrint = priorityPrint;
 }
 
+Graphic::Graphic(RenderPS renderPS, bool isPrint, int priorityPrint) {
+    this->renderPosition = renderPS.rPosition;
+    this->renderSize = renderPS.rSize;
+    this->isPrint = isPrint;
+    this->priorityPrint = priorityPrint;
+}
+
 void Graphic::setPriorityPrint(int priorityPrint)
 {
     this->priorityPrint = priorityPrint;

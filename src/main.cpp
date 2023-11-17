@@ -1,7 +1,5 @@
 #include "main.hpp"
 #include "Chess.hpp"
-#include <SFML/Graphics.hpp>
-#include "IngameScreen/Fen.hpp"
 
 int main()
 {

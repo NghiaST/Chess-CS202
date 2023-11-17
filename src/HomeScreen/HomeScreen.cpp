@@ -22,7 +22,7 @@ HomeScreen::HomeScreen() : Screen() {
 
 
     Background = Image(theme->getTitleScreenTexture(), Point(0, 0), INTERFACE::WindowSize, true, 0);
-    TitleScreen = new FreeButton(0, TitleScreenPosition, Point(0, 0), true, true, &theme->getFontTitle(), theme->getColorTitle(), 100, "LION CHESS");
+    TitleScreen = new DynamicTextBox(0, TitleScreenPosition, Point(0, 0), true, true, &theme->getFontTitle(), theme->getColorTitle(), 100, "LION CHESS");
     PlayButton = new Button(1, PlayButtonPosition, PlayButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "Play");
     SettingButton = new Button(2, SettingButtonPosition, SettingButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "Setting");
     StatisticsButton = new Button(3, StatisticsButtonPosition, StatisticsButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "Statistics");
@@ -61,10 +61,10 @@ void HomeScreen::update(sf::Time deltaTime) {
 }
 
 void HomeScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
-    PlayButton->updateRender();
-    SettingButton->updateRender();
-    StatisticsButton->updateRender();
-    ExitButton->updateRender();
+    // PlayButton->updateRender();
+    // SettingButton->updateRender();
+    // StatisticsButton->updateRender();
+    // ExitButton->updateRender();
     
     Background.draw(target);
     target.draw(*TitleScreen);
@@ -75,7 +75,6 @@ void HomeScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
 }
 
 void HomeScreen::formatTheme() {
-    theme->setTheme(FileInit::LoadTheme());
     PlayButton->setColorBM(theme->getColorDefault());
     SettingButton->setColorBM(theme->getColorDefault());
     StatisticsButton->setColorBM(theme->getColorDefault());

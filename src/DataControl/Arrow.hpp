@@ -1,11 +1,10 @@
 #ifndef __Arrow_hpp__
 #define __Arrow_hpp__
 
-#include <SFML/Graphics.hpp>
-#include <vector>
 #include "Color.hpp"
 #include "Include.hpp"
-
+#include <SFML/Graphics.hpp>
+#include <vector>
 
 class ArrowShape : public sf::Drawable {
 public:

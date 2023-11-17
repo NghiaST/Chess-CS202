@@ -12,7 +12,7 @@ public:
     ~ButtonOption();
     bool handleEvent(const sf::Event& event);
     void update(sf::Time deltaTime);
-    void updateRender();
+    // void updateRender();
     void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const override;
 
     void setColorBM(const ColorButMulti& colorButMulti);

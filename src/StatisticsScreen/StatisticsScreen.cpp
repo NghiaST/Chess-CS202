@@ -28,14 +28,13 @@ void StatisticsScreen::update(sf::Time deltaTime) {
 }
 
 void StatisticsScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
-    BackButton->updateRender();
+    // BackButton->updateRender();
     
     Background.draw(target);
     target.draw(*BackButton);
 }
 
 void StatisticsScreen::formatTheme() {
-    theme->setTheme(FileInit::LoadTheme());
     Background.setTexture(theme->getBackgroundTexture());
     BackButton->setColorBM(theme->getColorDefault());
 }

@@ -1,17 +1,16 @@
 #ifndef __Button_hpp__
 #define __Button_hpp__
 
+#include "TextBox.hpp"
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
 #include <sstream>
 
-#include <SFML/Graphics.hpp>
-#include "StaticButton.hpp"
-
 enum ButtonStates { BTN_IDLE = 0, BTN_HOVER, BTN_ACTIVE, BTN_HOLD };
 
-class Button : public StaticButton {
+class Button : public TextBox {
 public:
     Button(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, 
             const sf::Font* sfFont, const ColorButMulti& colorButMulti, unsigned int sizeText = 12, 
@@ -24,38 +23,17 @@ public:
 
     // Accessors
     int getButtonState() const;
+    const ColorButMulti& getColorBM() const { return colorButMulti; }
 
 public:
     // Functions
 
     /// handleEvent: return 0 if no event, 1 if event
     bool handleEvent(const sf::Event& event);
-    virtual void updateRender();
-    
+
 private:
     ColorButMulti colorButMulti;
     ButtonStates buttonState;
-};
-
-class FreeButton : public StaticButton {
-public:
-    FreeButton(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, 
-            const sf::Font* sfFont, const ColorButMulti& colorButMulti, unsigned int sizeText = 12, 
-            std::string text = "", float thickness = -1, Point renderOffsetText = Point(0, 0));
-    ~FreeButton();
-    void changeButtonState();
-    void update(sf::Time deltaTime);
-    int getButtonState() const;
-
-private:
-    ColorButMulti colorButMulti;
-    int buttonState;
-    double timer;
-    
-private:
-    int velocity;
-    int limit;
-    double timeMove;
 };
 
 #endif

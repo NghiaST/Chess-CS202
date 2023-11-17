@@ -3,7 +3,7 @@
 Circle::Circle(Point renderPosition) 
     : Graphic(renderPosition, Point(64, 64), true, 100)
 {
-    this->colorButMulti = Color::ColorButMultiLight;
+    this->colorButMulti = Color::ButMultiHumor;
     this->thickness = -5;
     circleShape.setFillColor(sf::Color::Transparent);
     circleShape.setOutlineColor(colorButMulti.get(0).FillColor);

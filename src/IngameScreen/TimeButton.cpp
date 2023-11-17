@@ -8,7 +8,7 @@ TimeButton::TimeButton(int id, Point renderPositionWhite, Point renderPositionBl
     isWhiteTurn = true;
     isCountDown = false;
     isOutOfTime = false;
-    totalTime = 70;
+    totalTime = 80;
     timeWhite = totalTime;
     timeBlack = totalTime;
 
@@ -34,6 +34,7 @@ void TimeButton::setReverseTable(bool isReverseTable) {
 }
 
 std::string TimeButton::update(sf::Time deltaTime) {
+    std::string result = "";
     if (isCountDown) {
         if (isWhiteTurn) {
             timeWhite -= deltaTime.asSeconds();
@@ -41,7 +42,7 @@ std::string TimeButton::update(sf::Time deltaTime) {
                 timeWhite = 0;
                 isCountDown = false;
                 isOutOfTime = true;
-                return "outoftime";
+                result = "outoftime";
             }
         }
         else {
@@ -50,25 +51,25 @@ std::string TimeButton::update(sf::Time deltaTime) {
                 timeBlack = 0;
                 isCountDown = false;
                 isOutOfTime = true;
-                return "outoftime";
+                result = "outoftime";
             }
         }
     }
-    return "";
+    updateRender();
+    return result;
 }
 
 void TimeButton::updateRender() {
-    auto ProcessStr = [&](Button* buttonSide, double time) -> void {
+    auto ProcessStr = [&](Button* buttonSide, double time, bool isRuntime) -> void {
         std::string str = std::to_string((int)time / 60) + ":" + ((int)time % 60 < 10 ? "0" : "") + std::to_string((int)time % 60);
         if (time < 60) {
             str += "." + std::to_string((int)(time * 10) % 10);
         }
         buttonSide->setText(str);
+        buttonSide->setButtonState((ButtonStates) (isRuntime ? 3 : 0));
     };
-    ProcessStr(buttonWhite, timeWhite);
-    ProcessStr(buttonBlack, timeBlack);
-    buttonWhite->updateRender();
-    buttonBlack->updateRender();
+    ProcessStr(buttonWhite, timeWhite, isCountDown && isWhiteTurn);
+    ProcessStr(buttonBlack, timeBlack, isCountDown && !isWhiteTurn);
 }
 
 void TimeButton::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -107,4 +108,5 @@ void TimeButton::reset() {
     isOutOfTime = false;
     timeWhite = totalTime;
     timeBlack = totalTime;
+    updateRender();
 }

@@ -1,17 +1,23 @@
 #ifndef __Graphic_hpp__
 #define __Graphic_hpp__
-#include <SFML/Graphics.hpp>
-#include "DataControl/Include.hpp"
 
-class Theme;
+#include "DataControl/Point.hpp"
+#include "DataControl/RenderPS.hpp"
+#include <SFML/Graphics.hpp>
+
 class Graphic : public sf::Drawable {
 public:
     Graphic(Point renderPosition = Point(0, 0), Point renderSize = Point(0, 0), bool isPrint = true, int priorityPrint = 0);
+    Graphic(RenderPS renderPS, bool isPrint = true, int priorityPrint = 0);
+    
+    // Mutators
     void setPriorityPrint(int priorityPrint);
-    void setRenderPosition(Point renderPosition);
-    void setRenderPosition(double x, double y);
-    void setRenderSize(Point renderSize);
+    virtual void setRenderPosition(Point renderPosition);
+    virtual void setRenderPosition(double x, double y);
+    virtual void setRenderSize(Point renderSize);
     void setIsPrint(bool isPrint);
+
+    // Accessors
     const int& getPriorityPrint() const;
     const Point& getRenderPosition() const;
     bool getIsPrint() const;

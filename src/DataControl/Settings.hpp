@@ -1,9 +1,9 @@
 #ifndef __Settings_hpp__
 #define __Settings_hpp__
 
-#include <SFML/Graphics.hpp>
 #include "GameSettings.hpp"
 #include "Theme.hpp"
+#include <SFML/Graphics.hpp>
 
 class Settings {
 private:

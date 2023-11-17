@@ -9,7 +9,7 @@ Settings::~Settings() {
 }
 
 void Settings::setThemeIndex(const ThemeIndex themeIndex) {
-    this->themeIndex.setThemeIndex(themeIndex);
+    this->themeIndex = themeIndex;
 }
 
 void Settings::setGameSettings(const GameSettings gameSettings) {

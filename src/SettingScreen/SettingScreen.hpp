@@ -5,7 +5,7 @@
 #include "../Screen.hpp"
 #include "../DataControl/Image.hpp"
 #include "../IngameScreen/BoardPrint.hpp"
-#include "../IngameScreen/Piece.hpp"
+#include "../IngameScreen/PiecePrint.hpp"
 #include "../DataControl/ButtonOption.hpp"
 #include "../DataControl/Theme.hpp"
 
@@ -29,7 +29,7 @@ private:
 private:
     Image Background;
     BoardPrint* boardPrint;
-    std::vector<Piece*> piecePrintList;
+    std::vector<PiecePrint*> piecePrintList;
     Button* BackButton;
     ButtonOption* BackgroundOption;
     ButtonOption* PieceOption;

@@ -1,10 +1,10 @@
 #ifndef __HomeScreen_hpp__
 #define __HomeScreen_hpp__
 
-#include <SFML/Graphics.hpp>
 #include "../Screen.hpp"
 #include "../DataControl/Button.hpp"
 #include "../DataControl/Image.hpp"
+#include <SFML/Graphics.hpp>
 
 class HomeScreen : public Screen {
 public:
@@ -36,7 +36,7 @@ private:
 
 private:
     Image Background;
-    FreeButton* TitleScreen;
+    DynamicTextBox* TitleScreen;
     Button* PlayButton;
     Button* SettingButton;
     Button* StatisticsButton;

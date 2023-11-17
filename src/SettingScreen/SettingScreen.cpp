@@ -16,7 +16,7 @@ SettingScreen::SettingScreen() : Screen() {
     std::vector<int> pieceList = Fen::FenToPosition(Fen::StartPosition).squarePieces;
     piecePrintList.assign(64, nullptr);
     for(int index = 0; index < 64; index++) {
-        piecePrintList[index] = new Piece(index, pieceList[index]);
+        piecePrintList[index] = new PiecePrint(index, pieceList[index]);
         piecePrintList[index]->setRenderPosition(boardPosition);
         piecePrintList[index]->setRenderSize(boardSize / 8);
     }
@@ -75,12 +75,12 @@ void SettingScreen::update(sf::Time deltaTime) {
 }
 
 void SettingScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
-    BackButton->updateRender();
-    BackgroundOption->updateRender();
-    PieceOption->updateRender();
-    BoardOption->updateRender();
-    ButOption->updateRender();
-    TextOption->updateRender();
+    // BackButton->updateRender();
+    // BackgroundOption->updateRender();
+    // PieceOption->updateRender();
+    // BoardOption->updateRender();
+    // ButOption->updateRender();
+    // TextOption->updateRender();
     boardPrint->update();
     for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
         (*it)->update(theme);
@@ -101,7 +101,6 @@ void SettingScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
 }
 
 void SettingScreen::formatTheme() {
-    theme->setTheme(FileInit::LoadTheme());
     Background.setTexture(theme->getBackgroundTexture());
     BackButton->setColorBM(theme->getColorDefault());
     BackgroundOption->setColorBM(theme->getColorDefault());

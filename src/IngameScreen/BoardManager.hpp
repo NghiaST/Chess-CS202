@@ -3,15 +3,15 @@
 
 #include <SFML/Graphics.hpp>
 #include "../DataControl/Include.hpp"
-#include "../DataControl/StaticButton.hpp"
+#include "../DataControl/TextBox.hpp"
 #include "../DataControl/Button.hpp"
-#include "Piece.hpp"
+#include "PiecePrint.hpp"
 #include "BoardPrint.hpp"
-#include "Board.hpp"
-#include "Bot.hpp"
+#include "../ChessBoard/Bot.hpp"
 #include "../DataControl/Arrow.hpp"
 #include "../DataControl/Circle.hpp"
 #include "../DataControl/FileInit.hpp"
+#include "../ChessBoard/Board.hpp"
 #include <vector>
 
 class BoardManager : public sf::Drawable {
@@ -70,7 +70,7 @@ private:
     Point cellSize;
 
 private:
-    std::vector<Piece*> piecePrintList;
+    std::vector<PiecePrint*> piecePrintList;
     Bot* bot;
     BoardPrint* boardPrint;
     int gameStatus; // 0: none, 1: newgame, 2: ongoing, 3: endgame

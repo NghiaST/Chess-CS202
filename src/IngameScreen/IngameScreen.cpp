@@ -23,7 +23,7 @@ IngameScreen::IngameScreen() : Screen() {
     Point timeButtonPositionBlack = boardPosition + Point(boardSize.x, 0) - timeButtonSize - Point(0, 5);
 
     boardManager = new BoardManager(boardPosition, boardSize, theme);
-    timeButton = new TimeButton(50, timeButtonPositionWhite, timeButtonPositionBlack, timeButtonSize, &theme->getFont(), theme->getColorStatic());
+    timeButton = new TimeButton(50, timeButtonPositionWhite, timeButtonPositionBlack, timeButtonSize, &theme->getFont(), theme->getColorDefault());
     saveButton    = new Button(51, saveButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Save");
     undoButton    = new Button(52, undoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Undo");
     redoButton    = new Button(53, redoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Redo");
@@ -184,12 +184,12 @@ void IngameScreen::update(sf::Time deltaTime) {
 
 void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     boardManager->updateRender();
-    timeButton->updateRender();
-    saveButton->updateRender();
-    undoButton->updateRender();
-    redoButton->updateRender();
-    newgameButton->updateRender();
-    backButton->updateRender();
+    // timeButton->updateRender();
+    // saveButton->updateRender();
+    // undoButton->updateRender();
+    // redoButton->updateRender();
+    // newgameButton->updateRender();
+    // backButton->updateRender();
     
     target.draw(Background);
     target.draw(*saveButton);
@@ -202,12 +202,11 @@ void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
 }
 
 void IngameScreen::formatTheme() {
-    theme->setTheme(FileInit::LoadTheme());
     Background.setTexture(theme->getBackgroundTexture());
     saveButton->setColorBM(theme->getColorDefault());
     undoButton->setColorBM(theme->getColorDefault());
     redoButton->setColorBM(theme->getColorDefault());
     newgameButton->setColorBM(theme->getColorDefault());
     backButton->setColorBM(theme->getColorDefault());
-    timeButton->setColorBM(theme->getColorStatic());
+    timeButton->setColorBM(theme->getColorDefault());
 }
