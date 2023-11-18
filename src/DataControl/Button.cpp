@@ -1,4 +1,4 @@
-#include "Button.hpp"
+#include <DataControl/Button.hpp>
 
 Button::Button(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, 
         const sf::Font* sfFont, const ColorButMulti& colorButMulti, unsigned int sizeText, 

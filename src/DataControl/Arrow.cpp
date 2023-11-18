@@ -1,4 +1,4 @@
-#include "Arrow.hpp"
+#include <DataControl/Arrow.hpp>
 #include <cmath>
 
 ArrowShape::ArrowShape() {

@@ -1,4 +1,4 @@
-#include "Book.hpp"
+#include <Helpers/Book.hpp>
 
 int Book::getRank(int square) {
     return square / 8;

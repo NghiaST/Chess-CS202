@@ -1,4 +1,4 @@
-#include "Board.hpp"
+#include <ChessBoard/Board.hpp>
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -73,7 +73,7 @@ bool Board::ifCheckMate() {
 }
 
 bool Board::ifStaleMate() {
-    return !ifCheck() && getLegalMoveList().size() == 0 || presentGameState.fiftyMoveCounter >= 100;
+    return !ifCheck() && (getLegalMoveList().size() == 0) || presentGameState.fiftyMoveCounter >= 100;
 }
 
 bool Board::isBoardLegal() {

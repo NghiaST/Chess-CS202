@@ -1,4 +1,4 @@
-#include "IngameScreen.hpp"
+#include <IngameScreen/IngameScreen.hpp>
 
 IngameScreen::IngameScreen() : Screen() {
     currentScreen = ScreenType::IngameScreen;

@@ -1,5 +1,5 @@
-#include "BoardManager.hpp"
-#include "../Helpers/MoveUtility.hpp"
+#include <IngameScreen/BoardManager.hpp>
+#include <Helpers/MoveUtility.hpp>
 
 BoardManager::BoardManager(Point renderPosition, Point renderSize) 
     : GameAttributes()

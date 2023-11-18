@@ -1,4 +1,4 @@
-#include "PromotionManager.hpp"
+#include <IngameScreen/PromotionManager.hpp>
 
 PromotionManager::PromotionManager(int id, Point renderPosition, Point renderSize)
     : Graphic(renderPosition, renderSize, false, 100)

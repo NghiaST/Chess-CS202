@@ -1,4 +1,4 @@
-#include "Circle.hpp"
+#include <DataControl/Circle.hpp>
 
 Circle::Circle(Point renderPosition) 
     : Graphic(renderPosition, Point(64, 64), true, 100)

@@ -1,4 +1,4 @@
-#include "TimeButton.hpp"
+#include <IngameScreen/TimeButton.hpp>
 
 TimeButton::TimeButton(int id, Point renderPositionWhite, Point renderPositionBlack, Point renderSize, const sf::Font* font, const ColorButMulti& colorButMulti) {
     this->renderPositionWhite = renderPositionWhite;

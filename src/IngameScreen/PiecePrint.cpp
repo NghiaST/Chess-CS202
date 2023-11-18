@@ -1,4 +1,4 @@
-#include "PiecePrint.hpp"
+#include <IngameScreen/PiecePrint.hpp>
 #include <algorithm>
 
 PiecePrint::PiecePrint(int index, int piece, int status)

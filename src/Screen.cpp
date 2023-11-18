@@ -1,4 +1,4 @@
-#include "Screen.hpp"
+#include <Screen.hpp>
 
 Screen::Screen() {
     shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment);

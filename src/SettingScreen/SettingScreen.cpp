@@ -1,5 +1,5 @@
-#include "SettingScreen.hpp"
-#include "../Helpers/Fen.hpp"
+#include <SettingScreen/SettingScreen.hpp>
+#include <Helpers/Fen.hpp>
 
 SettingScreen::SettingScreen() : Screen() {
     currentScreen = ScreenType::SettingScreen;

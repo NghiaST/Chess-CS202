@@ -1,6 +1,6 @@
-#include "Fen.hpp"
-#include "../ChessBoard/Board.hpp"
-#include "../DataControl/Include.hpp"
+#include <Helpers/Fen.hpp>
+#include <ChessBoard/Board.hpp>
+#include <DataControl/Include.hpp>
 
 const std::string Fen::StartPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

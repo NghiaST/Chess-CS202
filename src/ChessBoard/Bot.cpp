@@ -1,4 +1,4 @@
-#include "Bot.hpp"
+#include <ChessBoard/Bot.hpp>
 
 Bot::Bot() {
     board = new Board();

@@ -1,4 +1,4 @@
-#include "BoardPrint.hpp"
+#include <IngameScreen/BoardPrint.hpp>
 
 BoardPrint::BoardPrint(Point boardPosition, Point boardSize, const TextureBoard* textureBoard)
   : Graphic(boardPosition, boardSize, true, 100)

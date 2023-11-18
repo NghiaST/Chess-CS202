@@ -1,4 +1,4 @@
-#include "GameState.hpp"
+#include <ChessBoard/GameState.hpp>
 
 // namespace Chess::DataManager {
 GameState::GameState()

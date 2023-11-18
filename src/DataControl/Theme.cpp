@@ -1,5 +1,5 @@
-#include "Theme.hpp"
-#include "FileInit.hpp"
+#include <DataControl/Theme.hpp>
+#include <DataControl/FileInit.hpp>
 #include <iostream>
 
 ///-----------------------------------------------------------------

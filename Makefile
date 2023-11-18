@@ -1,20 +1,26 @@
-NAME = Chess
-CXX = g++
-CXXFLAGS = -Wall -std=c++17 -MMD -MP
-# -Wextra -Werror
 ASSETDIR = asset
 BINDIR = bin
 DATDIR = dat
+LIBDIR = libs
 OBJDIR = obj
 SRCDIR = src
 IMAGEDIR = $(ASSETDIR)/image
 SOUNDDIR = $(ASSETDIR)/sound
 FONTDIR = $(ASSETDIR)/font
 OTHERDIR = $(SRCDIR)/Other
-SFMLINCDIR = SFML-2.5.1/include
-SFMLLIBDIR = SFML-2.5.1/lib
+SFMLINCDIR = $(LIBDIR)/SFML-2.5.1/include
+SFMLLIBDIR = $(LIBDIR)/SFML-2.5.1/lib
 ICON = $(OBJDIR)/Other/resource.res
-FLAGS = $(SFMLLIBDIR) -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
+
+NAME = Chess
+CXX = g++
+CXXFLAGS = -Wall -std=c++17 -MMD -MP
+# -Wextra -Werror
+INCLUDES = -I $(SFMLINCDIR) -I ".\include"
+LIBS = -lsfml-graphics-d -lsfml-window-d -lsfml-system-d -lsfml-audio-d -lsfml-network-d
+LIBS_RELEASE = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lsfml-network
+LFLAGS = -L $(SFMLLIBDIR) $(LIBS)
+LFLAGS_RELEASE = -L $(SFMLLIBDIR) $(LIBS_RELEASE)
 
 SUBFOLDER = ChessBoard IngameScreen DataControl HomeScreen SettingScreen StatisticsScreen OptionScreen Other Helpers
 
@@ -33,7 +39,6 @@ ifeq ($(OS),Windows_NT)
 else
 	DIRECTORIES = $(OBJDIR) $(SUBFOLDER:%=$(OBJDIR)/%)
 endif
-
 
 FILE = $(FILE_ORIGIN) $(FILE_CHESSBOARD:%=ChessBoard/%)  $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%) $(FILE_HOMESCREEN:%=HomeScreen/%) $(FILE_SETTINGSCREEN:%=SettingScreen/%) $(FILE_STATISTICSSCREEN:%=StatisticsScreen/%) $(FILE_OPTIONSCREEN:%=OptionScreen/%) $(FILE_HELPERS:%=Helpers/%)
 
@@ -82,12 +87,8 @@ rebuild: clean all
 
 test:
 	${HIDE} echo test.cpp
-	${CXX} ${CXXFLAGS} -I ${SFMLINCDIR} -c src/test.cpp -o test.exe -L ${FLAGS}
+	${CXX} ${CXXFLAGS} ${INCLUDES} -c src/test.cpp -o test.exe -L ${LFLAGS}
 	test.exe
-
-neww:
-	echo $(RCICON)
-	echo $(ICON)
 
 ifeq ($(OS),Windows_NT)
 $(DIRECTORIES):
@@ -100,7 +101,7 @@ endif
 
 %.exe: ${OBJS} ${ICON}
 	${HIDE} echo linking .o file to -*_*- $@
-	${HIDE} ${CXX} ${CXXFLAGS} $^ -o $@ -L ${FLAGS}
+	${HIDE} ${CXX} ${CXXFLAGS} ${INCLUDES} $^ -o $@ ${LFLAGS}
 
 ${OBJDIR}/Other/%.res: ${SRCDIR}/Other/%.rc
 	${HIDE} echo compile $*.res
@@ -109,5 +110,5 @@ ${OBJDIR}/Other/%.res: ${SRCDIR}/Other/%.rc
 -include $(DEPS)
 ${OBJDIR}/%.o: ${SRCDIR}/%.cpp
 	${HIDE} echo compile $(notdir $*.o)
-	${HIDE} ${CXX} ${CXXFLAGS} -I ${SFMLINCDIR} -c $< -o $@
+	${HIDE} ${CXX} ${CXXFLAGS} ${INCLUDES} -c $< -o $@ ${LFLAGS}
 -include $(DEPS)

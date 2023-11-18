@@ -1,4 +1,4 @@
-#include "Move.hpp"
+#include <ChessBoard/Move.hpp>
 
 Move::Move() {
     startSquare = -1;

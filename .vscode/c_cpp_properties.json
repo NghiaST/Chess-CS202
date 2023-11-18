@@ -4,7 +4,8 @@
             "name": "Chess Project",
             "includePath": [
                 "${workspaceFolder}/**",
-                "SFML-2.5.1/include"
+                "./libs/SFML-2.5.1/include",
+                "./include"
             ],
             "defines": [
                 "_DEBUG",
@@ -14,11 +15,13 @@
             "compilerPath": "D:/msys64/mingw64/bin/g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "windows-gcc-x64",
+            "intelliSenseMode": "windows-gcc-x86",
             "compilerArgs": [
                 "./graphics/lib -lsfml-graphics",
                 "./graphics/lib -lsfml-window",
-                "./graphics/lib -lsfml-system"
+                "./graphics/lib -lsfml-system",
+                "./graphics/lib -lsfml-audio",
+                "./graphics/lib -lsfml-network"
             ],
             "configurationProvider": "ms-vscode.makefile-tools"
         }

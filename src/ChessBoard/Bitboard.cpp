@@ -1,4 +1,4 @@
-#include "Bitboard.hpp"
+#include <ChessBoard/Bitboard.hpp>
 
 std::vector<ulong> BitboardUtility::KnightMoves = std::vector<ulong>(64);
 std::vector<ulong> BitboardUtility::BishopMoves = std::vector<ulong>(64);

@@ -1,10 +1,10 @@
-#include "FileInit.hpp"
-#include "../Helpers/MoveUtility.hpp"
-#include "../Helpers/FEN.hpp"
-#include "../ChessBoard/Move.hpp"
-#include "../ChessBoard/Board.hpp"
-#include "Theme.hpp"
-#include "GameAttributes.hpp"
+#include <DataControl/FileInit.hpp>
+#include <DataControl/Theme.hpp>
+#include <DataControl/GameAttributes.hpp>
+#include <Helpers/MoveUtility.hpp>
+#include <Helpers/FEN.hpp>
+#include <ChessBoard/Move.hpp>
+#include <ChessBoard/Board.hpp>
 #include <fstream>
 #include <filesystem>
 

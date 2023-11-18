@@ -1,4 +1,4 @@
-#include "Image.hpp"
+#include <DataControl/Image.hpp>
 
 Image::Image() : Graphic() {}
 

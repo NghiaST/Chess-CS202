@@ -1,4 +1,4 @@
-#include "StatisticsScreen.hpp"
+#include <StatisticsScreen/StatisticsScreen.hpp>
 
 StatisticsScreen::StatisticsScreen() : Screen() {
     currentScreen = ScreenType::StatisticsScreen;

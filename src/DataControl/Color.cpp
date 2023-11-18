@@ -1,4 +1,4 @@
-#include "Color.hpp"
+#include <DataControl/Color.hpp>
 
 ColorButton::ColorButton() 
   : FillColor(sf::Color::White), 

@@ -1,7 +1,7 @@
-#include "MoveUtility.hpp"
-#include "BoardHelpers.hpp"
-#include "../ChessBoard/Move.hpp"
-#include "../ChessBoard/Board.hpp"
+#include <Helpers/MoveUtility.hpp>
+#include <Helpers/BoardHelpers.hpp>
+#include <ChessBoard/Move.hpp>
+#include <ChessBoard/Board.hpp>
 
 Move MoveUtility::GetMoveFromNameUCI(std::string moveName, Board board) {
     int startSquare = BoardHelpers::SquareIndexFromName(moveName.substr(0, 2));

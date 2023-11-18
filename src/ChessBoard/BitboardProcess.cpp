@@ -1,4 +1,4 @@
-#include "BitboardProcess.hpp"
+#include <ChessBoard/BitboardProcess.hpp>
 
 void BitboardProcess::buildMoves(std::vector<Move> &moves, int startSquare, ulong bit, Move::FLAG flag) {
     while (bit) {

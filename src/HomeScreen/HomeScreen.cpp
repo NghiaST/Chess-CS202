@@ -1,4 +1,4 @@
-#include "HomeScreen.hpp"
+#include <HomeScreen/HomeScreen.hpp>
 
 HomeScreen::HomeScreen() : Screen() {
     currentScreen = ScreenType::HomeScreen;

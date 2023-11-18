@@ -1,4 +1,4 @@
-#include "Graphic.hpp"
+#include <Graphic.hpp>
 
 Graphic::Graphic(Point renderPosition, Point renderSize, bool isPrint, int priorityPrint)
 {

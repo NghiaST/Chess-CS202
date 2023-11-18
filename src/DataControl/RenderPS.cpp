@@ -1,5 +1,5 @@
-#include "RenderPS.hpp"
-#include "Point.hpp"
+#include <DataControl/RenderPS.hpp>
+#include <DataControl/Point.hpp>
 
 RenderPS::RenderPS() : rPosition(Point()), rSize(Point()) {}
 

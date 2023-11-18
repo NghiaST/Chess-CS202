@@ -1,5 +1,5 @@
-#include "GameAttributes.hpp"
-#include "FileInit.hpp"
+#include <DataControl/GameAttributes.hpp>
+#include <DataControl/FileInit.hpp>
 
 GameAttributes::GameAttributes() {
     this->mode = 0;

@@ -1,5 +1,5 @@
-#include "BoardHelpers.hpp"
-#include "../DataControl/Include.hpp"
+#include <Helpers/BoardHelpers.hpp>
+#include <DataControl/Include.hpp>
 
 const int BoardHelpers::a1 = 0;
 const int BoardHelpers::b1 = 1;

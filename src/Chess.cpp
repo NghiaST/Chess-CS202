@@ -1,4 +1,4 @@
-#include "Chess.hpp"
+#include <Chess.hpp>
 
 Chess::Chess() {
     Theme::getInstance()->setThemeID(FileInit::LoadTheme());

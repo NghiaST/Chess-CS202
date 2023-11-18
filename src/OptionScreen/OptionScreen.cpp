@@ -1,4 +1,4 @@
-#include "OptionScreen.hpp"
+#include <OptionScreen/OptionScreen.hpp>
 
 OptionScreen::OptionScreen() : Screen() {
     currentScreen = ScreenType::OptionScreen;

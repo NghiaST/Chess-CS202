@@ -1,4 +1,4 @@
-#include "ButtonOption.hpp"
+#include <DataControl/ButtonOption.hpp>
 
 ButtonOption::ButtonOption(int buttonID, Point renderPosition, Point renderSize, bool isPositionCenter, bool isRenderTextOrigin, const sf::Font *sfFont, const ColorButMulti &colorButMulti, unsigned int sizeText, std::vector<std::string> textOptions, int currentSelection, float thickness, Point renderOffsetText) 
     : Graphic(renderPosition - renderSize / 2 * isPositionCenter, renderSize, true, 100)

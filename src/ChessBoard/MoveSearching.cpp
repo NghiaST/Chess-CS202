@@ -1,4 +1,4 @@
-#include "MoveSearching.hpp"
+#include <ChessBoard/MoveSearching.hpp>
 
 MoveSearching::MoveSearching(int depth) {
     this->searchDepth = depth;

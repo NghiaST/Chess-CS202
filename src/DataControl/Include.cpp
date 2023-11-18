@@ -1,4 +1,4 @@
-#include "Include.hpp"
+#include <DataControl/Include.hpp>
 
 int PIECE::MakePiece(int pieceType, int pieceColor) {
     return pieceType | pieceColor;
