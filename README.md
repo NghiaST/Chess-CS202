@@ -1,6 +1,7 @@
 # CS202 - Chess Project
 
 Author: 22125064 - Le Huu Nghia
+
 This is my Solo Project for the course CS202 - Programming Systems.
 
 ## Application
