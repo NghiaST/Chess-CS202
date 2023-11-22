@@ -6,12 +6,14 @@
 #include <SFML/System/Clock.hpp>
 #include <ctime>
 #include <cmath>
+#include <memory>
 
 class MoveSearching {
 public:
-    MoveSearching(int depth);
+    MoveSearching(int depth, std::shared_ptr<bool> stopflag);
     ~MoveSearching();
 
+    void setFlag(bool flag);
     int Searching(Board& board, int timeSearchingMs, int searchDepth); //, int alpha, int beta, bool isMaximizingPlayer);
     int CalculateScore(const Board& board);
     std::vector<Move> getRankMove(int numberMoves); // get some best moves
@@ -25,9 +27,7 @@ private:
     std::vector<Move> moveSelections;
     std::vector<int> moveScore;
     std::vector<std::pair<int, Move>> moveSelectionsSorted;
-    // Move selectedMove, 
     Move bestMove;
-    // int selectedScore;
     int analysisPoint;
     int analysisUncompletePoint;
     int score;
@@ -37,6 +37,8 @@ private:
     int id_search;
     bool isSearch;
     bool isSearchComplete;
+
+    std::shared_ptr<bool> stopflag;
 };
 
 #endif

@@ -1,8 +1,9 @@
 #include <ChessBoard/MoveSearching.hpp>
 
-MoveSearching::MoveSearching(int depth) {
+MoveSearching::MoveSearching(int depth, std::shared_ptr<bool> stopflag) {
     this->searchDepth = depth;
     this->maxDepth = depth;
+    // this->stopflag = stopflag;
     this->id_search = 0;
     this->isSearch = false;
     this->analysisPoint = 0;
@@ -13,7 +14,9 @@ MoveSearching::~MoveSearching() {
     for(MoveSearching* moveSearch : this->moveSearches) {
         delete moveSearch;
     }
+    // this->stopflag = nullptr;
 }
+int w;
 
 int MoveSearching::Searching(Board& board, int timeSearchingMs, int searchDepth) {
     sf::Clock clock;
@@ -22,14 +25,14 @@ int MoveSearching::Searching(Board& board, int timeSearchingMs, int searchDepth)
     if (isSearch == false) {
         isSearch = true;
 
-        multiplyScore = board.ifWhiteTurn() ? 1 : -1;
+        multiplyScore = board.isWhiteTurn() ? 1 : -1;
         score = CalculateScore(board) * multiplyScore;
         if (searchDepth == 0) {
             isSearchComplete = true;
             return score;
         }
         else {
-            moveSelections = board.getLegalMoveList();
+            moveSelections = board.GenerateMoves();
             cntMoves = moveSelections.size();
             moveSearches.assign(cntMoves, nullptr);
             moveScore.assign(cntMoves, -10000);
@@ -37,7 +40,7 @@ int MoveSearching::Searching(Board& board, int timeSearchingMs, int searchDepth)
         }
 
         if (cntMoves == 0) {
-            if (board.ifCheck()) {
+            if (board.isCheck()) {
                 score = analysisPoint = -1000000;
             }
             else {
@@ -55,7 +58,7 @@ int MoveSearching::Searching(Board& board, int timeSearchingMs, int searchDepth)
         Move move = moveSelections[id_search];
         board.MakeMove(move, true);
         if (moveSearches[id_search] == nullptr) {
-            moveSearches[id_search] = new MoveSearching(this->maxDepth - 1);
+            moveSearches[id_search] = new MoveSearching(this->maxDepth - 1, stopflag);
         }
         MoveSearching* moveSearch = moveSearches[id_search];
 

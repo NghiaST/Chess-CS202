@@ -8,6 +8,7 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize)
     bot = new Bot();
     theme = Theme::getInstance();
     promotionManager = new PromotionManager(0, renderPosition, renderSize);
+    mIsAutoRestart = false;
 
     if (!shader.loadFromFile("dat/shader.frag", sf::Shader::Fragment)) {
         printf("Error loading shader\n");
@@ -36,7 +37,7 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize)
     if (FileInit::LoadGame(*board, *this)) {
         Loading();
         Reload();    
-        setCountDown(true);
+        setCountDown(gameStatus != ENDGAME);
     }
     else {
         NewGame();
@@ -62,22 +63,22 @@ int BoardManager::getGameStatus() const {
     return (int) gameStatus;
 }
 CHESS::COLOR BoardManager::getTurn() const {
-    return CHESS::COLOR(isWhiteTurn);
+    return CHESS::COLOR(mIsWhiteTurn);
 }
 int BoardManager::getResult() const {
     return gameResult;
 }
 
 bool BoardManager::ifBotTurn() const {
-    return isBot[isWhiteTurn];
+    return isBot[mIsWhiteTurn];
 }
 
-bool BoardManager::ifCheckMate() const {
-    return isCheckMate;
+bool BoardManager::isCheckMate() const {
+    return mIsCheckMate;
 }
 
 bool BoardManager::ifStaleMate() const {
-    return isStaleMate;
+    return mIsStaleMate;
 }
 
 bool BoardManager::ifEndGame() const {
@@ -91,10 +92,10 @@ const Board &BoardManager::getBoard() const {
 // Modifiers
 
 void BoardManager::freshState() {
-    isCheck = board->ifCheck();
-    isCheckMate = board->ifCheckMate();
-    isStaleMate = board->ifStaleMate();
-    isWhiteTurn = board->ifWhiteTurn();
+    mIsCheck = board->isCheck();
+    mIsCheckMate = board->isCheckMate();
+    mIsStaleMate = board->isStaleMate();
+    mIsWhiteTurn = board->isWhiteTurn();
     isBotRunning = false;
     isEvent = true;
     isPieceSelected = false;
@@ -103,13 +104,16 @@ void BoardManager::freshState() {
     noteList.clear();
     suggestMoves.clear();
     promotionManager->setPromotionFile(-1);
-    setTurn(isWhiteTurn);
+    promotionManager->setIsRotate(isBoardRotate);
+    promotionManager->setIsWhite(mIsWhiteTurn);
+    setTurn(mIsWhiteTurn);
+    setCountDown(gameStatus != NONSTART);
 
-    if (isCheckMate) 
+    if (mIsCheckMate) 
         EndGame(ENDFLAG::CHECKMATE);
     else if (isOutOfTime()) 
         EndGame(ENDFLAG::TIMEOUT);
-    else if (isStaleMate)
+    else if (mIsStaleMate)
         EndGame(ENDFLAG::STALEMATE);
     
     if (gameStatus == NONSTART) {
@@ -167,30 +171,20 @@ void BoardManager::Reload() {
 }
 
 void BoardManager::Undo() {
-    printf("UNDO\n");
-    if (board->isHistoryEmpty()) return;
-    movesUndoList.push_back(board->getLastMove());
-    board->UndoMove();
+    if (!board->UndoMoveCache()) return;
     freshState();
 
-    if (isBot[isWhiteTurn] == false) return;
-    if (board->isHistoryEmpty()) return;
-    movesUndoList.push_back(board->getLastMove());
-    board->UndoMove();
+    if (isBot[mIsWhiteTurn] == false) return;
+    if (!board->UndoMoveCache()) return;
     freshState();
 }
 
 void BoardManager::Redo() {
-    printf("REDO\n");
-    if (movesUndoList.size() == 0) return;
-    board->MakeMove(movesUndoList.back());
-    movesUndoList.pop_back();
+    if (!board->RedoMoveCache()) return;
     freshState();
 
-    if (movesUndoList.size() == 0) return;
-    if (isBot[isWhiteTurn] == false) return;
-    board->MakeMove(movesUndoList.back());
-    movesUndoList.pop_back();
+    if (isBot[mIsWhiteTurn] == false) return;
+    if (!board->RedoMoveCache()) return;
     freshState();
 }
 
@@ -199,7 +193,7 @@ void BoardManager::EndGame(ENDFLAG endFlag) {
     this->endFlag = endFlag;
     switch (endFlag) {
         case ENDFLAG::CHECKMATE:
-            gameResult = (CHESS::COLOR) (isWhiteTurn ^ 1);
+            gameResult = (CHESS::COLOR) (mIsWhiteTurn ^ 1);
             break;
         case ENDFLAG::STALEMATE:
             gameResult = CHESS::COLOR::Both;
@@ -208,10 +202,10 @@ void BoardManager::EndGame(ENDFLAG endFlag) {
             gameResult = CHESS::COLOR::Both;
             break;
         case ENDFLAG::RESIGN:
-            gameResult = (CHESS::COLOR) (isWhiteTurn ^ 1);
+            gameResult = (CHESS::COLOR) (mIsWhiteTurn ^ 1);
             break;
         case ENDFLAG::TIMEOUT:
-            gameResult = (CHESS::COLOR) (isWhiteTurn ^ 1);
+            gameResult = (CHESS::COLOR) (mIsWhiteTurn ^ 1);
             break;
         case ENDFLAG::THREEFOLDREP:
             gameResult = CHESS::COLOR::Both;
@@ -235,15 +229,18 @@ void BoardManager::setBotHelp(bool isBotHelp) {
     isEvent = true;
 }
 
+void BoardManager::setAutoRestart(bool isAutoRestart) {
+    this->mIsAutoRestart = isAutoRestart;
+}
+
 void BoardManager::MakeCorrectMove(Move move) {
     std::cout << MoveUtility::GetMoveNameSAN(move, *board) << '\n';
-    board->MakeMove(move);
-    switchTurn();
+    board->MoveCache(move);
+    GameAttributes::updateMakeMove();
     isPieceSelected = false;
     isPieceHold = false;
     preSquareIndex = move.startSquare;
     curSquareIndex = move.targetSquare;
-    movesUndoList.clear();
     freshState();
     FileInit::SaveGame(*board, *this);
     if (gameStatus == ENDGAME) {
@@ -254,14 +251,14 @@ void BoardManager::MakeCorrectMove(Move move) {
 
 bool BoardManager::ManageMove(int startSquare, int targetSquare, bool isBotMove)
 {
-    if (!isBotMove && isBot[isWhiteTurn]) return false;
-    std::vector<Move> moveList = board->getLegalMoveAt(startSquare);
+    if (!isBotMove && isBot[mIsWhiteTurn]) return false;
+    std::vector<Move> moveList = board->GenerateMovesSquare(startSquare);
     for(Move move : moveList) {
         if (move.targetSquare == targetSquare) {
             if (move.isPromotion()) {
                 movePromotion = move;
                 promotionManager->setPromotionFile(targetSquare % 8);
-                promotionManager->setIsWhite(isWhiteTurn);
+                promotionManager->setIsWhite(mIsWhiteTurn);
                 isPiecePromotion = true;
                 return false;
             }
@@ -274,7 +271,7 @@ bool BoardManager::ManageMove(int startSquare, int targetSquare, bool isBotMove)
 
 std::vector<int> BoardManager::getLegalIndexAt(int squareIndex) {
     std::vector<int> legalIndexs;
-    std::vector<Move> legalMoves = board->getLegalMoveAt(squareIndex);
+    std::vector<Move> legalMoves = board->GenerateMovesSquare(squareIndex);
     for(Move move : legalMoves)
         legalIndexs.push_back(move.targetSquare);
     return legalIndexs;
@@ -344,7 +341,7 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
                     }
                     int squareIndex = coordChess.x * 8 + coordChess.y;
                     if (!isPieceSelected) {
-                        if (PIECE::isPieceYourTurn(board->getPiece(squareIndex), isWhiteTurn)) {
+                        if (PIECE::isPieceYourTurn(board->getPiece(squareIndex), mIsWhiteTurn)) {
                             isPieceSelected = true;
                             isPieceHold = true;
                             selectedPieceIndex = squareIndex;
@@ -367,7 +364,7 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
                             res = "make move";
                         }
                         else if (isPiecePromotion) {}
-                        else if (PIECE::PieceColor(board->getPiece(squareIndex)) == PIECE::boolToColor(isWhiteTurn)) {
+                        else if (PIECE::PieceColor(board->getPiece(squareIndex)) == PIECE::boolToColor(mIsWhiteTurn)) {
                             isPieceSelected = true;
                             isPieceHold = true;
                             selectedPieceIndex = squareIndex;
@@ -433,6 +430,12 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
 }
 
 std::string BoardManager::update(sf::Time deltaTime) {
+    if (gameStatus == ENDGAME) {
+        if (mIsAutoRestart) {
+            NewGame();
+        }
+        return "";
+    }
     GameAttributes::UpdateTime();
     if (isOutOfTime()) {
         EndGame(ENDFLAG::TIMEOUT);
@@ -440,10 +443,16 @@ std::string BoardManager::update(sf::Time deltaTime) {
 
     std::string res = "";
     if (gameStatus != ENDGAME) {
-        if (isBot[isWhiteTurn]) {
+        if (isBot[mIsWhiteTurn]) {
             if (!isBotRunning) {
                 isBotRunning = true;
                 bot->setTimeThinkingMs(2500);
+                if (mIsWhiteTurn) {
+                    bot->setSearchDepth(3);
+                }
+                else {
+                    bot->setSearchDepth(3);
+                }
                 bot->LoadBoard(*board);
             }
             bot->Thinking();
@@ -457,7 +466,8 @@ std::string BoardManager::update(sf::Time deltaTime) {
         else if (isBotHelp) {
             if (!isBotRunning) {
                 isBotRunning = true;
-                bot->setTimeThinkingMs(10000);
+                bot->setTimeThinkingMs(100000);
+                bot->setSearchDepth(3);
                 bot->LoadBoard(*board);
             }
             bot->Thinking();
@@ -483,14 +493,14 @@ void BoardManager::updateRender() {
         piecePrintList[i]->setMouseStatus(MOUSE::None);
         boardPrint->setStateCell(i, BoardPrint::Common);
     }
-    if (isCheck) {
-        boardPrint->setStateCell(board->getKingSquareIndex(isWhiteTurn), BoardPrint::Check);
+    if (mIsCheck) {
+        boardPrint->setStateCell(board->getKingSquareIndex(mIsWhiteTurn), BoardPrint::Check);
     }
-    if (isCheckMate) {
-        boardPrint->setStateCell(board->getKingSquareIndex(isWhiteTurn), BoardPrint::CheckMate);
+    if (mIsCheckMate) {
+        boardPrint->setStateCell(board->getKingSquareIndex(mIsWhiteTurn), BoardPrint::CheckMate);
     }
-    if (isStaleMate) {
-        boardPrint->setStateCell(board->getKingSquareIndex(isWhiteTurn), BoardPrint::StaleMate);
+    if (mIsStaleMate) {
+        boardPrint->setStateCell(board->getKingSquareIndex(mIsWhiteTurn), BoardPrint::StaleMate);
     }
     if (board->isHistoryEmpty() == false) {
         Move lastMove = board->getLastMove();

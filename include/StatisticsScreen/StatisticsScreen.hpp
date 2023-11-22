@@ -5,6 +5,7 @@
 #include <IngameScreen/BoardPrint.hpp>
 #include <DataControl/Image.hpp>
 #include <DataControl/Button.hpp>
+#include <StatisticsScreen/Table.hpp>
 #include <iostream>
 
 class StatisticsScreen : public Screen {
@@ -27,6 +28,7 @@ private:
     Image Background;
     BoardPrint* boardPrint;
     Button* BackButton;
+    Table* table;
 };
 
 #endif

@@ -6,11 +6,13 @@ OptionScreen::OptionScreen() : Screen() {
     int middle = INTERFACE::WindowSize.x / 2;
 
     ButtonSize = Point(130, 60);
-    ButtonOptionSize = Point(300, 90);
+    ButtonOptionSize = Point(300, 80);
 
-    ModeOptionPosition       = Point(middle, 100);
-    DifficultyOptionPosition = Point(middle, 200);
-    BotHelpOptionPosition    = Point(middle, 300);
+    ModeOptionPosition       = Point(middle, 90);
+    DifficultyOptionPosition = Point(middle, 180);
+    BotHelpOptionPosition    = Point(middle, 270);
+    TimeTotalOptionPosition  = Point(middle, 360);
+    TimeExtraOptionPosition  = Point(middle, 450);
 
     ContinueButtonPosition = Point(middle - 1.2 * ButtonSize.x, 600);
     NewGameButtonPosition  = Point(middle - 0.0 * ButtonSize.x, 600);
@@ -24,15 +26,20 @@ OptionScreen::OptionScreen() : Screen() {
 
     int mode, level;
     bool isBotHelp;
-    FileInit::LoadOptions(mode, level, isBotHelp);
+    int timeTotal, timeExtra;
+    FileInit::LoadOptions(mode, level, isBotHelp, timeTotal, timeExtra);
 
     std::vector<std::string> modeList = {"PvE White", "PvE Black", "PvP", "EvE"};
     std::vector<std::string> levelList = {"Easy", "Medium", "Hard"};
-    std::vector<std::string> botHelpList = {"Off", "On"};
+    std::vector<std::string> botHelpList = {"Bot Help Off", "Bot Help On"};
+    std::vector<std::string> timeTotalList = {"1m", "2m", "3m", "5m", "10m", "15m", "30m", "60m"};
+    std::vector<std::string> timeExtraList = {"0s", "2s", "5s", "10s", "15s", "30s"};
 
     ModeOption       = new ButtonOption(4, ModeOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, modeList, mode, 2);
     DifficultyOption = new ButtonOption(5, DifficultyOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, levelList, level, 2);
     BotHelpOption    = new ButtonOption(6, BotHelpOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, botHelpList, isBotHelp, 2);
+    TimeTotalOption  = new ButtonOption(7, TimeTotalOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeTotalList, timeTotal, 2);
+    TimeExtraOption  = new ButtonOption(8, TimeExtraOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeExtraList, timeExtra, 2);
 }
 
 OptionScreen::~OptionScreen() {
@@ -42,6 +49,8 @@ OptionScreen::~OptionScreen() {
     delete ModeOption;
     delete DifficultyOption;
     delete BotHelpOption;
+    delete TimeTotalOption;
+    delete TimeExtraOption;
 }
 
 void OptionScreen::handleEvent(const sf::Event& event) {
@@ -60,8 +69,14 @@ void OptionScreen::handleEvent(const sf::Event& event) {
     if (BotHelpOption->handleEvent(event)) {
         isChange = true;
     }
+    if (TimeTotalOption->handleEvent(event)) {
+        isChange = true;
+    }
+    if (TimeExtraOption->handleEvent(event)) {
+        isChange = true;
+    }
     if (isChange) {
-        FileInit::SaveConfig(theme->getThemeIndex(), ModeOption->getCurrentSelection(), DifficultyOption->getCurrentSelection(), (bool) BotHelpOption->getCurrentSelection());
+        FileInit::SaveConfig(theme->getThemeIndex(), ModeOption->getCurrentSelection(), DifficultyOption->getCurrentSelection(), (bool) BotHelpOption->getCurrentSelection(), TimeTotalOption->getCurrentSelection(), TimeExtraOption->getCurrentSelection());
     }
     if (ContinueButton->handleEvent(event)) {
         isScreenChange = true;
@@ -89,6 +104,8 @@ void OptionScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     target.draw(*ModeOption);
     target.draw(*DifficultyOption);
     target.draw(*BotHelpOption);
+    target.draw(*TimeTotalOption);
+    target.draw(*TimeExtraOption);
 }
 
 void OptionScreen::formatTheme() {
@@ -99,4 +116,6 @@ void OptionScreen::formatTheme() {
     ModeOption->setColorBM(theme->getColorDefault());
     DifficultyOption->setColorBM(theme->getColorDefault());
     BotHelpOption->setColorBM(theme->getColorDefault());
+    TimeTotalOption->setColorBM(theme->getColorDefault());
+    TimeExtraOption->setColorBM(theme->getColorDefault());
 }

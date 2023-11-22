@@ -4,6 +4,7 @@
 #include <ChessBoard/Board.hpp>
 #include <ChessBoard/MoveSearching.hpp>
 #include <SFML/System/Clock.hpp>
+#include <thread>
 
 class Bot {
 public:
@@ -12,6 +13,7 @@ public:
 
 private:
     Board* board;
+    std::shared_ptr<bool> stopflag;
     const int limitThinkingTimeMs = 30;
     int searchDepth;
     int timeThinkingMs;
@@ -25,13 +27,15 @@ private:
     bool isThinkingDone;
     int timeRemainMs;
     sf::Clock clock;
-    
+    std::thread thinkingThread;
+
 public:
     void LoadBoard(const Board& board);
     void LoadFEN(std::string fen);
     void setSearchDepth(int searchDepth);
     void setTimeThinkingMs(double timeThinkingMs);
     void Thinking();
+    void StopThinking();
 
     // Accessors
     std::vector<Move> getRankMove(int numberMoves);

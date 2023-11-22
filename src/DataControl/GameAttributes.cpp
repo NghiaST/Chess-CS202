@@ -25,14 +25,13 @@ GameAttributes::GameAttributes(int mode, int level, int timeWhite, int timeBlack
 GameAttributes::~GameAttributes() {}
 
 void GameAttributes::NewLoading() {
-    FileInit::LoadOptions(mode, level, isBotHelp); //, timeWhite, timeBlack);
-    timeWhite = 120000;
-    timeBlack = 120000;
+    FileInit::LoadOptions(mode, level, isBotHelp, timeTotalMode, timeExtraMode);
+    timeWhite = timeBlack = TOTAL[timeTotalMode] * 1000;
     Fresh();
 }
 
 void GameAttributes::Loading() {
-    FileInit::LoadOptions(mode, level, isBotHelp);
+    FileInit::LoadOptions(mode, level, isBotHelp, timeTotalMode, timeExtraMode);
     Fresh();
 }
 
@@ -50,6 +49,17 @@ void GameAttributes::Fresh() {
 void GameAttributes::switchTurn() {
     UpdateTime();
     isWhiteTurn = !isWhiteTurn;
+    isCountDown = true;
+}
+
+void GameAttributes::updateMakeMove() {
+    if (isWhiteTurn) {
+        timeWhite += EXTRA[timeExtraMode] * 1000;
+    }
+    else {
+        timeBlack += EXTRA[timeExtraMode] * 1000;
+    }
+    switchTurn();
     isCountDown = true;
 }
 

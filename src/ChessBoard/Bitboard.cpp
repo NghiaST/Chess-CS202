@@ -11,6 +11,7 @@ std::vector<ulong> BitboardUtility::WhiteKingCastles = std::vector<ulong>(64);
 std::vector<ulong> BitboardUtility::BlackKingCastles = std::vector<ulong>(64);
 std::vector<ulong> BitboardUtility::WhitePawnEnpassant = std::vector<ulong>(64);
 std::vector<ulong> BitboardUtility::BlackPawnEnpassant = std::vector<ulong>(64);
+bool BitboardUtility::isInitialized = false;
 
 int Bits::PopBit(ulong& iBit) {
     if (!iBit) return -1;
@@ -36,6 +37,8 @@ bool Bits::GetBit(ulong& iBit, int index) {
 }
 
 void BitboardUtility::Initialize() {
+    if (isInitialized) return;
+    isInitialized = true;
     KnightMoves = std::vector<ulong>(64);
     BishopMoves = std::vector<ulong>(64);
     RookMoves = std::vector<ulong>(64);

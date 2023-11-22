@@ -52,7 +52,7 @@ public:
     CHESS::COLOR getTurn() const;
     int getResult() const;
     bool ifBotTurn() const;
-    bool ifCheckMate() const;
+    bool isCheckMate() const;
     bool ifStaleMate() const;
     bool ifEndGame() const;
     const Board& getBoard() const;
@@ -65,6 +65,7 @@ public:
     void EndGame(ENDFLAG endFlag);
 
     void setBotHelp(bool isBotHelp);
+    void setAutoRestart(bool isAutoRestart);
 
 
 private:
@@ -96,10 +97,11 @@ private:
     CHESS::COLOR gameResult; // 0: none, 1: white win, 2: black win, 3: draw
 
     std::vector<bool> isBot;
-    bool isCheck;
-    bool isCheckMate;
-    bool isStaleMate;
-    bool isWhiteTurn;
+    bool mIsAutoRestart;
+    bool mIsCheck;
+    bool mIsCheckMate;
+    bool mIsStaleMate;
+    bool mIsWhiteTurn;
 
     bool isBotRunning;
     bool isEvent;
@@ -123,7 +125,6 @@ private:
     std::vector<int> possibleIndexList; // all squareIndex is prepared to move
     // std::vector<int> noteCircleList;   /// all squareIndex which is right clicked
     std::vector<std::pair<int, int>> noteList; // all arrow from start to target
-    std::vector<Move> movesUndoList;
 
     std::vector<Circle> noteCircleRender;
     std::vector<Arrow> noteArrowRender;

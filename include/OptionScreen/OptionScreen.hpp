@@ -29,6 +29,8 @@ private:
 
     Point ModeOptionPosition;
     Point DifficultyOptionPosition;
+    Point TimeTotalOptionPosition;
+    Point TimeExtraOptionPosition;
     Point BotHelpOptionPosition;
 
 private:
@@ -38,6 +40,8 @@ private:
     Button* BackButton;
     ButtonOption* ModeOption;
     ButtonOption* DifficultyOption;
+    ButtonOption* TimeTotalOption;
+    ButtonOption* TimeExtraOption;
     ButtonOption* BotHelpOption;
 };
 

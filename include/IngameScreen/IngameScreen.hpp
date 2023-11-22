@@ -4,6 +4,7 @@
 #include <Screen.hpp>
 #include <IngameScreen/BoardManager.hpp>
 #include <IngameScreen/TimeButton.hpp>
+#include <DataControl/ButtonOption.hpp>
 #include <DataControl/Image.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -26,10 +27,12 @@ private:
     Point redoButtonPosition;
     Point newgameButtonPosition;
     Point backButtonPosition;
+    Point autoRestartOptionPosition;
 
     Point boardSize;
     Point buttonSize;
     Point timeButtonSize;
+    Point autoRestartOptionSize;
 
 private:
     BoardManager* boardManager;
@@ -41,6 +44,7 @@ private:
     Button* redoButton;
     Button* newgameButton;
     Button* backButton;
+    ButtonOption* autoRestartOption;
 
     bool isPieceHold;
     Point mousePosition;

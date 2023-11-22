@@ -2,22 +2,25 @@
 
 Bot::Bot() {
     board = new Board();
+    stopflag = std::make_unique<bool>(false);
     searchDepth = 2;
     timeThinkingMs = 2500;
     isThinkingDone = false;
-    moveSearching = new MoveSearching(searchDepth);
+    moveSearching = new MoveSearching(searchDepth, std::move(stopflag));
 }
 
 Bot::~Bot() {
     delete board;
     delete moveSearching;
+    stopflag = nullptr;
 }
 
 void Bot::LoadBoard(const Board& board) {
     delete this->board;
     delete moveSearching;
     this->board = new Board(board);
-    moveSearching = new MoveSearching(searchDepth);
+    this->stopflag = std::make_shared<bool>(false);
+    moveSearching = new MoveSearching(searchDepth, stopflag);
     isThinkingDone = false;
     clock.restart();
     currentTimeThinkingMs = timeThinkingMs;
@@ -36,7 +39,10 @@ void Bot::setTimeThinkingMs(double timeThinkingMs) {
 }
 
 void Bot::Thinking() {
-    if (isThinkingDone) return;
+    if (isThinkingDone || *stopflag) return;
+    // thinkingThread = std::thread(&MoveSearching::Searching, moveSearching, *board, limitThinkingTimeMs, searchDepth);
+    // thinkingThread.join();
+
     moveSearching->Searching(*board, limitThinkingTimeMs, searchDepth);
     currentTimeThinkingMs -= clock.getElapsedTime().asMilliseconds();
     clock.restart();
@@ -47,7 +53,12 @@ void Bot::Thinking() {
             printf("Don't think enough\n");
         bestMove = moveSearching->GetBestMove();
         isThinkingDone = true;
+        *stopflag = true;
     }
+}
+
+void Bot::StopThinking() {
+    *stopflag = true;
 }
 
 std::vector<Move> Bot::getRankMove(int number) {

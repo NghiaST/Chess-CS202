@@ -56,6 +56,9 @@ public:
 
     static ulong PawnAttack(ulong iBit, bool isWhite);
     static ulong Shift(ulong iBit, int shift);
+
+private:
+    static bool isInitialized;
 };
 
 #endif

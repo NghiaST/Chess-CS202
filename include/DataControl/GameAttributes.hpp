@@ -13,6 +13,7 @@ public:
     void Fresh();
     void UpdateTime();
     void switchTurn();
+    void updateMakeMove();
     void setTurn(bool isWhiteTurn);
     void setCountDown(bool isCountDown);
 
@@ -31,11 +32,13 @@ protected:
     bool isPlayerWhite;
 
 private:
+    const int TOTAL[8] = {60, 120, 180, 300, 600, 900, 1800, 3600};
+    const int EXTRA[6] = {0, 2, 5, 10, 15, 30};
     sf::Clock clock;
     bool isCountDown;
     bool isWhiteTurn;
-    int timeTotal;
-    int timeExtra;
+    int timeTotalMode;
+    int timeExtraMode;
 
     friend class FileInit;
 };

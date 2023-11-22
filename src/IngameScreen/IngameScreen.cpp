@@ -18,6 +18,7 @@ IngameScreen::IngameScreen() : Screen() {
     redoButtonPosition    = Point(leftPositionButton, 3.15 * buttonSize.y);
     newgameButtonPosition = Point(leftPositionButton, 4.20 * buttonSize.y);
     backButtonPosition    = Point(leftPositionButton, 5.25 * buttonSize.y);
+    autoRestartOptionPosition = Point(leftPositionButton, 7 * buttonSize.y);
 
     Point timeButtonPositionWhite = boardPosition + boardSize - Point(timeButtonSize.x, 0) + Point(0, 5);
     Point timeButtonPositionBlack = boardPosition + Point(boardSize.x, 0) - timeButtonSize - Point(0, 5);
@@ -29,6 +30,7 @@ IngameScreen::IngameScreen() : Screen() {
     redoButton    = new Button(53, redoButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Redo");
     newgameButton = new Button(54, newgameButtonPosition, buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "New Game");
     backButton    = new Button(55, backButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Back"); 
+    autoRestartOption = new ButtonOption(56, autoRestartOptionPosition, buttonSize, false, true, &theme->getFont(), theme->getColorDefault(), 10, {"Off", "On"});
     timeButton->setReverseTable(boardManager->ifBoardRotate());
 
     isPieceHold = false;
@@ -41,7 +43,8 @@ IngameScreen::IngameScreen() : Screen() {
         {"undo", 3},
         {"redo", 4},
         {"newgame", 5},
-        {"back", 6}
+        {"back", 6},
+        {"autoRestartOption", 7}
     };
     priority = defaultPriority;
     handleOrder = {
@@ -51,7 +54,8 @@ IngameScreen::IngameScreen() : Screen() {
         "undo",
         "redo",
         "newgame",
-        "back"
+        "back",
+        "autoRestartOption"
     };
 }
 
@@ -63,6 +67,7 @@ IngameScreen::~IngameScreen() {
     delete redoButton;
     delete newgameButton;
     delete backButton;
+    delete autoRestartOption;
 }
 
 void IngameScreen::handleEvent(const sf::Event& event) {
@@ -91,10 +96,9 @@ void IngameScreen::handleEvent(const sf::Event& event) {
             if (status == "make move") {
                 timeButton->setTurn(boardManager->getTurn());
                 timeButton->setIsCountDown(true);
-                // timeButton->changeTurn();
                 if (boardManager->ifEndGame()) {
                     timeButton->setIsCountDown(false);
-                    if (boardManager->ifCheckMate()) {
+                    if (boardManager->isCheckMate()) {
                         status = "checkmate";
                     }
                     else if (boardManager->ifStaleMate()) {
@@ -108,6 +112,9 @@ void IngameScreen::handleEvent(const sf::Event& event) {
         }
         else if (name == "save") {
             status = saveButton->handleEvent(event) ? "save" : "";
+            if (status == "save") {
+                FileInit::ExtractGame(boardManager->getBoard().getMovesHistory());
+            }
         }
         else if (name == "undo") {
             status = undoButton->handleEvent(event) ? "undo" : "";
@@ -139,6 +146,17 @@ void IngameScreen::handleEvent(const sf::Event& event) {
             //     timeButton->reset();
             // }
         }
+        else if (name == "autoRestartOption") {
+            status = autoRestartOption->handleEvent(event) ? "autoRestartOption" : "";
+            if (status == "autoRestartOption") {
+                if (autoRestartOption->getCurrentSelection() == 0) {
+                    boardManager->setAutoRestart(false);
+                }
+                else {
+                    boardManager->setAutoRestart(true);
+                }
+            }
+        }
     }
 }
 
@@ -157,7 +175,7 @@ void IngameScreen::update(sf::Time deltaTime) {
 
             if (status == "make move") {
                 if (boardManager->ifEndGame()) {
-                    if (boardManager->ifCheckMate()) {
+                    if (boardManager->isCheckMate()) {
                         status = "checkmate";
                     }
                     else if (boardManager->ifStaleMate()) {
@@ -188,6 +206,7 @@ void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     target.draw(*redoButton);
     target.draw(*newgameButton);
     target.draw(*backButton);
+    target.draw(*autoRestartOption);
     timeButton->draw(target);
     boardManager->draw(target, states);
 }
@@ -200,4 +219,5 @@ void IngameScreen::formatTheme() {
     newgameButton->setColorBM(theme->getColorDefault());
     backButton->setColorBM(theme->getColorDefault());
     timeButton->setColorBM(theme->getColorDefault());
+    autoRestartOption->setColorBM(theme->getColorDefault());
 }

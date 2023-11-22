@@ -93,6 +93,7 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "filesystem": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "semaphore": "cpp"
     }
 }

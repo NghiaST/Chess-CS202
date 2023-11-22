@@ -90,7 +90,7 @@ std::string MoveUtility::GetMoveNameSAN(Move move, Board board) {
     if (movePieceType != PIECE::Pawn) {
         moveNotation += PIECE::PieceTypeToChar(movePieceType);
     }
-    std::vector<Move> moves = board.getLegalMoveList();
+    std::vector<Move> moves = board.GenerateMoves();
 
     if (movePieceType != PIECE::Pawn && movePieceType != PIECE::King) {
         bool showAny = false;
@@ -158,8 +158,8 @@ std::string MoveUtility::GetMoveNameSAN(Move move, Board board) {
     }
 
     board.MakeMove(move, true);
-    if (board.ifCheck()) {
-        if (board.ifCheckMate()) {
+    if (board.isCheck()) {
+        if (board.isCheckMate()) {
             moveNotation += "#";
         }
         else {
@@ -177,7 +177,7 @@ Move MoveUtility::GetMoveFromSAN(std::string algebraicNotation, Board board) {
                         [](char c) { return c == '+' || c == '#' || c == 'x' || c == '-'; }),
         algebraicNotation.end());
     
-    std::vector<Move> allMoves = board.getLegalMoveList();
+    std::vector<Move> allMoves = board.GenerateMoves();
     Move move = Move();
 
     for (Move moveToTest : allMoves) {
