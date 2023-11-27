@@ -2,6 +2,7 @@
 #define __GameAttributes_hpp__
 
 #include <SFML/System/Clock.hpp>
+#include <string>
 
 class GameAttributes {
 public:
@@ -21,6 +22,7 @@ public:
     bool isOutOfTime(bool isWhite) const;
     bool IsCountDown() const;
     bool IsWhiteTurn() const;
+    std::string getVariantsName() const;
     int getCurrentTime() const;
     int getTime(bool isWhite) const;
 
@@ -41,6 +43,7 @@ protected:
     bool isPlayerWhite;
 
 private:
+    const std::string variantsName[3] = {"standard", "kingofthehill", "atomic"};
     const int TOTAL[8] = {60, 120, 180, 300, 600, 900, 1800, 3600};
     const int EXTRA[6] = {0, 2, 5, 10, 15, 30};
     sf::Clock clock;

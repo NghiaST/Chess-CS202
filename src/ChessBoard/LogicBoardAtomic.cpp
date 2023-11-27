@@ -1,64 +1,105 @@
-#include <ChessBoard/LogicBoardStandard.hpp>
+#include <ChessBoard/LogicBoardAtomic.hpp>
 #include <ChessBoard/LogicBoard.hpp>
 #include <ChessBoard/Move.hpp>
 #include <ChessBoard/Board.hpp>
 #include <ChessBoard/GameState.hpp>
 
-LogicBoardStandard::LogicBoardStandard()
-  : LogicBoard() {}
-
-LogicBoardStandard::~LogicBoardStandard() {
+LogicBoardAtomic::LogicBoardAtomic()
+  : LogicBoard() 
+{
+    BitboardUtility::Initialize(); 
+    Reset();
+    LoadBasicPosition();
+    this->mIsMovesGeneratorInCache = false;
 }
 
-Board *LogicBoardStandard::clone() const {
-    LogicBoardStandard *cloneBoard = new LogicBoardStandard();
+LogicBoardAtomic::~LogicBoardAtomic() {
+}
+
+Board *LogicBoardAtomic::clone() const {
+    LogicBoardAtomic *cloneBoard = new LogicBoardAtomic();
     *cloneBoard = *this;
     return cloneBoard;
 }
 // More Validation
 
-bool LogicBoardStandard::isCheck() const {
+void LogicBoardAtomic::LoadPosition(PositionInfo posInfo) {
+    Reset();
+    pieces = posInfo.squarePieces;
+    piecesHistory.push_back(pieces);
+    mIsWhiteTurn = posInfo.whiteToMove;
+    presentGameState.castlingRights = posInfo.castlingRights;
+    presentGameState.enPassantFile = posInfo.enPassantFile;
+    presentGameState.fiftyMoveCounter = posInfo.fiftyMoveCounter;
+    cntMoves = posInfo.fullmoveNumber * 2 - (mIsWhiteTurn ? 2 : 1);
+
+    presentGameState = GameState(PIECE::None, posInfo.enPassantFile, posInfo.castlingRights, posInfo.fiftyMoveCounter);
+    gameStateHistory.push_back(presentGameState);
+}
+
+void LogicBoardAtomic::Reset()
+{
+    gameStateHistory.clear();
+    movesHistory.clear();
+    piecesHistory.clear();
+    presentGameState = GameState();
+    gameStateHistory.push_back(presentGameState);
+    mIsWhiteTurn = true;
+    cntMoves = 0;
+    mUndoMoves.clear();
+    mIsMovesGeneratorInCache = false;
+}
+
+bool LogicBoardAtomic::isCheck() const {
     int kingPos = getKingSquareIndex(mIsWhiteTurn);
-    return isSquareUnderAttack(kingPos, mIsWhiteTurn ^ 1);
+    int kingPosB = getKingSquareIndex(!mIsWhiteTurn);
+    int dis = std::max(abs(kingPos / 8 - kingPosB / 8), abs(kingPos % 8 - kingPosB % 8));
+    return (kingPos != -1 && kingPosB != -1 && dis != 1 && isSquareUnderAttack(kingPos, mIsWhiteTurn ^ 1));
     // ulong attackedSquares = getAttackedSquares(isWhiteTurn ^ 1);
     // return Bits::GetBit(attackedSquares, kingPos);
 }
 
-bool LogicBoardStandard::isCheckMate() {
-    return isCheck() && isNextMoveImpossible();
+bool LogicBoardAtomic::isCheckMate() {
+    return !isKingDead() && isCheck() && isNextMoveImpossible();
 }
 
-bool LogicBoardStandard::isStaleMate() {
-    return !isCheck() && isNextMoveImpossible();
+bool LogicBoardAtomic::isStaleMate() {
+    return !isKingDead() && !isCheck() && isNextMoveImpossible();
 }
 
-bool LogicBoardStandard::isBoardLegal() {
+bool LogicBoardAtomic::isBoardLegal() {
     int kingPos = getKingSquareIndex(mIsWhiteTurn ^ 1);
-    return !isSquareUnderAttack(kingPos, mIsWhiteTurn);
+    int kingPosB = getKingSquareIndex(mIsWhiteTurn);
+    int dis = std::max(abs(kingPos / 8 - kingPosB / 8), abs(kingPos % 8 - kingPosB % 8));
+    return kingPos != -1 && (kingPosB == -1 || dis == 1 || !isSquareUnderAttack(kingPos, mIsWhiteTurn));
     // ulong attackedSquares = getAttackedSquares(isWhiteTurn);
     // return !Bits::GetBit(attackedSquares, kingPos);
 }
 
-bool LogicBoardStandard::isEndGame() {
-    return isCheckMate() || isStaleMate() || isFiftyMove();
+bool LogicBoardAtomic::isEndGame() {
+    if (isKingDead()) {
+        return true;
+    }
+    return isKingDead() || isCheckMate() || isStaleMate() || isFiftyMove();
 }
 
-bool LogicBoardStandard::isWin() {
-    return isCheckMate();
+bool LogicBoardAtomic::isWin() {
+    return isKingDead() || isCheckMate();
 }
 
-bool LogicBoardStandard::isDraw() {
-    return isStaleMate() || isFiftyMove();
+bool LogicBoardAtomic::isDraw() {
+    return !isKingDead() && (isStaleMate() || isFiftyMove());
 }
 
-Board::EndFlag LogicBoardStandard::getEndFlag() {
+Board::EndFlag LogicBoardAtomic::getEndFlag() {
+    if (isKingDead()) return EndFlag::KingDead;
     if (isCheckMate()) return EndFlag::Checkmate;
     if (isStaleMate()) return EndFlag::Stalemate;
     if (isFiftyMove()) return EndFlag::FiftyMove;
     return EndFlag::Unknown;
 }
 
-void LogicBoardStandard::MakeMove(Move move, bool inSearch) {
+void LogicBoardAtomic::MakeMove(Move move, bool inSearch) {
     int startSquare = move.startSquare;
     int targetSquare = move.targetSquare;
     int flag = move.flag;
@@ -75,11 +116,6 @@ void LogicBoardStandard::MakeMove(Move move, bool inSearch) {
     int newCastlingRights = presentGameState.castlingRights;
     int newEnpassantFile = -1;
 
-    // Handle captures (remove piece captured)
-    if (capturedPiece != PIECE::None) {
-        // iBoard.removePieceAtSquare(capturedPiece, capturedSquare);
-        pieces[capturedSquare] = PIECE::None;
-    }
 
     /// Note: After handle captures, piece can move to targetSquare
     MovePiece(movePiece, startSquare, targetSquare);
@@ -104,6 +140,17 @@ void LogicBoardStandard::MakeMove(Move move, bool inSearch) {
         pieces[targetSquare] = promotionPiece;
     }
 
+    // Handle captures (remove piece captured)
+    if (capturedPiece != PIECE::None) {
+        // iBoard.removePieceAtSquare(capturedPiece, capturedSquare);
+        ulong bit = BitboardUtility::KingMoves[capturedSquare];
+
+        for(int square = Bits::PopBit(bit); square != -1; square = Bits::PopBit(bit)) {
+            if (PIECE::PieceType(pieces[square]) != PIECE::Pawn)
+                pieces[square] = PIECE::None;
+        }
+        pieces[capturedSquare] = PIECE::None;
+    }
     /////////////////////// Update Current State ///////////////////////
 
     // Update move 2 square, allow enpassant
@@ -138,57 +185,18 @@ void LogicBoardStandard::MakeMove(Move move, bool inSearch) {
     presentGameState = newGameState;
     mIsMovesGeneratorInCache = false;
 
+    piecesHistory.push_back(pieces);
     if (inSearch == false) {
         movesHistory.push_back(move);
     }
 }
 
-void LogicBoardStandard::UnmakeMove(Move move, bool inSearch) {
+void LogicBoardAtomic::UnmakeMove(Move move, bool inSearch) {
     mIsWhiteTurn ^= 1;
     cntMoves--;
 
-    int startSquare = move.startSquare;
-    int targetSquare = move.targetSquare;
-    int flag = move.flag;
-    bool isPromotion = move.isPromotion();
-    bool isEnpassant = (move.flag == Move::FLAG::EnPassant);
-
-    int movePiece = pieces[targetSquare];
-
-    int capturedSquare = targetSquare + (isEnpassant ? (mIsWhiteTurn ? -8 : 8) : 0);
-    int capturedPieceType = presentGameState.capturedPieceType;
-    int capturedPiece = capturedPieceType + PIECE::boolToColor(mIsWhiteTurn ^ 1);
-
-    /////////////////////// Move Piece + Process State ///////////////////////
-
-    // Handle Pawn (Promotion)
-    if (isPromotion) {
-        int promotionPiece = movePiece;
-        movePiece = PIECE::Pawn + (mIsWhiteTurn ? PIECE::White : PIECE::Black);
-        // iBoard.removePieceAtSquare(promotionPiece, targetSquare);
-        // iBoard.addPieceAtSquare(movePiece, targetSquare);
-        pieces[targetSquare] = movePiece;
-    }
-
-    MovePiece(movePiece, targetSquare, startSquare);
-
-    // Handle captures (remove piece captured)
-    if (capturedPieceType != PIECE::None) {
-        // iBoard.addPieceAtSquare(capturedPiece, capturedSquare);
-        pieces[capturedSquare] = capturedPiece;
-    }
-
-    // Handle King
-    if (move.flag == Move::FLAG::Castle) {
-        // Move Rook
-        int rookStartSquare = startSquare + (targetSquare < startSquare ? -4 : 3);
-        int rookTargetSquare = startSquare + (targetSquare < startSquare ? -1 : 1);
-        MovePiece(pieces[rookTargetSquare], rookTargetSquare, rookStartSquare);
-    }
-    
-    /// Note: may add zobrist key here (coming soon)  ///
-    /// UpdateSliderBitboards();
-
+    piecesHistory.pop_back();
+    pieces = piecesHistory.back();
     gameStateHistory.pop_back();
     presentGameState = gameStateHistory.back();
     mIsMovesGeneratorInCache = false;
@@ -198,7 +206,7 @@ void LogicBoardStandard::UnmakeMove(Move move, bool inSearch) {
     }
 }
 
-std::vector<Move> LogicBoardStandard::GenerateMoves() {
+std::vector<Move> LogicBoardAtomic::GenerateMoves() {
     if (mIsMovesGeneratorInCache) {
         return movesGeneratorCache;
     }
@@ -213,7 +221,7 @@ std::vector<Move> LogicBoardStandard::GenerateMoves() {
     return movesGeneratorCache;
 }
 
-std::vector<Move> LogicBoardStandard::GenerateMovesSquare(int startSquare) {
+std::vector<Move> LogicBoardAtomic::GenerateMovesSquare(int startSquare) {
     std::vector<Move> pseudoMoveList = GeneratePseudoMovesSquareNotKingCheck(startSquare);
     std::vector<Move> legalMoveList;
     for (Move pseudoMove : pseudoMoveList) {
@@ -224,15 +232,21 @@ std::vector<Move> LogicBoardStandard::GenerateMovesSquare(int startSquare) {
     return legalMoveList;
 }
 
-bool LogicBoardStandard::isMoveLegal(Move move) {
+bool LogicBoardAtomic::isMoveLegal(Move move) {
     return isMovePseudo(move) && isPseudoMoveLegal(move);
 }
 
-bool LogicBoardStandard::isMovePseudo(Move move) const {
+/// Private
+
+bool LogicBoardAtomic::isKingDead() const {
+    return getKingSquareIndex(mIsWhiteTurn) == -1;
+}
+
+bool LogicBoardAtomic::isMovePseudo(Move move) const {
     return false;
 }
 
-bool LogicBoardStandard::isPseudoMoveLegal(Move move) {
+bool LogicBoardAtomic::isPseudoMoveLegal(Move move) {
     if (!isPseudoMoveLegalNotKingCheck(move)) return false;
     MakeMove(move, true);
     bool ans = isBoardLegal();
@@ -240,7 +254,7 @@ bool LogicBoardStandard::isPseudoMoveLegal(Move move) {
     return ans;
 }
 
-bool LogicBoardStandard::isPseudoMoveLegalNotKingCheck(Move move) const {
+bool LogicBoardAtomic::isPseudoMoveLegalNotKingCheck(Move move) const {
 /// assert that startPiece has the same color as isWhiteTurn
     int startSquare = move.startSquare;
     int targetSquare = move.targetSquare;
@@ -318,12 +332,14 @@ bool LogicBoardStandard::isPseudoMoveLegalNotKingCheck(Move move) const {
         }
     }
     if (startPieceType == PIECE::King) {
+        if (getPiece(targetSquare) != PIECE::None)
+            return false;
         return true;
     }
     return false;
 }
 
-std::vector<Move> LogicBoardStandard::GeneratePseudoMovesNotKingCheck() const {
+std::vector<Move> LogicBoardAtomic::GeneratePseudoMovesNotKingCheck() const {
     std::vector<Move> moves;
     for(int i = 0; i < 64; i++) 
     if (PIECE::PieceColor(getPiece(i)) == PIECE::boolToColor(mIsWhiteTurn)) {
@@ -336,7 +352,7 @@ std::vector<Move> LogicBoardStandard::GeneratePseudoMovesNotKingCheck() const {
     return moves;
 }
 
-std::vector<Move> LogicBoardStandard::GeneratePseudoMovesSquareNotKingCheck(int startSquare) {
+std::vector<Move> LogicBoardAtomic::GeneratePseudoMovesSquareNotKingCheck(int startSquare) {
     std::vector<Move> moves;
     std::vector<Move> tmpMoves = BitboardProcess::getPseudoMoves(startSquare, getPiece(startSquare));
     for(Move move : tmpMoves) {
@@ -346,7 +362,7 @@ std::vector<Move> LogicBoardStandard::GeneratePseudoMovesSquareNotKingCheck(int 
     return moves;
 }
 
-ulong LogicBoardStandard::getAttackedSquares(bool isYourTurn) const {
+ulong LogicBoardAtomic::getAttackedSquares(bool isYourTurn) const {
     ulong attackedSquares = 0;
     for(int startSquare = 0; startSquare < 64; startSquare++) {
         int startPiece = getPiece(startSquare);
@@ -362,12 +378,12 @@ ulong LogicBoardStandard::getAttackedSquares(bool isYourTurn) const {
     return attackedSquares;
 }
 
-bool LogicBoardStandard::isSquareUnderAttack(int targetSquare, bool isWhiteTurn) const {
+bool LogicBoardAtomic::isSquareUnderAttack(int targetSquare, bool isWhiteTurn) const {
     ulong attackedSquares = getAttackedSquares(isWhiteTurn);
     return Bits::GetBit(attackedSquares, targetSquare);
 }
 
-bool LogicBoardStandard::isPreventPiece(int startSquare, int targetSquare) const {
+bool LogicBoardAtomic::isPreventPiece(int startSquare, int targetSquare) const {
     Point startIndex2D(startSquare / 8, startSquare % 8);
     Point endIndex2D(targetSquare / 8, targetSquare % 8);
     Point diff = endIndex2D - startIndex2D;

@@ -12,9 +12,9 @@ OptionScreen::OptionScreen() : Screen() {
     VariantsOptionPosition   = Point(middle, 80 * 1);
     ModeOptionPosition       = Point(middle, 80 * 2);
     DifficultyOptionPosition = Point(middle, 80 * 3);
-    BotHelpOptionPosition    = Point(middle, 80 * 4);
-    TimeTotalOptionPosition  = Point(middle, 80 * 5);
-    TimeExtraOptionPosition  = Point(middle, 80 * 6);
+    TimeTotalOptionPosition  = Point(middle, 80 * 4);
+    TimeExtraOptionPosition  = Point(middle, 80 * 5);
+    BotHelpOptionPosition    = Point(middle, 80 * 6);
 
     ContinueButtonPosition = Point(middle - 1.2 * ButtonSize.x, 600);
     NewGameButtonPosition  = Point(middle - 0.0 * ButtonSize.x, 600);
@@ -28,19 +28,19 @@ OptionScreen::OptionScreen() : Screen() {
 
     GameAttributes gameAttributes = GameAttributes();
 
-    std::vector<std::string> variantsList = {"Standard", "King of the Hill"};
+    std::vector<std::string> variantsList = {"Standard", "King of the Hill", "Atomic"};
     std::vector<std::string> modeList = {"PvE White", "PvE Black", "PvP", "EvE"};
     std::vector<std::string> levelList = {"Easy", "Medium", "Hard"};
-    std::vector<std::string> botHelpList = {"Bot Help Off", "Bot Help On"};
     std::vector<std::string> timeTotalList = {"1m", "2m", "3m", "5m", "10m", "15m", "30m", "60m"};
     std::vector<std::string> timeExtraList = {"0s", "2s", "5s", "10s", "15s", "30s"};
+    std::vector<std::string> botHelpList = {"Bot Help Off", "Bot Help On"};
 
     VariantsOption   = new ButtonOption(3, VariantsOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, variantsList, gameAttributes.getVariants(), 2);
     ModeOption       = new ButtonOption(4, ModeOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, modeList, gameAttributes.getMode(), 2);
     DifficultyOption = new ButtonOption(5, DifficultyOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, levelList, gameAttributes.getLevel(), 2);
-    BotHelpOption    = new ButtonOption(6, BotHelpOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, botHelpList, gameAttributes.getIsBotHelp(), 2);
-    TimeTotalOption  = new ButtonOption(7, TimeTotalOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeTotalList, gameAttributes.getTimeTotalMode(), 2);
-    TimeExtraOption  = new ButtonOption(8, TimeExtraOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeExtraList, gameAttributes.getTimeExtraMode(), 2);
+    TimeTotalOption  = new ButtonOption(6, TimeTotalOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeTotalList, gameAttributes.getTimeTotalMode(), 2);
+    TimeExtraOption  = new ButtonOption(7, TimeExtraOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeExtraList, gameAttributes.getTimeExtraMode(), 2);
+    BotHelpOption    = new ButtonOption(8, BotHelpOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, botHelpList, gameAttributes.getIsBotHelp(), 2);
 }
 
 OptionScreen::~OptionScreen() {
@@ -71,17 +71,17 @@ void OptionScreen::handleEvent(const sf::Event& event) {
     if (DifficultyOption->handleEvent(event)) {
         isChange = true;
     }
-    if (BotHelpOption->handleEvent(event)) {
-        isChange = true;
-    }
     if (TimeTotalOption->handleEvent(event)) {
         isChange = true;
     }
     if (TimeExtraOption->handleEvent(event)) {
         isChange = true;
     }
+    if (BotHelpOption->handleEvent(event)) {
+        isChange = true;
+    }
     if (isChange) {
-        GameAttributes gameAttributes(VariantsOption->getCurrentSelection(), ModeOption->getCurrentSelection(), DifficultyOption->getCurrentSelection(), (bool) BotHelpOption->getCurrentSelection(), TimeTotalOption->getCurrentSelection(), TimeExtraOption->getCurrentSelection());
+        GameAttributes gameAttributes(VariantsOption->getCurrentSelection(), ModeOption->getCurrentSelection(), DifficultyOption->getCurrentSelection(), TimeTotalOption->getCurrentSelection(), TimeExtraOption->getCurrentSelection(), (bool) BotHelpOption->getCurrentSelection());
         FileManager::SaveThemeConfig(theme->getThemeIndex(), gameAttributes);
     }
     if (ContinueButton->handleEvent(event)) {
@@ -110,9 +110,9 @@ void OptionScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     target.draw(*VariantsOption);
     target.draw(*ModeOption);
     target.draw(*DifficultyOption);
-    target.draw(*BotHelpOption);
     target.draw(*TimeTotalOption);
     target.draw(*TimeExtraOption);
+    target.draw(*BotHelpOption);
 }
 
 void OptionScreen::formatTheme() {
@@ -122,7 +122,7 @@ void OptionScreen::formatTheme() {
     BackButton->setColorBM(theme->getColorDefault());
     ModeOption->setColorBM(theme->getColorDefault());
     DifficultyOption->setColorBM(theme->getColorDefault());
-    BotHelpOption->setColorBM(theme->getColorDefault());
     TimeTotalOption->setColorBM(theme->getColorDefault());
     TimeExtraOption->setColorBM(theme->getColorDefault());
+    BotHelpOption->setColorBM(theme->getColorDefault());
 }

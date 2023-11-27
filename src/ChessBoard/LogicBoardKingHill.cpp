@@ -10,16 +10,15 @@ LogicBoardKingHill::LogicBoardKingHill()
     mIsSquareHill = std::vector<bool>(64, 0);
     mIsSquareHill[27] = 1;
     mIsSquareHill[28] = 1;
-    mIsSquareHill[29] = 1;
-    mIsSquareHill[30] = 1;
+    mIsSquareHill[35] = 1;
+    mIsSquareHill[36] = 1;
 }
 
 LogicBoardKingHill::~LogicBoardKingHill() {
 }
 
 Board *LogicBoardKingHill::clone() const {
-    Board *cloneBoard = FactoryBoard::CreateBoard("kingofthehill");
-    printf("Aa");
+    LogicBoardKingHill *cloneBoard = new LogicBoardKingHill();
     *cloneBoard = *this;
     return cloneBoard;
 }

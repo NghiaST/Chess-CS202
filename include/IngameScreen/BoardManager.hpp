@@ -36,7 +36,8 @@ public:
         TIMEOUT,
         THREEFOLDREP,
         FIFTYMOVE,
-        KINGHILL
+        KINGHILL,
+        KINGDEAD
     };
 
 public:
@@ -58,6 +59,9 @@ public:
     bool isStaleMate() const;
     bool isEndGame() const;
     const Board& getBoard() const;
+    ENDFLAG getEndGame() const;
+    std::string getStringEndGame() const;
+    bool isAutoRestart() const;
 
     // Modifiers
     void NewGame();

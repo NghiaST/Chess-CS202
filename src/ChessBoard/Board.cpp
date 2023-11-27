@@ -2,6 +2,7 @@
 #include <ChessBoard/LogicBoard.hpp>
 #include <ChessBoard/LogicBoardStandard.hpp>
 #include <ChessBoard/LogicBoardKingHill.hpp>
+#include <ChessBoard/LogicBoardAtomic.hpp>
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -29,16 +30,6 @@ Board::Board(const Board &board) {
     gameStateHistory = board.gameStateHistory;
     movesHistory = board.movesHistory;
 }
-
-// Board& Board::operator=(const Board &board) {
-//     pieces = board.pieces;
-//     mIsWhiteTurn = board.mIsWhiteTurn;
-//     cntMoves = board.cntMoves;
-//     presentGameState = board.presentGameState;
-//     gameStateHistory = board.gameStateHistory;
-//     movesHistory = board.movesHistory;
-//     return *this;
-// }
 
 Board::~Board() {}
 
@@ -139,6 +130,9 @@ Board *FactoryBoard::CreateBoard(std::string boardType) {
     }
     else if (boardType == "kingofthehill") {
         return new LogicBoardKingHill();
+    }
+    else if (boardType == "atomic") {
+        return new LogicBoardAtomic();
     }
 }
 

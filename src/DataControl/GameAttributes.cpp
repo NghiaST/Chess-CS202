@@ -45,7 +45,6 @@ void GameAttributes::Loading() {
 void GameAttributes::Fresh() {
     if (mode == 1) {
         isPlayerWhite = false;
-        level = 0;
     }
     else
         isPlayerWhite = true;
@@ -113,6 +112,9 @@ bool GameAttributes::IsWhiteTurn() const {
     return isWhiteTurn;
 }
 
+std::string GameAttributes::getVariantsName() const {
+    return variantsName[variants];
+}
 int GameAttributes::getCurrentTime() const {
     if (isWhiteTurn)
         return timeWhite;

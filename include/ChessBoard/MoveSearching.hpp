@@ -13,7 +13,7 @@ public:
     MoveSearching(int depth, std::shared_ptr<bool> stopflag);
     ~MoveSearching();
 
-    void setFlag(bool flag);
+    // void setFlag(bool flag);
     int Searching(Board& board, int timeSearchingMs, int searchDepth); //, int alpha, int beta, bool isMaximizingPlayer);
     int CalculateScore(const Board& board);
     std::vector<Move> getRankMove(int numberMoves); // get some best moves

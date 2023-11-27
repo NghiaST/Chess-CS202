@@ -1,5 +1,5 @@
-#ifndef __LogicBoardStandard_hpp__
-#define __LogicBoardStandard_hpp__
+#ifndef __LogicBoardAtomic_hpp__
+#define __LogicBoardAtomic_hpp__
 
 #include <ChessBoard/LogicBoard.hpp>
 #include <vector>
@@ -7,11 +7,14 @@
 typedef unsigned long long ulong;
 class Move;
 
-class LogicBoardStandard : public LogicBoard {
+class LogicBoardAtomic : public LogicBoard {
 public:
-    LogicBoardStandard();
-    virtual ~LogicBoardStandard();
+    LogicBoardAtomic();
+    virtual ~LogicBoardAtomic();
     Board* clone() const;
+
+    void LoadPosition(PositionInfo posInfo) override;
+    void Reset() override;
 
     // Move Validation
     bool isCheck() const;
@@ -34,6 +37,8 @@ public:
     // virtual Move getFlagMove(int startSquare, int targetSquare) = 0;
 
 private:
+    bool isKingDead() const;
+
     /// Check if this move is pseudo move
     bool isMovePseudo(Move move) const;
 
@@ -48,6 +53,9 @@ private:
     ulong getAttackedSquares(bool isYourTurn) const;
     bool isSquareUnderAttack(int targetSquare, bool mIsWhiteTurn) const;
     bool isPreventPiece(int startSquare, int targetSquare) const;
+
+private:
+    std::vector<std::vector<int>> piecesHistory;
 };
 
 #endif

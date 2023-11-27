@@ -17,7 +17,8 @@ public:
         Stalemate,
         ThreefoldRep,
         FiftyMove,
-        KingHill
+        KingHill,
+        KingDead
     };
 
 public:

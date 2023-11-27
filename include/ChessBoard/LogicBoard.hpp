@@ -12,10 +12,10 @@ public:
     int getKingSquareIndex(bool colorTurn) const;
 
     // Loading Positions
-    void LoadPosition(PositionInfo posInfo);
+    virtual void LoadPosition(PositionInfo posInfo);
     void LoadPosition(std::string FEN_notation);
     void LoadBasicPosition();
-    void Reset();
+    virtual void Reset();
 
     // Move Validation
     bool isNextMoveImpossible();

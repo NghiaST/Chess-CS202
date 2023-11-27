@@ -59,13 +59,7 @@ void HomeScreen::handleEvent(const sf::Event& event) {
 void HomeScreen::update(sf::Time deltaTime) {
     TitleScreen->update(deltaTime);
 }
-
 void HomeScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
-    // PlayButton->updateRender();
-    // SettingButton->updateRender();
-    // StatisticsButton->updateRender();
-    // ExitButton->updateRender();
-    
     Background.draw(target);
     target.draw(*TitleScreen);
     target.draw(*PlayButton);

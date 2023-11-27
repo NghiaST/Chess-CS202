@@ -4,7 +4,7 @@
 BoardManager::BoardManager(Point renderPosition, Point renderSize) 
     : GameAttributes()
 {
-    board = FactoryBoard::CreateBoard("kingofthehill");
+    board = FactoryBoard::CreateBoard(GameAttributes::getVariantsName());
     bot = new Bot();
     theme = Theme::getInstance();
     promotionManager = new PromotionManager(0, renderPosition, renderSize);
@@ -84,8 +84,52 @@ const Board &BoardManager::getBoard() const {
     return *board;
 }
 
-// Modifiers
+BoardManager::ENDFLAG BoardManager::getEndGame() const {
+    return mEndFlag;
+}
 
+std::string BoardManager::getStringEndGame() const {
+    std::string res = "by ";
+    switch (mEndFlag) {
+        case ENDFLAG::CHECKMATE:
+            res += "checkmate";
+            break;
+        case ENDFLAG::STALEMATE:
+            res += "stalemate";
+            break;
+        case ENDFLAG::AGREEDRAW:
+            res += "agreedraw";
+            break;
+        case ENDFLAG::RESIGN:
+            res += "resign";
+            break;
+        case ENDFLAG::TIMEOUT:
+            res += "timeout";
+            break;
+        case ENDFLAG::THREEFOLDREP:
+            res += "threefoldrep";
+            break;
+        case ENDFLAG::FIFTYMOVE:
+            res += "fiftymove";
+            break;
+        case ENDFLAG::KINGHILL:
+            res += "kinghill";
+            break;
+        case ENDFLAG::KINGDEAD:
+            res += "kingdead";
+            break;
+        default:
+            res += "unknown";
+            break;
+    }
+    return res;
+}
+
+bool BoardManager::isAutoRestart() const {
+    return mIsAutoRestart;
+}
+
+// Modifiers
 void BoardManager::freshState() {
     mIsCheck = board->isCheck();
     mIsCheckMate = board->isCheckMate();
@@ -121,6 +165,9 @@ void BoardManager::freshState() {
                 break;
             case Board::EndFlag::KingHill:
                 EndGame(ENDFLAG::KINGHILL);
+                break;
+            case Board::EndFlag::KingDead:
+                EndGame(ENDFLAG::KINGDEAD);
                 break;
             default:
                 break;
@@ -187,7 +234,7 @@ void BoardManager::Undo() {
     if (!board->UndoMoveCache()) return;
     freshState();
 
-    if (isBot[mIsWhiteTurn] == false) return;
+    if (isBot[mIsWhiteTurn] == false || gameStatus == ENDGAME) return;
     if (!board->UndoMoveCache()) return;
     freshState();
 }
@@ -196,7 +243,7 @@ void BoardManager::Redo() {
     if (!board->RedoMoveCache()) return;
     freshState();
 
-    if (isBot[mIsWhiteTurn] == false) return;
+    if (isBot[mIsWhiteTurn] == false || gameStatus == ENDGAME) return;
     if (!board->RedoMoveCache()) return;
     freshState();
 }
@@ -227,6 +274,9 @@ void BoardManager::EndGame(ENDFLAG mEndFlag) {
             gameResult = CHESS::COLOR::Both;
             break;
         case ENDFLAG::KINGHILL:
+            gameResult = (CHESS::COLOR) (mIsWhiteTurn ^ 1);
+            break;
+        case ENDFLAG::KINGDEAD:
             gameResult = (CHESS::COLOR) (mIsWhiteTurn ^ 1);
             break;
         default:

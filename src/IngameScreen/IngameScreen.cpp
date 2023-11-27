@@ -31,6 +31,8 @@ IngameScreen::IngameScreen() : Screen() {
     newgameButton = new Button(54, newgameButtonPosition, buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "New Game");
     backButton    = new Button(55, backButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Back"); 
     autoRestartOption = new ButtonOption(56, autoRestartOptionPosition, buttonSize, false, true, &theme->getFont(), theme->getColorDefault(), 10, {"Off", "On"});
+    notificationEndGame = new NotificationEndGame(0, Point(INTERFACE::WindowSize) / 2, Point(300, 300), true, true, &theme->getFont(), 1, "");
+    notificationEndGame->setIsPrint(false);
     timeButton->setReverseTable(boardManager->isBoardRotate());
 
     isPieceHold = false;
@@ -44,10 +46,12 @@ IngameScreen::IngameScreen() : Screen() {
         {"redo", 4},
         {"newgame", 5},
         {"back", 6},
-        {"autoRestartOption", 7}
+        {"autoRestartOption", 7},
+        {"notificationEndGame", -1}
     };
     priority = defaultPriority;
     handleOrder = {
+        "notificationEndGame",
         "boardManager",
         "time",
         "save",
@@ -68,6 +72,7 @@ IngameScreen::~IngameScreen() {
     delete newgameButton;
     delete backButton;
     delete autoRestartOption;
+    delete notificationEndGame;
 }
 
 void IngameScreen::handleEvent(const sf::Event& event) {
@@ -94,16 +99,10 @@ void IngameScreen::handleEvent(const sf::Event& event) {
         if (name == "boardManager") {
             status = boardManager->handleEvent(event);
             if (status == "make move") {
-                timeButton->setTurn(boardManager->getTurn());
-                timeButton->setIsCountDown(true);
                 if (boardManager->isEndGame()) {
-                    timeButton->setIsCountDown(false);
-                    if (boardManager->isCheckMate()) {
-                        status = "checkmate";
-                    }
-                    else if (boardManager->isStaleMate()) {
-                        status = "stalemate";
-                    }
+                    status = "end game";
+                    if (boardManager->isAutoRestart() == false)
+                        notificationEndGame->setEndGame(boardManager->getResult(), boardManager->getStringEndGame());
                 }
             }
         }
@@ -141,10 +140,6 @@ void IngameScreen::handleEvent(const sf::Event& event) {
                 isScreenChange = true;
                 nextScreen = ScreenType::HomeScreen;
             }
-            // if (status == "newgame") {
-            //     boardManager->NewGame();
-            //     timeButton->reset();
-            // }
         }
         else if (name == "autoRestartOption") {
             status = autoRestartOption->handleEvent(event) ? "autoRestartOption" : "";
@@ -154,6 +149,22 @@ void IngameScreen::handleEvent(const sf::Event& event) {
                 }
                 else {
                     boardManager->setAutoRestart(true);
+                }
+            }
+        }
+        else if (name == "notificationEndGame") {
+            status = notificationEndGame->handleEvent(event) ? "notificationEndGame" : "";
+            if (status == "notificationEndGame") {
+                if (notificationEndGame->getOnclick() == NotificationEndGame::Onclick::NEW_GAME) {
+                    boardManager->NewGame();
+                    timeButton->setReverseTable(boardManager->isBoardRotate());
+                }
+                else if (notificationEndGame->getOnclick() == NotificationEndGame::Onclick::BACK) {
+                    isScreenChange = true;
+                    nextScreen = ScreenType::HomeScreen;
+                }
+                else if (notificationEndGame->getOnclick() == NotificationEndGame::Onclick::CLOSE) {
+                    notificationEndGame->setIsPrint(false);
                 }
             }
         }
@@ -175,12 +186,9 @@ void IngameScreen::update(sf::Time deltaTime) {
 
             if (status == "make move") {
                 if (boardManager->isEndGame()) {
-                    if (boardManager->isCheckMate()) {
-                        status = "checkmate";
-                    }
-                    else if (boardManager->isStaleMate()) {
-                        status = "stalemate";
-                    }
+                    status = "end game";
+                    if (boardManager->isAutoRestart() == false)
+                        notificationEndGame->setEndGame(boardManager->getResult(), boardManager->getStringEndGame());
                 }
             }
 
@@ -209,6 +217,7 @@ void IngameScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     target.draw(*autoRestartOption);
     timeButton->draw(target);
     boardManager->draw(target, states);
+    notificationEndGame->draw(target);
 }
 
 void IngameScreen::formatTheme() {

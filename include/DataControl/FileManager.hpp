@@ -30,6 +30,7 @@ public:
     static void LoadThemeConfig(ThemeIndex& themeIndex, GameAttributes& gameAttributes);
     static std::vector<StatisticsData> LoadStatistics();
 
+    static void CheckConfigAndSave();
     static void RemoveSaveGame();
 
 private:

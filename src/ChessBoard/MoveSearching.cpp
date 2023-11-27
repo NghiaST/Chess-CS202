@@ -17,7 +17,6 @@ MoveSearching::~MoveSearching() {
     }
     // this->stopflag = nullptr;
 }
-int w;
 
 int MoveSearching::Searching(Board& board, int timeSearchingMs, int searchDepth) {
     sf::Clock clock;
@@ -33,7 +32,7 @@ int MoveSearching::Searching(Board& board, int timeSearchingMs, int searchDepth)
         }
         else {
             if (board.isEndGame()) {
-                score = analysisPoint = board.isWin() ? -1000000 : 0; //board.isDraw() ? 0 : 1000000;
+                score = analysisPoint = board.isWin() ? -1000000 : board.isDraw() ? 0 : 1000000;
                 isSearchComplete = true;
                 return analysisPoint;
             }

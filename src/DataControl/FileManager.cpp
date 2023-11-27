@@ -160,11 +160,12 @@ void FileManager::SaveConfig(const GameAttributes& gameAttributes) {
 void FileManager::SaveThemeConfig(const ThemeIndex& themeIndex, const GameAttributes& gameAttributes) {
     std::ofstream file(datConfig);
     file << themeIndex.BackgroundIndex << " " << themeIndex.PieceIndex << " " << themeIndex.BoardIndex << " " << themeIndex.ButtonIndex << " " << themeIndex.TextIndex << "\n";
-    file << gameAttributes.variants << " " << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.isBotHelp << " " << gameAttributes.timeTotalMode << " " << gameAttributes.timeExtraMode;
+    file << gameAttributes.variants << " " << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.timeTotalMode << " " << gameAttributes.timeExtraMode << " " << gameAttributes.isBotHelp;
     file.close();
 }
 
 bool FileManager::LoadGame(Board &board, GameAttributes &gameAttributes) {
+    CheckConfigAndSave();
     std::ifstream file(datSave);
     if (!file.is_open()) {
         board.LoadBasicPosition();
@@ -215,7 +216,7 @@ void FileManager::LoadConfig(GameAttributes& gameAttributes) {
     std::ifstream file(datConfig);
     int x;
     file >> x >> x >> x >> x >> x;
-    file >> gameAttributes.variants >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.isBotHelp >> gameAttributes.timeTotalMode >> gameAttributes.timeExtraMode;
+    file >> gameAttributes.variants >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.timeTotalMode >> gameAttributes.timeExtraMode >> gameAttributes.isBotHelp;
     file.close();
 }
 
@@ -227,7 +228,7 @@ void FileManager::LoadThemeConfig(ThemeIndex& themeIndex, GameAttributes& gameAt
     }
     std::ifstream file(datConfig);
     file >> themeIndex.BackgroundIndex >> themeIndex.PieceIndex >> themeIndex.BoardIndex >> themeIndex.ButtonIndex >> themeIndex.TextIndex;
-    file >> gameAttributes.variants >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.isBotHelp >> gameAttributes.timeTotalMode >> gameAttributes.timeExtraMode;
+    file >> gameAttributes.variants >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.timeTotalMode >> gameAttributes.timeExtraMode >> gameAttributes.isBotHelp;
     file.close();
 }
 
@@ -257,6 +258,35 @@ std::vector<StatisticsData> FileManager::LoadStatistics() {
     }
     file.close();
     return StatisticsList;
+}
+
+void FileManager::CheckConfigAndSave() {
+    if (!std::filesystem::exists(datConfig)) {
+        std::ofstream file(datConfig);
+        file << "0 0 0 0 0\n0 0 0 0 0 0";
+        file.close();
+    }
+    if (!std::filesystem::exists(datSave)) {
+        std::ofstream file(datSave);
+        file << "0 0 0 0 0\n0 0 0 0 0 0";
+        file.close();
+    }
+
+    std::ifstream file(datConfig);
+    GameAttributes gameAttributes(false);
+    int x;
+    file >> x >> x >> x >> x >> x;
+    file >> gameAttributes.variants >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.timeTotalMode >> gameAttributes.timeExtraMode >> gameAttributes.isBotHelp;
+    file.close();
+
+    std::ifstream file2(datSave);
+    GameAttributes gameAttributes2(false);
+    file2 >> gameAttributes2.variants >> gameAttributes2.mode >> gameAttributes2.level >> gameAttributes2.timeWhite >> gameAttributes2.timeBlack;
+    file2.close();
+
+    if (gameAttributes.variants != gameAttributes2.variants) {
+        RemoveSaveGame();
+    }
 }
 
 void FileManager::RemoveSaveGame() {

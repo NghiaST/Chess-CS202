@@ -7,6 +7,7 @@
 #include <DataControl/Image.hpp>
 #include <DataControl/Theme.hpp>
 #include <DataControl/ButtonOption.hpp>
+#include <DataControl/FileManager.hpp>
 #include <iostream>
 
 class OptionScreen : public Screen {

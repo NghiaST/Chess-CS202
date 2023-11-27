@@ -25,10 +25,10 @@ LFLAGS_RELEASE = -L $(SFMLLIBDIR) $(LIBS_RELEASE)
 SUBFOLDER = ChessBoard IngameScreen DataControl HomeScreen SettingScreen StatisticsScreen OptionScreen Other Helpers
 
 FILE_ORIGIN = main Graphic Chess Screen
-FILE_CHESSBOARD = Bitboard BitboardProcess Board Bot GameState Move MoveSearching LogicBoard LogicBoardStandard LogicBoardKingHill
+FILE_CHESSBOARD = Bitboard BitboardProcess Board Bot GameState Move MoveSearching LogicBoard LogicBoardStandard LogicBoardKingHill LogicBoardAtomic
 FILE_HELPERS = BoardHelpers Book Fen MoveUtility
 FILE_HOMESCREEN = HomeScreen
-FILE_INGAMESCREEN = BoardManager BoardPrint IngameScreen PiecePrint TimeButton PromotionManager
+FILE_INGAMESCREEN = BoardManager BoardPrint IngameScreen PiecePrint TimeButton PromotionManager NotificationEndGame
 FILE_DATACONTROL = Arrow Button ButtonOption Circle Color FileManager GameAttributes GameSettings Image Include Point RenderRect TextBox Theme
 FILE_OPTIONSCREEN = OptionScreen
 FILE_SETTINGSCREEN = SettingScreen

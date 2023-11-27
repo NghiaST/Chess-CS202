@@ -6,6 +6,7 @@
 #include <IngameScreen/TimeButton.hpp>
 #include <DataControl/ButtonOption.hpp>
 #include <DataControl/Image.hpp>
+#include <IngameScreen/NotificationEndGame.hpp>
 #include <SFML/Graphics.hpp>
 
 class IngameScreen : public Screen {
@@ -45,6 +46,7 @@ private:
     Button* newgameButton;
     Button* backButton;
     ButtonOption* autoRestartOption;
+    NotificationEndGame* notificationEndGame;
 
     bool isPieceHold;
     Point mousePosition;
