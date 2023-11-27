@@ -34,6 +34,9 @@ public:
     int getTimeExtraMode() const;
     bool getIsBotHelp() const;
 
+    // Modifiers
+    void setMode(int mode);
+
 protected:
     int variants;   // 0: Standard, 1: King of the Hill, 2: Crazyhouse
     int mode;

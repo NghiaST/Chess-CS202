@@ -13,8 +13,8 @@ Move MoveUtility::GetMoveFromNameUCI(std::string moveName, const Board& board) {
 
     Move::FLAG flag = Move::NoFlag;
 
-
     if (pieceType == PIECE::Pawn) {
+        printf("moveName: %s\n", moveName.c_str());
         // Promotion
         if (moveName.length() > 4)
         {

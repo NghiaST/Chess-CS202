@@ -21,6 +21,9 @@ private:
     Point PlayButtonPosition;
     Point PlayButtonSize;
 
+    Point PuzzlesButtonPosition;
+    Point PuzzlesButtonSize;
+
     Point SettingButtonPosition;
     Point SettingButtonSize;
 
@@ -38,6 +41,7 @@ private:
     Image Background;
     DynamicTextBox* TitleScreen;
     Button* PlayButton;
+    Button* PuzzlesButton;
     Button* SettingButton;
     Button* StatisticsButton;
     Button* ExitButton;

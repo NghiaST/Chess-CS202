@@ -22,7 +22,7 @@ LIBS_RELEASE = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lsfml-n
 LFLAGS = -L $(SFMLLIBDIR) $(LIBS)
 LFLAGS_RELEASE = -L $(SFMLLIBDIR) $(LIBS_RELEASE)
 
-SUBFOLDER = ChessBoard IngameScreen DataControl HomeScreen SettingScreen StatisticsScreen OptionScreen Other Helpers
+SUBFOLDER = ChessBoard IngameScreen DataControl HomeScreen PuzzlesScreen SettingScreen StatisticsScreen OptionScreen Other Helpers
 
 FILE_ORIGIN = main Graphic Chess Screen
 FILE_CHESSBOARD = Bitboard BitboardProcess Board Bot GameState Move MoveSearching LogicBoard LogicBoardStandard LogicBoardKingHill LogicBoardAtomic
@@ -31,6 +31,7 @@ FILE_HOMESCREEN = HomeScreen
 FILE_INGAMESCREEN = BoardManager BoardPrint IngameScreen PiecePrint TimeButton PromotionManager NotificationEndGame
 FILE_DATACONTROL = Arrow Button ButtonOption Circle Color FileManager GameAttributes GameSettings Image Include Point RenderRect TextBox Theme
 FILE_OPTIONSCREEN = OptionScreen
+FILE_PUZZLESSCREEN = PuzzlesScreen BoardPuzzlesManager
 FILE_SETTINGSCREEN = SettingScreen
 FILE_STATISTICSSCREEN = StatisticsScreen Table ProcessStatistics
 
@@ -40,7 +41,7 @@ else
 	DIRECTORIES = $(OBJDIR) $(SUBFOLDER:%=$(OBJDIR)/%)
 endif
 
-FILE = $(FILE_ORIGIN) $(FILE_CHESSBOARD:%=ChessBoard/%)  $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%) $(FILE_HOMESCREEN:%=HomeScreen/%) $(FILE_SETTINGSCREEN:%=SettingScreen/%) $(FILE_STATISTICSSCREEN:%=StatisticsScreen/%) $(FILE_OPTIONSCREEN:%=OptionScreen/%) $(FILE_HELPERS:%=Helpers/%)
+FILE = $(FILE_ORIGIN) $(FILE_CHESSBOARD:%=ChessBoard/%)  $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%) $(FILE_HOMESCREEN:%=HomeScreen/%) $(FILE_SETTINGSCREEN:%=SettingScreen/%) $(FILE_STATISTICSSCREEN:%=StatisticsScreen/%) $(FILE_OPTIONSCREEN:%=OptionScreen/%) $(FILE_HELPERS:%=Helpers/%) $(FILE_PUZZLESSCREEN:%=PuzzlesScreen/%)
 
 FILE_O = $(FILE:%=%.o)
 FILE_CPP = $(FILE:%=%.cpp)

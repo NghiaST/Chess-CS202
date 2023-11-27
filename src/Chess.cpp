@@ -23,10 +23,6 @@ Chess::Chess() {
 }
 
 Chess::~Chess() {
-    // delete homeScreen;
-    // delete settingScreen;
-    // delete ingameScreen;
-    // delete statisticsScreen;
     delete mScreen;
     Theme::destroyInstance();
 }
@@ -86,6 +82,10 @@ void Chess::changeScreen(ScreenType screenType) {
         case ScreenType::HomeScreen:
             homeScreen = new HomeScreen();
             mScreen = homeScreen;
+            break;
+        case ScreenType::PuzzlesScreen:
+            puzzlesScreen = new PuzzlesScreen();
+            mScreen = puzzlesScreen;
             break;
         case ScreenType::SettingScreen:
             settingScreen = new SettingScreen();

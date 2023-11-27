@@ -23,12 +23,14 @@ public:
     static void SaveTheme(const ThemeIndex& themeIndex);
     static void SaveConfig(const GameAttributes& gameAttributes);
     static void SaveThemeConfig(const ThemeIndex& themeIndex, const GameAttributes& gameAttributes);
+
     // Load
     static bool LoadGame(Board& board, GameAttributes& gameAttributes);
     static ThemeIndex LoadTheme();
     static void LoadConfig(GameAttributes& gameAttributes);
     static void LoadThemeConfig(ThemeIndex& themeIndex, GameAttributes& gameAttributes);
     static std::vector<StatisticsData> LoadStatistics();
+    static void LoadPuzzles(Board& board, std::vector<Move>& movesSolution, std::string& quizName, std::string& quizLink, int puzzleNumber);
 
     static void CheckConfigAndSave();
     static void RemoveSaveGame();
@@ -40,6 +42,7 @@ private:
     static const std::string datStatistics;
     static const std::string datOnlineGame;
     static const std::string datUsers;
+    static const std::string datPuzzles;
 };
 
 #endif

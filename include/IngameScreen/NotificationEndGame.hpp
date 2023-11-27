@@ -17,6 +17,7 @@ public:
 
     Onclick getOnclick() const;
     void setEndGame(int result, std::string EndGameFlag);
+    void setEndGame(std::string showButtonText, std::string EndGameFlag);
 
 private:
     TextBox *showButton;

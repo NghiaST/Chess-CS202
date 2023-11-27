@@ -5,6 +5,7 @@
 #include <DataControl/Theme.hpp>
 #include <HomeScreen/HomeScreen.hpp>
 #include <IngameScreen/IngameScreen.hpp>
+#include <PuzzlesScreen/PuzzlesScreen.hpp>
 #include <SettingScreen/SettingScreen.hpp>
 #include <StatisticsScreen/StatisticsScreen.hpp>
 #include <OptionScreen/OptionScreen.hpp>
@@ -29,6 +30,7 @@ private:
     Screen* mScreen;
     IngameScreen* ingameScreen;
     HomeScreen* homeScreen;
+    PuzzlesScreen* puzzlesScreen;
     SettingScreen* settingScreen;
     StatisticsScreen* statisticsScreen;
     OptionScreen* optionScreen;

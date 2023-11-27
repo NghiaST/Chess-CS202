@@ -66,11 +66,11 @@ void ImageActive::setMouseStatus(int mousestatus, Point mousePosition) {
     this->mousePosition = mousePosition;
     if (mouseStatus == MOUSE::Hold) {
         setRenderPosition(mousePosition - renderSize / 2);
-        setPriorityPrint(1);
+        setPriorityPrint(2);
     }
     else {
         setRenderPosition(mPosition);
-        setPriorityPrint(2);
+        setPriorityPrint(1);
     }
 }
 

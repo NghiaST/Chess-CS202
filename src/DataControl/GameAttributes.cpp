@@ -24,8 +24,8 @@ GameAttributes::GameAttributes(int variants, int mode, int level, int timeTotalM
     this->isBotHelp = isBotHelp;
     this->isPlayerWhite = isPlayerWhite;
     this->isCountDown = false;
-    this->timeWhite = TOTAL[timeTotalMode] * 1000;
-    this->timeBlack = TOTAL[timeTotalMode] * 1000;
+    this->timeWhite = (timeTotalMode == -1 ? -1 : TOTAL[timeTotalMode] * 1000);
+    this->timeBlack = (timeTotalMode == -1 ? -1 : TOTAL[timeTotalMode] * 1000);
     Fresh();
 }
 
@@ -59,6 +59,7 @@ void GameAttributes::switchTurn() {
 }
 
 void GameAttributes::updateMakeMove() {
+    if (timeExtraMode == -1) return;
     if (isWhiteTurn) {
         timeWhite += EXTRA[timeExtraMode] * 1000;
     }
@@ -158,4 +159,10 @@ int GameAttributes::getTimeExtraMode() const {
 
 bool GameAttributes::getIsBotHelp() const {
     return isBotHelp;
+}
+
+// Modifiers
+void GameAttributes::setMode(int mode) {
+    this->mode = mode;
+    Fresh();
 }

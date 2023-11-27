@@ -8,6 +8,7 @@
 #include <ChessBoard/LogicBoard.hpp>
 #include <ChessBoard/LogicBoardStandard.hpp>
 #include <fstream>
+#include <sstream>
 #include <filesystem>
 #include <StatisticsScreen/ProcessStatistics.hpp>
 
@@ -17,6 +18,7 @@ const std::string FileManager::datSave = "dat/save.dat";
 const std::string FileManager::datStatistics = "dat/statistics.dat";
 const std::string FileManager::datOnlineGame = "dat/onlinegame.dat";
 const std::string FileManager::datUsers = "dat/users.dat";
+const std::string FileManager::datPuzzles = "dat/puzzles.csv";
 
 /*
     About datConfig:
@@ -258,6 +260,36 @@ std::vector<StatisticsData> FileManager::LoadStatistics() {
     }
     file.close();
     return StatisticsList;
+}
+
+void FileManager::LoadPuzzles(Board &board, std::vector<Move>& movesSolution, std::string& quizName, std::string& quizLink, int puzzleNumber) {
+    std::ifstream file(datPuzzles);
+    std::string line;
+    ++puzzleNumber;
+    while (puzzleNumber--) getline(file, line);
+    file.close();
+    std::stringstream ss(line);
+    std::string code, FEN, moves, unknown;
+    getline(ss, code, ',');
+    getline(ss, FEN, ',');
+    getline(ss, moves, ',');
+    getline(ss, unknown, ',');
+    getline(ss, unknown, ',');
+    getline(ss, unknown, ',');
+    getline(ss, unknown, ',');
+    getline(ss, quizName, ',');
+    getline(ss, quizLink, ',');
+    board.LoadPosition(FEN);
+    movesSolution.clear();
+    std::stringstream ss2(moves);
+    std::string move;
+    while (getline(ss2, move, ' ')) {
+        movesSolution.push_back(MoveUtility::GetMoveFromNameUCI(move, board));
+        board.MakeMove(movesSolution.back(), true);
+    }
+    for(int i = (int) movesSolution.size() - 1; i >= 0; --i) {
+        board.UnmakeMove(movesSolution[i], true);
+    }
 }
 
 void FileManager::CheckConfigAndSave() {

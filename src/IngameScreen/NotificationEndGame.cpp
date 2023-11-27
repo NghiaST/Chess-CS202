@@ -78,6 +78,12 @@ void NotificationEndGame::setEndGame(int result, std::string EndGameFlag) {
     Graphic::setIsPrint(true);
 }
 
+void NotificationEndGame::setEndGame(std::string showButtonText, std::string EndGameFlag) {
+    showButton->setText(showButtonText);
+    text->setText(EndGameFlag);
+    Graphic::setIsPrint(true);
+}
+
 void NotificationEndGame::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     if (!isPrint) return;
     target.draw(*showButton, states);
