@@ -1,20 +1,22 @@
-#include <DataControl/FileInit.hpp>
+#include <DataControl/FileManager.hpp>
 #include <DataControl/Theme.hpp>
 #include <DataControl/GameAttributes.hpp>
 #include <Helpers/MoveUtility.hpp>
 #include <Helpers/FEN.hpp>
 #include <ChessBoard/Move.hpp>
 #include <ChessBoard/Board.hpp>
+#include <ChessBoard/LogicBoard.hpp>
+#include <ChessBoard/LogicBoardStandard.hpp>
 #include <fstream>
 #include <filesystem>
 #include <StatisticsScreen/ProcessStatistics.hpp>
 
-const std::string FileInit::datHistory = "dat/history.dat";
-const std::string FileInit::datConfig = "dat/config.dat";
-const std::string FileInit::datSave = "dat/save.dat";
-const std::string FileInit::datStatistics = "dat/statistics.dat";
-const std::string FileInit::datOnlineGame = "dat/onlinegame.dat";
-const std::string FileInit::datUsers = "dat/users.dat";
+const std::string FileManager::datHistory = "dat/history.dat";
+const std::string FileManager::datConfig = "dat/config.dat";
+const std::string FileManager::datSave = "dat/save.dat";
+const std::string FileManager::datStatistics = "dat/statistics.dat";
+const std::string FileManager::datOnlineGame = "dat/onlinegame.dat";
+const std::string FileManager::datUsers = "dat/users.dat";
 
 /*
     About datConfig:
@@ -51,14 +53,14 @@ const std::string FileInit::datUsers = "dat/users.dat";
             line i: round i (whiteMove blackMove)
 */
 
-void FileInit::Init() {
+void FileManager::Init() {
     if (!std::filesystem::exists("dat")) {
         std::filesystem::create_directory("dat");
     }
     // if file is not exist then create file
     if (!std::filesystem::exists(datConfig)) {
         std::ofstream file(datConfig);
-        file << "0 0 0 0 0\n0 0 0";
+        file << "0 0 0 0 0\n0 0 0 0 0 0";
         file.close();
     }
     if (!std::filesystem::exists(datStatistics)) {
@@ -68,7 +70,7 @@ void FileInit::Init() {
     }
 }
 
-void FileInit::StoreCompletedGame(const Board &board, int mode, int level, int result) {
+void FileManager::StoreCompletedGame(const Board &board, const GameAttributes& gameAttributes, int result) {
     // line 1: number of games
     // then, each game have 2 lines
     /*
@@ -93,7 +95,7 @@ void FileInit::StoreCompletedGame(const Board &board, int mode, int level, int r
     std::ofstream file2(datHistory);
     file2 << cntGames + 1 << "\n";
     file2 << all;
-    file2 << mode << " " << level << " " << result << "\n";
+    file2 << gameAttributes.variants << " " << gameAttributes.mode << " " << gameAttributes.level << " " << result << "\n";
     std::vector<Move> movesHistory = board.getMovesHistory();
     for (int i = 0; i < (int)movesHistory.size(); ++i) {
         std::string moveName = MoveUtility::GetMoveNameUCI(movesHistory[i]);
@@ -102,18 +104,19 @@ void FileInit::StoreCompletedGame(const Board &board, int mode, int level, int r
     file2.close();
 }
 
-void FileInit::ExtractGame(const std::vector<Move>& movesHistory) {
+void FileManager::ExtractGame(const std::vector<Move>& movesHistory) {
     std::ofstream file("extract.txt");
-    Board board;
+    SBoard sBoard("standard");
+    Board* board = sBoard.getBoard();
     for (int i = 0; i < (int)movesHistory.size(); ++i) {
-        std::string moveName = MoveUtility::GetMoveNameSAN(movesHistory[i], board);
+        std::string moveName = MoveUtility::GetMoveNameSAN(movesHistory[i], *board);
         file << moveName << " \n"[i & 1];
-        board.MakeMove(movesHistory[i]);
+        board->MakeMove(movesHistory[i]);
     }
     file.close();
 }
 
-void FileInit::SaveGame(const Board& board, const GameAttributes& gameAttributes) {
+void FileManager::SaveGame(const Board& board, const GameAttributes& gameAttributes) {
     std::vector<Move> movesHistory = board.getMovesHistory();
     int cntMoves = board.getMoveCount();
     if (cntMoves == (int) movesHistory.size()) {
@@ -124,10 +127,9 @@ void FileInit::SaveGame(const Board& board, const GameAttributes& gameAttributes
     }
 }
 
-void FileInit::SaveGameMoves(const std::vector<Move>& movesHistory, const GameAttributes& gameAttributes) {
-    Board board;
+void FileManager::SaveGameMoves(const std::vector<Move>& movesHistory, const GameAttributes& gameAttributes) {
     std::ofstream file(datSave);
-    file << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.timeWhite << " " << gameAttributes.timeBlack << "\n";
+    file << gameAttributes.variants << " " << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.timeWhite << " " << gameAttributes.timeBlack << "\n";
     file << "UCI\n";
     for (int i = 0; i < (int)movesHistory.size(); ++i) {
         std::string moveName = MoveUtility::GetMoveNameUCI(movesHistory[i]);
@@ -136,7 +138,7 @@ void FileInit::SaveGameMoves(const std::vector<Move>& movesHistory, const GameAt
     file.close();
 }
 
-void FileInit::SaveGameFEN(const Board& board, const GameAttributes& gameAttributes) {
+void FileManager::SaveGameFEN(const Board& board, const GameAttributes& gameAttributes) {
     std::ofstream file(datSave);
     file << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.timeWhite << " " << gameAttributes.timeBlack << "\n";
     file << "FEN\n";
@@ -145,32 +147,31 @@ void FileInit::SaveGameFEN(const Board& board, const GameAttributes& gameAttribu
     file.close();
 }
 
-void FileInit::SaveTheme(const ThemeIndex& themeIndex) {
+void FileManager::SaveTheme(const ThemeIndex& themeIndex) {
     GameAttributes gameAttributes;
-    LoadOptions(gameAttributes.mode, gameAttributes.level, gameAttributes.isBotHelp, gameAttributes.timeTotalMode, gameAttributes.timeExtraMode);
-    SaveConfig(themeIndex, gameAttributes.mode, gameAttributes.level, gameAttributes.isBotHelp, gameAttributes.timeTotalMode, gameAttributes.timeExtraMode);
+    SaveThemeConfig(themeIndex, gameAttributes);
 }
 
-void FileInit::SaveOptions(int mode, int level, bool isBotHelp, int timeTotalMode, int timeExtraMode) {
+void FileManager::SaveConfig(const GameAttributes& gameAttributes) {
     ThemeIndex themeIndex = LoadTheme();
-    LoadOptions(mode, level, isBotHelp, timeTotalMode, timeExtraMode);
-    SaveConfig(themeIndex, mode, level, isBotHelp, timeTotalMode, timeExtraMode);
+    SaveThemeConfig(themeIndex, gameAttributes);
 }
 
-void FileInit::SaveConfig(const ThemeIndex& themeIndex, int mode, int level, bool isBotHelp, int timeTotalMode, int timeExtraMode) {
+void FileManager::SaveThemeConfig(const ThemeIndex& themeIndex, const GameAttributes& gameAttributes) {
     std::ofstream file(datConfig);
-    file << themeIndex.BackgroundIndex << " " << themeIndex.PieceIndex << " " << themeIndex.BoardIndex << " " << themeIndex.ButtonIndex << " " << themeIndex.TextIndex << "\n" << mode << " " << level << " " << isBotHelp << " " << timeTotalMode << " " << timeExtraMode;
+    file << themeIndex.BackgroundIndex << " " << themeIndex.PieceIndex << " " << themeIndex.BoardIndex << " " << themeIndex.ButtonIndex << " " << themeIndex.TextIndex << "\n";
+    file << gameAttributes.variants << " " << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.isBotHelp << " " << gameAttributes.timeTotalMode << " " << gameAttributes.timeExtraMode;
     file.close();
 }
 
-bool FileInit::LoadGame(Board &board, GameAttributes &gameAttributes) {
+bool FileManager::LoadGame(Board &board, GameAttributes &gameAttributes) {
     std::ifstream file(datSave);
     if (!file.is_open()) {
         board.LoadBasicPosition();
-        LoadOptions(gameAttributes.mode, gameAttributes.level, gameAttributes.isBotHelp, gameAttributes.timeTotalMode, gameAttributes.timeExtraMode);
+        LoadConfig(gameAttributes);
         return false;
     }
-    file >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.timeWhite >> gameAttributes.timeBlack;
+    file >> gameAttributes.variants >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.timeWhite >> gameAttributes.timeBlack;
     file.ignore();
     std::string line;
     getline(file, line);
@@ -191,11 +192,11 @@ bool FileInit::LoadGame(Board &board, GameAttributes &gameAttributes) {
     return false;
 }
 
-ThemeIndex FileInit::LoadTheme()
+ThemeIndex FileManager::LoadTheme()
 {
     if (!std::filesystem::exists(datConfig)) {
         std::ofstream file(datConfig);
-        file << "0 0 0 0 0\n0 0 0";
+        file << "0 0 0 0 0\n0 0 0 0 0 0";
         file.close();
     }
     std::ifstream file(datConfig);
@@ -205,30 +206,32 @@ ThemeIndex FileInit::LoadTheme()
     return themeIndex;
 }
 
-void FileInit::LoadOptions(int& mode, int& level, bool& isBotHelp, int& timeTotalMode, int& timeExtraMode) {
+void FileManager::LoadConfig(GameAttributes& gameAttributes) {
     if (!std::filesystem::exists(datConfig)) {
         std::ofstream file(datConfig);
-        file << "0 0 0 0 0\n0 0 0 0 0";
+        file << "0 0 0 0 0\n0 0 0 0 0 0";
         file.close();
     }
     std::ifstream file(datConfig);
     int x;
-    file >> x >> x >> x >> x >> x >> mode >> level >> isBotHelp >> timeTotalMode >> timeExtraMode;
+    file >> x >> x >> x >> x >> x;
+    file >> gameAttributes.variants >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.isBotHelp >> gameAttributes.timeTotalMode >> gameAttributes.timeExtraMode;
     file.close();
 }
 
-void FileInit::LoadConfig(ThemeIndex& themeIndex, int& mode, int& level, bool& isBotHelp, int& timeTotalMode, int& timeExtraMode) {
+void FileManager::LoadThemeConfig(ThemeIndex& themeIndex, GameAttributes& gameAttributes) {
     if (!std::filesystem::exists(datConfig)) {
         std::ofstream file(datConfig);
-        file << "0 0 0 0 0\n0 0 0 0 0";
+        file << "0 0 0 0 0\n0 0 0 0 0 0";
         file.close();
     }
     std::ifstream file(datConfig);
-    file >> themeIndex.BackgroundIndex >> themeIndex.PieceIndex >> themeIndex.BoardIndex >> themeIndex.ButtonIndex >> themeIndex.TextIndex >> mode >> level >> isBotHelp >> timeTotalMode >> timeExtraMode;
+    file >> themeIndex.BackgroundIndex >> themeIndex.PieceIndex >> themeIndex.BoardIndex >> themeIndex.ButtonIndex >> themeIndex.TextIndex;
+    file >> gameAttributes.variants >> gameAttributes.mode >> gameAttributes.level >> gameAttributes.isBotHelp >> gameAttributes.timeTotalMode >> gameAttributes.timeExtraMode;
     file.close();
 }
 
-std::vector<StatisticsData> FileInit::LoadStatistics() {
+std::vector<StatisticsData> FileManager::LoadStatistics() {
     std::vector<StatisticsData> StatisticsList;
     StatisticsList.push_back(StatisticsData("PvEWhite"));
     StatisticsList.push_back(StatisticsData("PvEBlack"));
@@ -245,17 +248,17 @@ std::vector<StatisticsData> FileInit::LoadStatistics() {
     file >> cntGames;
     file.ignore();
     for(int i = 0; i < cntGames; i++) {
-        int mode, level, result;
-        file >> mode >> level >> result;
+        int variants, mode, level, result;
+        file >> variants >> mode >> level >> result;
         file.ignore();
         std::string line;
         getline(file, line);
-        StatisticsList[mode].add(level, result);
+        StatisticsList[mode].add(variants, level, result);
     }
     file.close();
     return StatisticsList;
 }
 
-void FileInit::RemoveSaveGame() {
+void FileManager::RemoveSaveGame() {
     std::filesystem::remove(datSave);
 }

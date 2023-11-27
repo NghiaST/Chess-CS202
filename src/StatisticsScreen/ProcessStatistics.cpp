@@ -1,5 +1,5 @@
 #include <StatisticsScreen/ProcessStatistics.hpp>
-#include <DataControl/FileInit.hpp>
+#include <DataControl/FileManager.hpp>
 #include <StatisticsScreen/ProcessStatistics.hpp>
 
 StatisticsData::StatisticsData(std::string name)
@@ -11,7 +11,7 @@ StatisticsData::StatisticsData(std::string name)
     draw = 0;
 }
 
-void StatisticsData::add(int level, int result)
+void StatisticsData::add(int variants, int level, int result)
 {
     all++;
     if (result == 1) {
@@ -28,7 +28,7 @@ void StatisticsData::add(int level, int result)
 std::vector<std::vector<std::string>> Statistics::getStatistics() {
     std::vector<std::vector<std::string>> statistics;
     int all, win, lose, draw;
-    std::vector<StatisticsData> StatisticsList = FileInit::LoadStatistics();
+    std::vector<StatisticsData> StatisticsList = FileManager::LoadStatistics();
     statistics.push_back({ "Mode", "Played", "Win", "Lose", "Draw" });
     for (int i = 0; i < StatisticsList.size(); i++) {
         all = StatisticsList[i].all;

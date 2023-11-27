@@ -2,7 +2,7 @@
 #define __Include_hpp__
 
 #include <DataControl/Point.hpp>
-#include <DataControl/RenderPS.hpp>
+#include <DataControl/RenderRect.hpp>
 #include <SFML/Graphics.hpp>
 
 typedef unsigned long long ulong;

@@ -3,7 +3,7 @@
 #include <ChessBoard/Move.hpp>
 #include <ChessBoard/Board.hpp>
 
-Move MoveUtility::GetMoveFromNameUCI(std::string moveName, Board board) {
+Move MoveUtility::GetMoveFromNameUCI(std::string moveName, const Board& board) {
     int startSquare = BoardHelpers::SquareIndexFromName(moveName.substr(0, 2));
     int targetSquare = BoardHelpers::SquareIndexFromName(moveName.substr(2, 2));
 
@@ -74,7 +74,7 @@ std::string MoveUtility::GetMoveNameUCI(Move move) {
     return moveName;
 }
 
-std::string MoveUtility::GetMoveNameSAN(Move move, Board board) {
+std::string MoveUtility::GetMoveNameSAN(Move move, Board& board) {
     int movePieceType = PIECE::PieceType(board.getPiece(move.startSquare));
     int capturedPieceType = PIECE::PieceType(board.getPiece(move.targetSquare));
 
@@ -171,7 +171,7 @@ std::string MoveUtility::GetMoveNameSAN(Move move, Board board) {
     return moveNotation;
 }
 
-Move MoveUtility::GetMoveFromSAN(std::string algebraicNotation, Board board) {
+Move MoveUtility::GetMoveFromSAN(std::string algebraicNotation, Board& board) {
     algebraicNotation.erase(
         std::remove_if(algebraicNotation.begin(), algebraicNotation.end(),
                         [](char c) { return c == '+' || c == '#' || c == 'x' || c == '-'; }),

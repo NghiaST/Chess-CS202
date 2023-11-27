@@ -16,10 +16,9 @@ SettingScreen::SettingScreen() : Screen() {
 
     std::vector<int> pieceList = Fen::FenToPosition(Fen::StartPosition).squarePieces;
     piecePrintList.assign(64, nullptr);
-    for(int index = 0; index < 64; index++) {
-        piecePrintList[index] = new PiecePrint(index, pieceList[index]);
-        piecePrintList[index]->setRenderPosition(boardPosition);
-        piecePrintList[index]->setRenderSize(boardSize / 8);
+    for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
+        int index = std::distance(piecePrintList.begin(), it);
+        *it = new PiecePrint(this->boardPosition, this->boardSize / 8, index, pieceList[index]);
     }
 
     ThemeIndex themeIndex = theme->getThemeIndex();
@@ -67,7 +66,7 @@ void SettingScreen::handleEvent(const sf::Event& event) {
         isChange = true;
     }
     if (isChange) {
-        FileInit::SaveTheme(theme->getThemeIndex());
+        FileManager::SaveTheme(theme->getThemeIndex());
         formatTheme();
     }
 }
@@ -77,9 +76,6 @@ void SettingScreen::update(sf::Time deltaTime) {
 
 void SettingScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     boardPrint->update();
-    for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
-        (*it)->updateRender();
-    }
     
     Background.draw(target);
     boardPrint->draw(target);

@@ -2,6 +2,8 @@
 #define __Bot_hpp__
 
 #include <ChessBoard/Board.hpp>
+#include <ChessBoard/LogicBoard.hpp>
+#include <ChessBoard/LogicBoardStandard.hpp>
 #include <ChessBoard/MoveSearching.hpp>
 #include <SFML/System/Clock.hpp>
 #include <thread>

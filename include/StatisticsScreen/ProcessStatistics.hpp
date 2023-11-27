@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 
-class FileInit;
+class FileManager;
 
 class StatisticsData {
 public:
     StatisticsData(std::string name = "");
-    void add(int level, int result);
+    void add(int variants, int level, int result);
 
 private:
     friend class Statistics;

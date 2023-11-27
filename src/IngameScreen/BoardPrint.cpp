@@ -5,7 +5,7 @@ BoardPrint::BoardPrint(Point boardPosition, Point boardSize, const TextureBoard*
 {
     stateBoard.resize(64, 0);
     this->textureBoard = textureBoard;
-    this->isBoardRotate = false;
+    this->mIsBoardRotate = false;
 }
 
 BoardPrint::~BoardPrint() {
@@ -16,8 +16,8 @@ void BoardPrint::setStateBoard(const std::vector<int> &stateBoard)
     this->stateBoard = stateBoard;
 }
 
-void BoardPrint::setBoardRotate(bool isBoardRotate) {
-    this->isBoardRotate = isBoardRotate;
+void BoardPrint::setBoardRotate(bool mIsBoardRotate) {
+    this->mIsBoardRotate = mIsBoardRotate;
 }
 
 void BoardPrint::setTextureBoard(const TextureBoard *TextureBoard) {
@@ -59,8 +59,8 @@ void BoardPrint::update() {
         int index = rank * 8 + file;
         // int colorBoard = (rank + file) % 2;
         
-        int row = isBoardRotate ? rank : 7 - rank;
-        int col = isBoardRotate ? 7 - file : file;
+        int row = mIsBoardRotate ? rank : 7 - rank;
+        int col = mIsBoardRotate ? 7 - file : file;
         float printPosx = renderPosition.x + col * cellSize.x;
         float printPosy = renderPosition.y + row * cellSize.y;
 

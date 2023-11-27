@@ -8,7 +8,7 @@
 class Image : public Graphic {
 public:
     Image();
-    Image(const sf::Texture& texture, Point renderPosition = Point(0, 0), Point renderSize = Point(0, 0), bool isPrint = true, int priorityPrint = 0);
+    Image(const sf::Texture& texture, Point renderPosition = Point(0, 0), Point renderSize = Point(-1, -1), bool isPrint = true, int priorityPrint = 0);
 
     void setTexture(const sf::Texture& texture);
     void setTextureRect(sf::IntRect textureRect);
@@ -21,6 +21,22 @@ public:
 
 protected:
     sf::Sprite sprite;
+};
+
+class ImageActive : public Image {
+public:
+    ImageActive();
+    ImageActive(const sf::Texture& texture, Point renderPosition = Point(0, 0), Point renderSize = Point(-1, -1), bool isPrint = true, int priorityPrint = 0);
+    void setMouseStatus(int mousestatus, Point mousePosition = Point(0, 0));
+    void setMainPosition(Point mPosition);
+    void setMousePosition(Point mousePosition);
+    bool handleEvent(const sf::Event& event);
+
+protected:
+    sf::Sprite sprite;
+    Point mPosition;
+    Point mousePosition;
+    MOUSE::STATUS mouseStatus;
 };
 
 #endif

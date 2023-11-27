@@ -3,14 +3,12 @@
 PromotionManager::PromotionManager(int id, Point renderPosition, Point renderSize)
     : Graphic(renderPosition, renderSize, false, 100)
 {
+    Point squareSize = renderSize / 8;
     pieceType = std::vector<int>{PIECE::Queen, PIECE::Rook, PIECE::Bishop, PIECE::Knight};
     for(int i = 0; i < 4; i++) {
-        pieces.push_back(PiecePrint(0, pieceType[i] | PIECE::White));
-        pieces[i].setRenderSize(renderSize / 8);
-        pieces[i].setRenderPosition(renderPosition);
+        pieces.push_back(PiecePrint(renderPosition, squareSize, 0, pieceType[i] | PIECE::White));
     }
     buttonPieces.assign(4, nullptr);
-    Point squareSize = renderSize / 8;
 
     Theme* theme = Theme::getInstance();
     for(Button* &button : buttonPieces) {

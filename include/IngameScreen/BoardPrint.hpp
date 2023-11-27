@@ -27,7 +27,7 @@ public:
     void setTextureBoard(const TextureBoard* TextureBoard);
     void setStateBoard(const std::vector<int>& stateBoard);
     void setStateCell(int index, STATUS state);
-    void setBoardRotate(bool isBoardRotate);
+    void setBoardRotate(bool mIsBoardRotate);
     int getStateCell(int index);
 
 public: // front-end
@@ -40,7 +40,7 @@ private:
     // stateBoard[i]: STATUS::COMMON, SELECTED, POSSIBLE, POSSIBLE_CAPTURE, CHECK, CHECKMATE
     std::vector<int> stateBoard;
     const TextureBoard* textureBoard;
-    bool isBoardRotate;
+    bool mIsBoardRotate;
 };
 
 #endif

@@ -5,8 +5,8 @@
 
 class GameAttributes {
 public:
-    GameAttributes();
-    GameAttributes(int mode, int level, int timeWhite, int timeBlack, bool isBotHelp, bool isPlayerWhite);
+    GameAttributes(bool isLoad = true);
+    GameAttributes(int variants, int mode, int level, int timeTotalMode, int timeExtraMode, bool isBotHelp);
     ~GameAttributes();
     void NewLoading();
     void Loading();
@@ -24,7 +24,16 @@ public:
     int getCurrentTime() const;
     int getTime(bool isWhite) const;
 
+    // Accessors
+    int getVariants() const;
+    int getMode() const;
+    int getLevel() const;
+    int getTimeTotalMode() const;
+    int getTimeExtraMode() const;
+    bool getIsBotHelp() const;
+
 protected:
+    int variants;   // 0: Standard, 1: King of the Hill, 2: Crazyhouse
     int mode;
     int level;
     int timeWhite, timeBlack;
@@ -40,7 +49,7 @@ private:
     int timeTotalMode;
     int timeExtraMode;
 
-    friend class FileInit;
+    friend class FileManager;
 };
 
 #endif

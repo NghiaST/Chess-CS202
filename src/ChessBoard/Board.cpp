@@ -1,4 +1,7 @@
 #include <ChessBoard/Board.hpp>
+#include <ChessBoard/LogicBoard.hpp>
+#include <ChessBoard/LogicBoardStandard.hpp>
+#include <ChessBoard/LogicBoardKingHill.hpp>
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -8,13 +11,14 @@
 
 // Constructor and Destructor
 
-Board::Board()
-: LogicBoardStandard()
-{
+Board::Board() {
+    this->mIsWhiteTurn = true;
+    this->cntMoves = 0;
+    this->presentGameState = GameState();
+    this->gameStateHistory.push_back(presentGameState);
+
     mIsWhiteTurn = true;
     cntMoves = 0;
-    Reset();
-    LoadBasicPosition();
 }
 
 Board::Board(const Board &board) {
@@ -26,40 +30,67 @@ Board::Board(const Board &board) {
     movesHistory = board.movesHistory;
 }
 
+// Board& Board::operator=(const Board &board) {
+//     pieces = board.pieces;
+//     mIsWhiteTurn = board.mIsWhiteTurn;
+//     cntMoves = board.cntMoves;
+//     presentGameState = board.presentGameState;
+//     gameStateHistory = board.gameStateHistory;
+//     movesHistory = board.movesHistory;
+//     return *this;
+// }
+
 Board::~Board() {}
 
-// Loading Positions
+// Accessors
 
-void Board::LoadPosition(PositionInfo posInfo) {
-    Reset();
-    pieces = posInfo.squarePieces;
-    mIsWhiteTurn = posInfo.whiteToMove;
-    presentGameState.castlingRights = posInfo.castlingRights;
-    presentGameState.enPassantFile = posInfo.enPassantFile;
-    presentGameState.fiftyMoveCounter = posInfo.fiftyMoveCounter;
-    cntMoves = posInfo.fullmoveNumber * 2 - (mIsWhiteTurn ? 2 : 1);
-
-    presentGameState = GameState(PIECE::None, posInfo.enPassantFile, posInfo.castlingRights, posInfo.fiftyMoveCounter);
-    gameStateHistory.push_back(presentGameState);
+int Board::getPiece(int rank, int file) const {
+    return pieces[rank * 8 + file];
 }
 
-void Board::LoadPosition(std::string FEN_notation) {
-    PositionInfo posInfo = Fen::FenToPosition(FEN_notation);
-    LoadPosition(posInfo);
+int Board::getPiece(int square) const {
+    return pieces[square];
 }
 
-void Board::LoadBasicPosition() {
-    LoadPosition(Fen::StartPosition);
+std::vector<int> Board::getAllPieces() const {
+    return this->pieces;
 }
 
-void Board::Reset() {
-    gameStateHistory.clear();
-    movesHistory.clear();
-    presentGameState = GameState();
-    gameStateHistory.push_back(presentGameState);
-    mIsWhiteTurn = true;
-    cntMoves = 0;
-    mUndoMoves.clear();
+bool Board::isWhiteTurn() const {
+    return mIsWhiteTurn;
+}
+
+const GameState Board::getGameState() const {
+    return presentGameState;
+}
+
+// Accessors - Move History
+
+bool Board::isHistoryEmpty() const {
+    return movesHistory.size() == 0;
+}
+
+int Board::getMoveCount() const {
+    return cntMoves;
+}
+
+Move Board::getLastMove() const
+{
+    return movesHistory.back();
+}
+
+std::vector<Move> Board::getMovesHistory() const {
+    return movesHistory;
+}
+
+// Checking
+
+bool Board::isUndoPossible() const {
+    return !isHistoryEmpty();
+}
+
+bool Board::isRedoPossible() const {
+    return !mUndoMoves.empty();
 }
 
 // Game Functions
@@ -91,10 +122,44 @@ bool Board::RedoMoveCache() {
     return true;
 }
 
-bool Board::isUndoPossible() const {
-    return !isHistoryEmpty();
+///--------------------------------------------
+
+int Board::getKingSquareIndex(bool colorTurn) const {
+    for(int i = 0; i < 64; i++) {
+        if (pieces[i] == (PIECE::King + PIECE::boolToColor(colorTurn))) {
+            return i;
+        }
+    }
+    return -1;
 }
 
-bool Board::isRedoPossible() const {
-    return !mUndoMoves.empty();
+Board *FactoryBoard::CreateBoard(std::string boardType) {
+    if (boardType == "standard") {
+        return new LogicBoardStandard();
+    }
+    else if (boardType == "kingofthehill") {
+        return new LogicBoardKingHill();
+    }
+}
+
+SBoard::SBoard(std::string boardType) {
+    this->board = FactoryBoard::CreateBoard(boardType);
+}
+
+SBoard::SBoard(const SBoard &sBoard) {
+    this->board = sBoard.board->clone();
+}
+
+SBoard::~SBoard() {
+    delete board;
+}
+
+SBoard &SBoard::operator=(const SBoard &sBoard) {
+    delete board;
+    this->board = sBoard.board->clone();
+    return *this;
+}
+
+Board *SBoard::getBoard() const {
+    return board;
 }

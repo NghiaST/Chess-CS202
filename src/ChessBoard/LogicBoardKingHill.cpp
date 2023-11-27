@@ -1,64 +1,73 @@
-#include <ChessBoard/LogicBoardStandard.hpp>
+#include <ChessBoard/LogicBoardKingHill.hpp>
 #include <ChessBoard/LogicBoard.hpp>
 #include <ChessBoard/Move.hpp>
 #include <ChessBoard/Board.hpp>
 #include <ChessBoard/GameState.hpp>
 
-LogicBoardStandard::LogicBoardStandard()
-  : LogicBoard() {}
-
-LogicBoardStandard::~LogicBoardStandard() {
+LogicBoardKingHill::LogicBoardKingHill()
+  : LogicBoard() 
+{
+    mIsSquareHill = std::vector<bool>(64, 0);
+    mIsSquareHill[27] = 1;
+    mIsSquareHill[28] = 1;
+    mIsSquareHill[29] = 1;
+    mIsSquareHill[30] = 1;
 }
 
-Board *LogicBoardStandard::clone() const {
-    Board *cloneBoard = FactoryBoard::CreateBoard("standard");
+LogicBoardKingHill::~LogicBoardKingHill() {
+}
+
+Board *LogicBoardKingHill::clone() const {
+    Board *cloneBoard = FactoryBoard::CreateBoard("kingofthehill");
+    printf("Aa");
     *cloneBoard = *this;
     return cloneBoard;
 }
 // More Validation
 
-bool LogicBoardStandard::isCheck() const {
+bool LogicBoardKingHill::isCheck() const {
     int kingPos = getKingSquareIndex(mIsWhiteTurn);
     return isSquareUnderAttack(kingPos, mIsWhiteTurn ^ 1);
     // ulong attackedSquares = getAttackedSquares(isWhiteTurn ^ 1);
     // return Bits::GetBit(attackedSquares, kingPos);
 }
 
-bool LogicBoardStandard::isCheckMate() {
+bool LogicBoardKingHill::isCheckMate() {
     return isCheck() && isNextMoveImpossible();
 }
 
-bool LogicBoardStandard::isStaleMate() {
+bool LogicBoardKingHill::isStaleMate() {
     return !isCheck() && isNextMoveImpossible();
 }
 
-bool LogicBoardStandard::isBoardLegal() {
+bool LogicBoardKingHill::isBoardLegal() {
     int kingPos = getKingSquareIndex(mIsWhiteTurn ^ 1);
     return !isSquareUnderAttack(kingPos, mIsWhiteTurn);
     // ulong attackedSquares = getAttackedSquares(isWhiteTurn);
     // return !Bits::GetBit(attackedSquares, kingPos);
 }
 
-bool LogicBoardStandard::isEndGame() {
-    return isCheckMate() || isStaleMate() || isFiftyMove();
+bool LogicBoardKingHill::isEndGame() {
+    return isCheckMate() || isStaleMate() || isFiftyMove() || isKingHill();
 }
 
-bool LogicBoardStandard::isWin() {
-    return isCheckMate();
+bool LogicBoardKingHill::isWin() {
+    return isCheckMate() || isKingHill();
 }
 
-bool LogicBoardStandard::isDraw() {
+bool LogicBoardKingHill::isDraw() {
     return isStaleMate() || isFiftyMove();
 }
 
-Board::EndFlag LogicBoardStandard::getEndFlag() {
+Board::EndFlag LogicBoardKingHill::getEndFlag() {
     if (isCheckMate()) return EndFlag::Checkmate;
     if (isStaleMate()) return EndFlag::Stalemate;
     if (isFiftyMove()) return EndFlag::FiftyMove;
+    if (isKingHill()) return EndFlag::KingHill;
     return EndFlag::Unknown;
 }
 
-void LogicBoardStandard::MakeMove(Move move, bool inSearch) {
+void LogicBoardKingHill::MakeMove(Move move, bool inSearch) {
     int startSquare = move.startSquare;
     int targetSquare = move.targetSquare;
     int flag = move.flag;
@@ -143,7 +152,7 @@ void LogicBoardStandard::MakeMove(Move move, bool inSearch) {
     }
 }
 
-void LogicBoardStandard::UnmakeMove(Move move, bool inSearch) {
+void LogicBoardKingHill::UnmakeMove(Move move, bool inSearch) {
     mIsWhiteTurn ^= 1;
     cntMoves--;
 
@@ -198,7 +207,7 @@ void LogicBoardStandard::UnmakeMove(Move move, bool inSearch) {
     }
 }
 
-std::vector<Move> LogicBoardStandard::GenerateMoves() {
+std::vector<Move> LogicBoardKingHill::GenerateMoves() {
     if (mIsMovesGeneratorInCache) {
         return movesGeneratorCache;
     }
@@ -213,7 +222,7 @@ std::vector<Move> LogicBoardStandard::GenerateMoves() {
     return movesGeneratorCache;
 }
 
-std::vector<Move> LogicBoardStandard::GenerateMovesSquare(int startSquare) {
+std::vector<Move> LogicBoardKingHill::GenerateMovesSquare(int startSquare) {
     std::vector<Move> pseudoMoveList = GeneratePseudoMovesSquareNotKingCheck(startSquare);
     std::vector<Move> legalMoveList;
     for (Move pseudoMove : pseudoMoveList) {
@@ -224,15 +233,22 @@ std::vector<Move> LogicBoardStandard::GenerateMovesSquare(int startSquare) {
     return legalMoveList;
 }
 
-bool LogicBoardStandard::isMoveLegal(Move move) {
+bool LogicBoardKingHill::isMoveLegal(Move move) {
     return isMovePseudo(move) && isPseudoMoveLegal(move);
 }
 
-bool LogicBoardStandard::isMovePseudo(Move move) const {
+/// private
+
+bool LogicBoardKingHill::isKingHill() const {
+    int kingPos = getKingSquareIndex(mIsWhiteTurn ^ 1);
+    return mIsSquareHill[kingPos];
+}
+
+bool LogicBoardKingHill::isMovePseudo(Move move) const {
     return false;
 }
 
-bool LogicBoardStandard::isPseudoMoveLegal(Move move) {
+bool LogicBoardKingHill::isPseudoMoveLegal(Move move) {
     if (!isPseudoMoveLegalNotKingCheck(move)) return false;
     MakeMove(move, true);
     bool ans = isBoardLegal();
@@ -240,7 +256,7 @@ bool LogicBoardStandard::isPseudoMoveLegal(Move move) {
     return ans;
 }
 
-bool LogicBoardStandard::isPseudoMoveLegalNotKingCheck(Move move) const {
+bool LogicBoardKingHill::isPseudoMoveLegalNotKingCheck(Move move) const {
 /// assert that startPiece has the same color as isWhiteTurn
     int startSquare = move.startSquare;
     int targetSquare = move.targetSquare;
@@ -323,7 +339,7 @@ bool LogicBoardStandard::isPseudoMoveLegalNotKingCheck(Move move) const {
     return false;
 }
 
-std::vector<Move> LogicBoardStandard::GeneratePseudoMovesNotKingCheck() const {
+std::vector<Move> LogicBoardKingHill::GeneratePseudoMovesNotKingCheck() const {
     std::vector<Move> moves;
     for(int i = 0; i < 64; i++) 
     if (PIECE::PieceColor(getPiece(i)) == PIECE::boolToColor(mIsWhiteTurn)) {
@@ -336,7 +352,7 @@ std::vector<Move> LogicBoardStandard::GeneratePseudoMovesNotKingCheck() const {
     return moves;
 }
 
-std::vector<Move> LogicBoardStandard::GeneratePseudoMovesSquareNotKingCheck(int startSquare) {
+std::vector<Move> LogicBoardKingHill::GeneratePseudoMovesSquareNotKingCheck(int startSquare) {
     std::vector<Move> moves;
     std::vector<Move> tmpMoves = BitboardProcess::getPseudoMoves(startSquare, getPiece(startSquare));
     for(Move move : tmpMoves) {
@@ -346,7 +362,7 @@ std::vector<Move> LogicBoardStandard::GeneratePseudoMovesSquareNotKingCheck(int 
     return moves;
 }
 
-ulong LogicBoardStandard::getAttackedSquares(bool isYourTurn) const {
+ulong LogicBoardKingHill::getAttackedSquares(bool isYourTurn) const {
     ulong attackedSquares = 0;
     for(int startSquare = 0; startSquare < 64; startSquare++) {
         int startPiece = getPiece(startSquare);
@@ -362,12 +378,12 @@ ulong LogicBoardStandard::getAttackedSquares(bool isYourTurn) const {
     return attackedSquares;
 }
 
-bool LogicBoardStandard::isSquareUnderAttack(int targetSquare, bool isWhiteTurn) const {
+bool LogicBoardKingHill::isSquareUnderAttack(int targetSquare, bool isWhiteTurn) const {
     ulong attackedSquares = getAttackedSquares(isWhiteTurn);
     return Bits::GetBit(attackedSquares, targetSquare);
 }
 
-bool LogicBoardStandard::isPreventPiece(int startSquare, int targetSquare) const {
+bool LogicBoardKingHill::isPreventPiece(int startSquare, int targetSquare) const {
     Point startIndex2D(startSquare / 8, startSquare % 8);
     Point endIndex2D(targetSquare / 8, targetSquare % 8);
     Point diff = endIndex2D - startIndex2D;

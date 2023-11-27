@@ -32,13 +32,13 @@ int Button::getButtonState() const {
 //Functions
 bool Button::handleEvent(const sf::Event& event) {
     /* Update the booleans for hover and pressed */
-    bool isEvent = false;
+    bool mIsEvent = false;
     if (event.type == sf::Event::MouseButtonPressed) {
         Point mousePos = Point(event.mouseButton.x, event.mouseButton.y);
         if (event.mouseButton.button == sf::Mouse::Left) {
             if (isMouseOn(mousePos)) {
                 setButtonState(BTN_ACTIVE);
-                isEvent = true;
+                mIsEvent = true;
             }
         }
     }
@@ -82,5 +82,5 @@ bool Button::handleEvent(const sf::Event& event) {
     else {
         // do nothing
     }
-    return isEvent;
+    return mIsEvent;
 }

@@ -2,13 +2,13 @@
 #define __Graphic_hpp__
 
 #include <DataControl/Point.hpp>
-#include <DataControl/RenderPS.hpp>
+#include <DataControl/RenderRect.hpp>
 #include <SFML/Graphics.hpp>
 
 class Graphic : public sf::Drawable {
 public:
     Graphic(Point renderPosition = Point(0, 0), Point renderSize = Point(0, 0), bool isPrint = true, int priorityPrint = 0);
-    Graphic(RenderPS renderPS, bool isPrint = true, int priorityPrint = 0);
+    Graphic(RenderRect renderPS, bool isPrint = true, int priorityPrint = 0);
     
     // Mutators
     void setPriorityPrint(int priorityPrint);

@@ -31,7 +31,7 @@ IngameScreen::IngameScreen() : Screen() {
     newgameButton = new Button(54, newgameButtonPosition, buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "New Game");
     backButton    = new Button(55, backButtonPosition   , buttonSize   , false, true, &theme->getFont(), theme->getColorDefault(), 20, "Back"); 
     autoRestartOption = new ButtonOption(56, autoRestartOptionPosition, buttonSize, false, true, &theme->getFont(), theme->getColorDefault(), 10, {"Off", "On"});
-    timeButton->setReverseTable(boardManager->ifBoardRotate());
+    timeButton->setReverseTable(boardManager->isBoardRotate());
 
     isPieceHold = false;
     mousePosition = Point(0, 0);
@@ -96,12 +96,12 @@ void IngameScreen::handleEvent(const sf::Event& event) {
             if (status == "make move") {
                 timeButton->setTurn(boardManager->getTurn());
                 timeButton->setIsCountDown(true);
-                if (boardManager->ifEndGame()) {
+                if (boardManager->isEndGame()) {
                     timeButton->setIsCountDown(false);
                     if (boardManager->isCheckMate()) {
                         status = "checkmate";
                     }
-                    else if (boardManager->ifStaleMate()) {
+                    else if (boardManager->isStaleMate()) {
                         status = "stalemate";
                     }
                 }
@@ -113,7 +113,7 @@ void IngameScreen::handleEvent(const sf::Event& event) {
         else if (name == "save") {
             status = saveButton->handleEvent(event) ? "save" : "";
             if (status == "save") {
-                FileInit::ExtractGame(boardManager->getBoard().getMovesHistory());
+                FileManager::ExtractGame(boardManager->getBoard().getMovesHistory());
             }
         }
         else if (name == "undo") {
@@ -132,7 +132,7 @@ void IngameScreen::handleEvent(const sf::Event& event) {
             status = newgameButton->handleEvent(event) ? "newgame" : "";
             if (status == "newgame") {
                 boardManager->NewGame();
-                timeButton->setReverseTable(boardManager->ifBoardRotate());
+                timeButton->setReverseTable(boardManager->isBoardRotate());
             }
         }
         else if (name == "back") {
@@ -174,11 +174,11 @@ void IngameScreen::update(sf::Time deltaTime) {
             status = boardManager->update(deltaTime);
 
             if (status == "make move") {
-                if (boardManager->ifEndGame()) {
+                if (boardManager->isEndGame()) {
                     if (boardManager->isCheckMate()) {
                         status = "checkmate";
                     }
-                    else if (boardManager->ifStaleMate()) {
+                    else if (boardManager->isStaleMate()) {
                         status = "stalemate";
                     }
                 }

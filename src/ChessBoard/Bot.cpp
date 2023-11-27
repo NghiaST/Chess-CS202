@@ -1,7 +1,7 @@
 #include <ChessBoard/Bot.hpp>
 
 Bot::Bot() {
-    board = new Board();
+    board = FactoryBoard::CreateBoard("standard");
     stopflag = std::make_unique<bool>(false);
     searchDepth = 2;
     timeThinkingMs = 2500;
@@ -18,7 +18,7 @@ Bot::~Bot() {
 void Bot::LoadBoard(const Board& board) {
     delete this->board;
     delete moveSearching;
-    this->board = new Board(board);
+    this->board = board.clone();
     this->stopflag = std::make_shared<bool>(false);
     moveSearching = new MoveSearching(searchDepth, stopflag);
     isThinkingDone = false;

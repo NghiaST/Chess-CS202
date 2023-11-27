@@ -4,7 +4,7 @@
 BoardManager::BoardManager(Point renderPosition, Point renderSize) 
     : GameAttributes()
 {
-    board = new Board();
+    board = FactoryBoard::CreateBoard("kingofthehill");
     bot = new Bot();
     theme = Theme::getInstance();
     promotionManager = new PromotionManager(0, renderPosition, renderSize);
@@ -21,22 +21,17 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize)
 
     piecePrintList.assign(64, nullptr);
     for(auto it = piecePrintList.begin(); it != piecePrintList.end(); ++it) {
-        *it = new PiecePrint(std::distance(piecePrintList.begin(), it), PIECE::None);
+        int index = std::distance(piecePrintList.begin(), it);
+        *it = new PiecePrint(this->boardPosition, this->cellSize, index, PIECE::None);
     }
     boardPrint = new BoardPrint(boardPosition, boardSize, &theme->getTextureBoard());
     gameStatus = GAMESTATUS::NONSTART;
     gameResult = CHESS::None;
 
-    // setup render
-    for(int index = 0; index < 64; index++) {
-        piecePrintList[index]->setRenderPosition(boardPosition);
-        piecePrintList[index]->setRenderSize(cellSize);
-    }
-
     // load game
-    if (FileInit::LoadGame(*board, *this)) {
+    if (FileManager::LoadGame(*board, *this)) {
         Loading();
-        Reload();    
+        Reload();
         setCountDown(gameStatus != ENDGAME);
     }
     else {
@@ -45,7 +40,7 @@ BoardManager::BoardManager(Point renderPosition, Point renderSize)
 }
 
 BoardManager::~BoardManager() {
-    FileInit::SaveGame(*board, *this);
+    FileManager::SaveGame(*board, *this);
     delete board;
     delete bot;
     delete boardPrint;
@@ -54,8 +49,8 @@ BoardManager::~BoardManager() {
     }
 }
 
-bool BoardManager::ifBoardRotate() const {
-    return isBoardRotate;
+bool BoardManager::isBoardRotate() const {
+    return mIsBoardRotate;
 }
 
 // Accessors
@@ -69,7 +64,7 @@ int BoardManager::getResult() const {
     return gameResult;
 }
 
-bool BoardManager::ifBotTurn() const {
+bool BoardManager::isBotTurn() const {
     return isBot[mIsWhiteTurn];
 }
 
@@ -77,11 +72,11 @@ bool BoardManager::isCheckMate() const {
     return mIsCheckMate;
 }
 
-bool BoardManager::ifStaleMate() const {
+bool BoardManager::isStaleMate() const {
     return mIsStaleMate;
 }
 
-bool BoardManager::ifEndGame() const {
+bool BoardManager::isEndGame() const {
     return gameStatus == ENDGAME;
 }
 
@@ -96,42 +91,60 @@ void BoardManager::freshState() {
     mIsCheckMate = board->isCheckMate();
     mIsStaleMate = board->isStaleMate();
     mIsWhiteTurn = board->isWhiteTurn();
-    isBotRunning = false;
-    isEvent = true;
+    mIsBotRunning = false;
+    mIsEvent = true;
     isPieceSelected = false;
     isNoteHold = false;
     isPiecePromotion = false;
     noteList.clear();
     suggestMoves.clear();
     promotionManager->setPromotionFile(-1);
-    promotionManager->setIsRotate(isBoardRotate);
+    promotionManager->setIsRotate(mIsBoardRotate);
     promotionManager->setIsWhite(mIsWhiteTurn);
     setTurn(mIsWhiteTurn);
     setCountDown(gameStatus != NONSTART);
 
-    if (mIsCheckMate) 
-        EndGame(ENDFLAG::CHECKMATE);
+    if (board->isEndGame()) {
+        Board::EndFlag endgameflag = board->getEndFlag();
+        switch (endgameflag) {
+            case Board::EndFlag::Checkmate:
+                EndGame(ENDFLAG::CHECKMATE);
+                break;
+            case Board::EndFlag::Stalemate:
+                EndGame(ENDFLAG::STALEMATE);
+                break;
+            case Board::EndFlag::ThreefoldRep:
+                EndGame(ENDFLAG::THREEFOLDREP);
+                break;
+            case Board::EndFlag::FiftyMove:
+                EndGame(ENDFLAG::FIFTYMOVE);
+                break;
+            case Board::EndFlag::KingHill:
+                EndGame(ENDFLAG::KINGHILL);
+                break;
+            default:
+                break;
+        }
+    }
     else if (isOutOfTime()) 
         EndGame(ENDFLAG::TIMEOUT);
-    else if (mIsStaleMate)
-        EndGame(ENDFLAG::STALEMATE);
     
     if (gameStatus == NONSTART) {
         gameStatus = ONGOING;
     }
 }
 
-void BoardManager::setBoardRotate(bool isBoardRotate) {
-    this->isBoardRotate = isBoardRotate;
-    boardPrint->setBoardRotate(isBoardRotate);
+void BoardManager::setBoardRotate(bool mIsBoardRotate) {
+    this->mIsBoardRotate = mIsBoardRotate;
+    boardPrint->setBoardRotate(mIsBoardRotate);
     for(int i = 0; i < 64; i++) {
-        int index = isBoardRotate ? 63 - i : i;
+        int index = mIsBoardRotate ? 63 - i : i;
         piecePrintList[i]->setIndex(index);
     }
 }
 
 void BoardManager::NewGame() {
-    FileInit::RemoveSaveGame();
+    FileManager::RemoveSaveGame();
     board->LoadBasicPosition();
     NewLoading();
     Reload();
@@ -188,10 +201,10 @@ void BoardManager::Redo() {
     freshState();
 }
 
-void BoardManager::EndGame(ENDFLAG endFlag) {
+void BoardManager::EndGame(ENDFLAG mEndFlag) {
     gameStatus = GAMESTATUS::ENDGAME;
-    this->endFlag = endFlag;
-    switch (endFlag) {
+    this->mEndFlag = mEndFlag;
+    switch (mEndFlag) {
         case ENDFLAG::CHECKMATE:
             gameResult = (CHESS::COLOR) (mIsWhiteTurn ^ 1);
             break;
@@ -213,8 +226,8 @@ void BoardManager::EndGame(ENDFLAG endFlag) {
         case ENDFLAG::FIFTYMOVE:
             gameResult = CHESS::COLOR::Both;
             break;
-        case ENDFLAG::DEADPOSITION:
-            gameResult = CHESS::COLOR::Both;
+        case ENDFLAG::KINGHILL:
+            gameResult = (CHESS::COLOR) (mIsWhiteTurn ^ 1);
             break;
         default:
             gameResult = CHESS::COLOR::Both;
@@ -226,7 +239,7 @@ void BoardManager::EndGame(ENDFLAG endFlag) {
 void BoardManager::setBotHelp(bool isBotHelp) {
     this->isBotHelp = isBotHelp;
     suggestMoves.clear();
-    isEvent = true;
+    mIsEvent = true;
 }
 
 void BoardManager::setAutoRestart(bool isAutoRestart) {
@@ -242,9 +255,9 @@ void BoardManager::MakeCorrectMove(Move move) {
     preSquareIndex = move.startSquare;
     curSquareIndex = move.targetSquare;
     freshState();
-    FileInit::SaveGame(*board, *this);
+    FileManager::SaveGame(*board, *this);
     if (gameStatus == ENDGAME) {
-        FileInit::StoreCompletedGame(*board, mode, level, gameResult);
+        FileManager::StoreCompletedGame(*board, *this, gameResult);
         setCountDown(false);
     }
 }
@@ -294,7 +307,7 @@ bool BoardManager::isMovePromotion(int startSquare, int targetSquare) {
 }
 
 std::string BoardManager::handleEvent(const sf::Event& event) {
-    isEvent = true;
+    mIsEvent = true;
     std::string res = "";
     if (isPiecePromotion) {
         if (promotionManager->handleEvent(event)) {
@@ -335,7 +348,7 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
                     sf::Vector2i coordChess;
                     coordChess.x = 7 - (int) (mousePosition.y - boardPosition.y) / (int)cellSize.y;
                     coordChess.y = (int) (mousePosition.x - boardPosition.x) / (int)cellSize.x;
-                    if (isBoardRotate) {
+                    if (mIsBoardRotate) {
                         coordChess.x = 7 - coordChess.x;
                         coordChess.y = 7 - coordChess.y;
                     }
@@ -397,7 +410,7 @@ std::string BoardManager::handleEvent(const sf::Event& event) {
                     sf::Vector2i coordChess;
                     coordChess.x = 7 - (int) (mousePosition.y - boardPosition.y) / (int)cellSize.y;
                     coordChess.y = (int) (mousePosition.x - boardPosition.x) / (int)cellSize.x;
-                    if (isBoardRotate) {
+                    if (mIsBoardRotate) {
                         coordChess.x = 7 - coordChess.x;
                         coordChess.y = 7 - coordChess.y;
                     }
@@ -444,8 +457,8 @@ std::string BoardManager::update(sf::Time deltaTime) {
     std::string res = "";
     if (gameStatus != ENDGAME) {
         if (isBot[mIsWhiteTurn]) {
-            if (!isBotRunning) {
-                isBotRunning = true;
+            if (!mIsBotRunning) {
+                mIsBotRunning = true;
                 bot->setTimeThinkingMs(2500);
                 if (mIsWhiteTurn) {
                     bot->setSearchDepth(3);
@@ -459,13 +472,13 @@ std::string BoardManager::update(sf::Time deltaTime) {
             if (bot->ifThinkingDone()) {
                 Move move = bot->getBestMove();
                 MakeCorrectMove(move);
-                isBotRunning = false;
+                mIsBotRunning = false;
                 res = "make move";
             }
         }
         else if (isBotHelp) {
-            if (!isBotRunning) {
-                isBotRunning = true;
+            if (!mIsBotRunning) {
+                mIsBotRunning = true;
                 bot->setTimeThinkingMs(100000);
                 bot->setSearchDepth(3);
                 bot->LoadBoard(*board);
@@ -474,7 +487,7 @@ std::string BoardManager::update(sf::Time deltaTime) {
             std::vector<Move> newSuggestMoves = bot->getRankMove(5);
             if (newSuggestMoves != suggestMoves) {
                 suggestMoves = newSuggestMoves;
-                isEvent = true;
+                mIsEvent = true;
             }
         }
     }
@@ -486,8 +499,8 @@ std::string BoardManager::update(sf::Time deltaTime) {
 }
 
 void BoardManager::updateRender() {
-    if (!isEvent) return;
-    isEvent = false;
+    if (!mIsEvent) return;
+    mIsEvent = false;
     for(int i = 0; i < 64; i++) {
         piecePrintList[i]->setPiece(board->getPiece(i));
         piecePrintList[i]->setMouseStatus(MOUSE::None);
@@ -545,7 +558,7 @@ void BoardManager::updateRender() {
         Move move = suggestMoves[i];
         int start = move.startSquare;
         int target = move.targetSquare;
-        if (isBoardRotate) {
+        if (mIsBoardRotate) {
             start = 63 - start;
             target = 63 - target;
         }

@@ -2,7 +2,7 @@
 #define __Screen_hpp__
 
 #include <DataControl/Theme.hpp>
-#include <DataControl/FileInit.hpp>
+#include <DataControl/FileManager.hpp>
 #include <SFML/Graphics.hpp>
 #include <ctime>
 

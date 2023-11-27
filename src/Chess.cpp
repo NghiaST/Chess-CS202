@@ -1,7 +1,7 @@
 #include <Chess.hpp>
 
 Chess::Chess() {
-    Theme::getInstance()->setThemeID(FileInit::LoadTheme());
+    Theme::getInstance()->setThemeID(FileManager::LoadTheme());
 
     homeScreen = new HomeScreen();
     // settingScreen = new SettingScreen();

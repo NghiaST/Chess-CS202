@@ -1,4 +1,5 @@
 #include <OptionScreen/OptionScreen.hpp>
+#include <DataControl/GameAttributes.hpp>
 
 OptionScreen::OptionScreen() : Screen() {
     currentScreen = ScreenType::OptionScreen;
@@ -6,13 +7,14 @@ OptionScreen::OptionScreen() : Screen() {
     int middle = INTERFACE::WindowSize.x / 2;
 
     ButtonSize = Point(130, 60);
-    ButtonOptionSize = Point(300, 80);
+    ButtonOptionSize = Point(300, 70);
 
-    ModeOptionPosition       = Point(middle, 90);
-    DifficultyOptionPosition = Point(middle, 180);
-    BotHelpOptionPosition    = Point(middle, 270);
-    TimeTotalOptionPosition  = Point(middle, 360);
-    TimeExtraOptionPosition  = Point(middle, 450);
+    VariantsOptionPosition   = Point(middle, 80 * 1);
+    ModeOptionPosition       = Point(middle, 80 * 2);
+    DifficultyOptionPosition = Point(middle, 80 * 3);
+    BotHelpOptionPosition    = Point(middle, 80 * 4);
+    TimeTotalOptionPosition  = Point(middle, 80 * 5);
+    TimeExtraOptionPosition  = Point(middle, 80 * 6);
 
     ContinueButtonPosition = Point(middle - 1.2 * ButtonSize.x, 600);
     NewGameButtonPosition  = Point(middle - 0.0 * ButtonSize.x, 600);
@@ -24,28 +26,28 @@ OptionScreen::OptionScreen() : Screen() {
     NewGameButton  = new Button(2, NewGameButtonPosition, ButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "New Game");
     BackButton     = new Button(3, BackButtonPosition, ButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "Back");
 
-    int mode, level;
-    bool isBotHelp;
-    int timeTotal, timeExtra;
-    FileInit::LoadOptions(mode, level, isBotHelp, timeTotal, timeExtra);
+    GameAttributes gameAttributes = GameAttributes();
 
+    std::vector<std::string> variantsList = {"Standard", "King of the Hill"};
     std::vector<std::string> modeList = {"PvE White", "PvE Black", "PvP", "EvE"};
     std::vector<std::string> levelList = {"Easy", "Medium", "Hard"};
     std::vector<std::string> botHelpList = {"Bot Help Off", "Bot Help On"};
     std::vector<std::string> timeTotalList = {"1m", "2m", "3m", "5m", "10m", "15m", "30m", "60m"};
     std::vector<std::string> timeExtraList = {"0s", "2s", "5s", "10s", "15s", "30s"};
 
-    ModeOption       = new ButtonOption(4, ModeOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, modeList, mode, 2);
-    DifficultyOption = new ButtonOption(5, DifficultyOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, levelList, level, 2);
-    BotHelpOption    = new ButtonOption(6, BotHelpOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, botHelpList, isBotHelp, 2);
-    TimeTotalOption  = new ButtonOption(7, TimeTotalOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeTotalList, timeTotal, 2);
-    TimeExtraOption  = new ButtonOption(8, TimeExtraOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeExtraList, timeExtra, 2);
+    VariantsOption   = new ButtonOption(3, VariantsOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, variantsList, gameAttributes.getVariants(), 2);
+    ModeOption       = new ButtonOption(4, ModeOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, modeList, gameAttributes.getMode(), 2);
+    DifficultyOption = new ButtonOption(5, DifficultyOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, levelList, gameAttributes.getLevel(), 2);
+    BotHelpOption    = new ButtonOption(6, BotHelpOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, botHelpList, gameAttributes.getIsBotHelp(), 2);
+    TimeTotalOption  = new ButtonOption(7, TimeTotalOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeTotalList, gameAttributes.getTimeTotalMode(), 2);
+    TimeExtraOption  = new ButtonOption(8, TimeExtraOptionPosition, ButtonOptionSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, timeExtraList, gameAttributes.getTimeExtraMode(), 2);
 }
 
 OptionScreen::~OptionScreen() {
     delete ContinueButton;
     delete NewGameButton;
     delete BackButton;
+    delete VariantsOption;
     delete ModeOption;
     delete DifficultyOption;
     delete BotHelpOption;
@@ -60,6 +62,9 @@ void OptionScreen::handleEvent(const sf::Event& event) {
     }
 
     bool isChange = false;
+    if (VariantsOption->handleEvent(event)) {
+        isChange = true;
+    }
     if (ModeOption->handleEvent(event)) {
         isChange = true;
     }
@@ -76,7 +81,8 @@ void OptionScreen::handleEvent(const sf::Event& event) {
         isChange = true;
     }
     if (isChange) {
-        FileInit::SaveConfig(theme->getThemeIndex(), ModeOption->getCurrentSelection(), DifficultyOption->getCurrentSelection(), (bool) BotHelpOption->getCurrentSelection(), TimeTotalOption->getCurrentSelection(), TimeExtraOption->getCurrentSelection());
+        GameAttributes gameAttributes(VariantsOption->getCurrentSelection(), ModeOption->getCurrentSelection(), DifficultyOption->getCurrentSelection(), (bool) BotHelpOption->getCurrentSelection(), TimeTotalOption->getCurrentSelection(), TimeExtraOption->getCurrentSelection());
+        FileManager::SaveThemeConfig(theme->getThemeIndex(), gameAttributes);
     }
     if (ContinueButton->handleEvent(event)) {
         isScreenChange = true;
@@ -85,7 +91,7 @@ void OptionScreen::handleEvent(const sf::Event& event) {
     if (NewGameButton->handleEvent(event)) {
         isScreenChange = true;
         nextScreen = ScreenType::IngameScreen;
-        FileInit::RemoveSaveGame();
+        FileManager::RemoveSaveGame();
     }
     if (BackButton->handleEvent(event)) {
         isScreenChange = true;
@@ -101,6 +107,7 @@ void OptionScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     target.draw(*ContinueButton);
     target.draw(*NewGameButton);
     target.draw(*BackButton);
+    target.draw(*VariantsOption);
     target.draw(*ModeOption);
     target.draw(*DifficultyOption);
     target.draw(*BotHelpOption);

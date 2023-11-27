@@ -1,5 +1,5 @@
 #include <DataControl/GameSettings.hpp>
-#include <DataControl/FileInit.hpp>
+#include <DataControl/FileManager.hpp>
 
 GameSettings::GameSettings() {
     this->mode = 0;

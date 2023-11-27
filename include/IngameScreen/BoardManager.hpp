@@ -3,6 +3,8 @@
 
 #include <ChessBoard/Bot.hpp>
 #include <ChessBoard/Board.hpp>
+#include <ChessBoard/LogicBoard.hpp>
+#include <ChessBoard/LogicBoardStandard.hpp>
 #include <IngameScreen/PiecePrint.hpp>
 #include <IngameScreen/BoardPrint.hpp>
 #include <IngameScreen/PromotionManager.hpp>
@@ -11,7 +13,7 @@
 #include <DataControl/Button.hpp>
 #include <DataControl/Arrow.hpp>
 #include <DataControl/Circle.hpp>
-#include <DataControl/FileInit.hpp>
+#include <DataControl/FileManager.hpp>
 #include <DataControl/GameSettings.hpp>
 #include <DataControl/GameAttributes.hpp>
 #include <SFML/Graphics.hpp>
@@ -34,7 +36,7 @@ public:
         TIMEOUT,
         THREEFOLDREP,
         FIFTYMOVE,
-        DEADPOSITION
+        KINGHILL
     };
 
 public:
@@ -47,14 +49,14 @@ public:
 
 public:
     // Accessors
-    bool ifBoardRotate() const;
+    bool isBoardRotate() const;
     int getGameStatus() const;
     CHESS::COLOR getTurn() const;
     int getResult() const;
-    bool ifBotTurn() const;
+    bool isBotTurn() const;
     bool isCheckMate() const;
-    bool ifStaleMate() const;
-    bool ifEndGame() const;
+    bool isStaleMate() const;
+    bool isEndGame() const;
     const Board& getBoard() const;
 
     // Modifiers
@@ -62,7 +64,7 @@ public:
     void Reload();
     void Undo();
     void Redo();
-    void EndGame(ENDFLAG endFlag);
+    void EndGame(ENDFLAG mEndFlag);
 
     void setBotHelp(bool isBotHelp);
     void setAutoRestart(bool isAutoRestart);
@@ -76,7 +78,7 @@ private:
 
 private:
     void freshState();
-    void setBoardRotate(bool isBoardRotate);
+    void setBoardRotate(bool mIsBoardRotate);
 
 private:
     Board* board;
@@ -103,9 +105,9 @@ private:
     bool mIsStaleMate;
     bool mIsWhiteTurn;
 
-    bool isBotRunning;
-    bool isEvent;
-    ENDFLAG endFlag;
+    bool mIsBotRunning;
+    bool mIsEvent;
+    ENDFLAG mEndFlag;
 
     bool isPieceSelected;
     bool isPieceHold;
@@ -117,13 +119,11 @@ private:
     Point mousePosition;
 
     bool isNoteHold;
-    bool isBoardRotate;
+    bool mIsBoardRotate;
 
-    // GameAttributes attributes;
     PromotionManager* promotionManager;
 
     std::vector<int> possibleIndexList; // all squareIndex is prepared to move
-    // std::vector<int> noteCircleList;   /// all squareIndex which is right clicked
     std::vector<std::pair<int, int>> noteList; // all arrow from start to target
 
     std::vector<Circle> noteCircleRender;

@@ -27,6 +27,7 @@ private:
     Point NewGameButtonPosition;
     Point BackButtonPosition;
 
+    Point VariantsOptionPosition;
     Point ModeOptionPosition;
     Point DifficultyOptionPosition;
     Point TimeTotalOptionPosition;
@@ -38,6 +39,7 @@ private:
     Button* ContinueButton;
     Button* NewGameButton;
     Button* BackButton;
+    ButtonOption* VariantsOption;
     ButtonOption* ModeOption;
     ButtonOption* DifficultyOption;
     ButtonOption* TimeTotalOption;

@@ -1,5 +1,5 @@
-#ifndef __MoveGenerator_hpp__
-#define __MoveGenerator_hpp__
+#ifndef __LogicBoardKingHill_hpp__
+#define __LogicBoardKingHill_hpp__
 
 #include <ChessBoard/LogicBoard.hpp>
 #include <vector>
@@ -7,10 +7,10 @@
 typedef unsigned long long ulong;
 class Move;
 
-class LogicBoardStandard : public LogicBoard {
+class LogicBoardKingHill : public LogicBoard {
 public:
-    LogicBoardStandard();
-    virtual ~LogicBoardStandard();
+    LogicBoardKingHill();
+    virtual ~LogicBoardKingHill();
     Board* clone() const;
 
     // Move Validation
@@ -34,6 +34,9 @@ public:
     // virtual Move getFlagMove(int startSquare, int targetSquare) = 0;
 
 private:
+    // Move Validation
+    bool isKingHill() const;
+
     /// Check if this move is pseudo move
     bool isMovePseudo(Move move) const;
 
@@ -48,6 +51,10 @@ private:
     ulong getAttackedSquares(bool isYourTurn) const;
     bool isSquareUnderAttack(int targetSquare, bool mIsWhiteTurn) const;
     bool isPreventPiece(int startSquare, int targetSquare) const;
+
+private:
+    std::vector<bool> mIsSquareHill;
 };
+
 
 #endif

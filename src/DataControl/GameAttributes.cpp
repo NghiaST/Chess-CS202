@@ -1,37 +1,44 @@
 #include <DataControl/GameAttributes.hpp>
-#include <DataControl/FileInit.hpp>
+#include <DataControl/FileManager.hpp>
 
-GameAttributes::GameAttributes() {
-    this->mode = 0;
-    this->level = 0;
-    this->timeWhite = 0;
-    this->timeBlack = 0;
-    this->isBotHelp = false;
-    this->isPlayerWhite = true;
-    this->isCountDown = false;
-    Loading();
+GameAttributes::GameAttributes(bool isLoad) {
+    if (isLoad) NewLoading();
+    else {
+        this->variants = 0;
+        this->mode = 0;
+        this->level = 0;
+        this->timeWhite = 0;
+        this->timeBlack = 0;
+        this->isBotHelp = false;
+        this->isPlayerWhite = true;
+        this->isCountDown = false;
+    }
 }
 
-GameAttributes::GameAttributes(int mode, int level, int timeWhite, int timeBlack, bool isBotHelp, bool isPlayerWhite) {
+GameAttributes::GameAttributes(int variants, int mode, int level, int timeTotalMode, int timeExtraMode, bool isBotHelp) {
+    this->variants = variants;
     this->mode = mode;
     this->level = level;
-    this->timeWhite = timeWhite;
-    this->timeBlack = timeBlack;
+    this->timeTotalMode = timeTotalMode;
+    this->timeExtraMode = timeExtraMode;
     this->isBotHelp = isBotHelp;
     this->isPlayerWhite = isPlayerWhite;
     this->isCountDown = false;
+    this->timeWhite = TOTAL[timeTotalMode] * 1000;
+    this->timeBlack = TOTAL[timeTotalMode] * 1000;
+    Fresh();
 }
 
 GameAttributes::~GameAttributes() {}
 
 void GameAttributes::NewLoading() {
-    FileInit::LoadOptions(mode, level, isBotHelp, timeTotalMode, timeExtraMode);
+    FileManager::LoadConfig(*this);
     timeWhite = timeBlack = TOTAL[timeTotalMode] * 1000;
     Fresh();
 }
 
 void GameAttributes::Loading() {
-    FileInit::LoadOptions(mode, level, isBotHelp, timeTotalMode, timeExtraMode);
+    FileManager::LoadConfig(*this);
     Fresh();
 }
 
@@ -123,4 +130,30 @@ int GameAttributes::getTime(bool isWhite) const {
 void GameAttributes::setCountDown(bool isCountDown) {
     this->isCountDown = isCountDown;
     clock.restart();
+}
+
+// Accesors
+
+int GameAttributes::getVariants() const {
+    return variants;
+}
+
+int GameAttributes::getMode() const {
+    return mode;
+}
+
+int GameAttributes::getLevel() const {
+    return level;
+}
+
+int GameAttributes::getTimeTotalMode() const {
+    return timeTotalMode;
+}
+
+int GameAttributes::getTimeExtraMode() const {
+    return timeExtraMode;
+}
+
+bool GameAttributes::getIsBotHelp() const {
+    return isBotHelp;
 }

@@ -8,6 +8,7 @@ MoveSearching::MoveSearching(int depth, std::shared_ptr<bool> stopflag) {
     this->isSearch = false;
     this->analysisPoint = 0;
     this->isSearchComplete = false;
+    this->cntMoves = 0;
 }
 
 MoveSearching::~MoveSearching() {
@@ -25,32 +26,25 @@ int MoveSearching::Searching(Board& board, int timeSearchingMs, int searchDepth)
     if (isSearch == false) {
         isSearch = true;
 
-        multiplyScore = board.isWhiteTurn() ? 1 : -1;
-        score = CalculateScore(board) * multiplyScore;
+        score = CalculateScore(board) * (board.isWhiteTurn() ? 1 : -1);
         if (searchDepth == 0) {
             isSearchComplete = true;
             return score;
         }
         else {
+            if (board.isEndGame()) {
+                score = analysisPoint = board.isWin() ? -1000000 : 0; //board.isDraw() ? 0 : 1000000;
+                isSearchComplete = true;
+                return analysisPoint;
+            }
             moveSelections = board.GenerateMoves();
             cntMoves = moveSelections.size();
             moveSearches.assign(cntMoves, nullptr);
             moveScore.assign(cntMoves, -10000);
             id_search = 0;
         }
-
-        if (cntMoves == 0) {
-            if (board.isCheck()) {
-                score = analysisPoint = -1000000;
-            }
-            else {
-                analysisPoint = 0;
-            }
-            isSearchComplete = true;
-        }
-        else {
-            bestMove = moveSelections[0];
-        }
+        
+        bestMove = moveSelections[0];
     }
 
     bool isChange = false;

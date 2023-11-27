@@ -1,5 +1,5 @@
 #include <DataControl/Theme.hpp>
-#include <DataControl/FileInit.hpp>
+#include <DataControl/FileManager.hpp>
 #include <iostream>
 
 ///-----------------------------------------------------------------
@@ -159,7 +159,7 @@ Theme::Theme() : ThemeIndex(ThemeData::ThemeIndexDefault)
 
     if (!this->TitleScreenTexture->loadFromFile(ThemeData::TitleImageFile)) printf("Error loading title screen texture\n");
     if (!this->FontTitle.loadFromFile(ThemeData::FontTitleName)) printf("Error loading fonttitle texture\n");
-    this->setThemeID(FileInit::LoadTheme());
+    this->setThemeID(FileManager::LoadTheme());
 }
 
 Theme::~Theme() {
