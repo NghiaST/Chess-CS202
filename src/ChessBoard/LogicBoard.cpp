@@ -65,8 +65,9 @@ bool LogicBoard::isBoardValidByCustom() {
         if (kingSquare == -1) {
             return false;
         }
-        for(int piece : pieces) {
-            if (piece == kingPiece && piece != kingSquare) {
+        for(int &piece : pieces) {
+            int index = &piece - &pieces[0];
+            if (piece == kingPiece && index != kingSquare) {
                 return false;
             }
         }
