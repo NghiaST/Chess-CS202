@@ -29,6 +29,7 @@ public:
     void setStateCell(int index, STATUS state);
     void setBoardRotate(bool mIsBoardRotate);
     int getStateCell(int index);
+    int getMouseIndex(Point mousePosition, bool isGetRotate = true);
 
 public: // front-end
     void update();

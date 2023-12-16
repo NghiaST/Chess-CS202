@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <sstream>
 
-enum ButtonStates { BTN_IDLE = 0, BTN_HOVER, BTN_ACTIVE, BTN_HOLD };
+enum ButtonStates { BTN_IDLE = 0, BTN_HOVER, BTN_ACTIVE, BTN_RELEASED };
 
 class Button : public TextBox {
 public:
@@ -20,10 +20,12 @@ public:
     // Mutators
     void setButtonState(ButtonStates buttonState);
     void setColorBM(const ColorButMulti& colorButMulti);
+    void setIsReleased(bool mIsReleased);
 
     // Accessors
     int getButtonState() const;
-    const ColorButMulti& getColorBM() const { return colorButMulti; }
+    const ColorButMulti& getColorBM() const;
+    bool isReleased() const;
 
 public:
     // Functions
@@ -34,6 +36,7 @@ public:
 private:
     ColorButMulti colorButMulti;
     ButtonStates buttonState;
+    bool mIsReleased;
 };
 
 #endif

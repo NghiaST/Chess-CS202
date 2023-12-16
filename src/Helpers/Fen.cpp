@@ -79,7 +79,7 @@ PositionInfo PositionInfo::BoardToPosition(const Board &board) {
     std::vector<int> pieces = board.getAllPieces();
     GameState gameState = board.getGameState();
     int cntMoves = board.getMoveCount();
-    return PositionInfo(pieces, !(cntMoves & 1), gameState.castlingRights, gameState.enPassantFile, gameState.fiftyMoveCounter, cntMoves);
+    return PositionInfo(pieces, !(cntMoves & 1), gameState.castlingRights, gameState.enPassantFile, gameState.fiftyMoveCounter, cntMoves / 2 + 1);
 }
 
 std::string Fen::PositionToFen(PositionInfo position) {

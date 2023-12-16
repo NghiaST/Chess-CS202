@@ -8,6 +8,7 @@ Button::Button(int buttonID, Point renderPosition, Point renderSize, bool isPosi
 {
     this->colorButMulti = colorButMulti;
     setButtonState(BTN_IDLE);
+    mIsReleased = false;
 }
 
 Button::~Button() {
@@ -24,14 +25,25 @@ void Button::setColorBM(const ColorButMulti &colorButMulti) {
     setColorButton(colorButMulti.get((int) buttonState));
 }
 
+void Button::setIsReleased(bool mIsReleased) {
+    this->mIsReleased = mIsReleased;
+}
+
 // Accessors
 int Button::getButtonState() const {
     return this->buttonState;
 }
 
+const ColorButMulti &Button::getColorBM() const {
+    return this->colorButMulti;
+}
+
+bool Button::isReleased() const {
+    return mIsReleased;
+}
+
 //Functions
 bool Button::handleEvent(const sf::Event& event) {
-    /* Update the booleans for hover and pressed */
     bool mIsEvent = false;
     if (event.type == sf::Event::MouseButtonPressed) {
         Point mousePos = Point(event.mouseButton.x, event.mouseButton.y);
@@ -45,6 +57,8 @@ bool Button::handleEvent(const sf::Event& event) {
     else if (event.type == sf::Event::MouseButtonReleased) {
         Point mousePos = Point(event.mouseButton.x, event.mouseButton.y);
         if (event.mouseButton.button == sf::Mouse::Left) {
+            if (buttonState == BTN_ACTIVE)
+                mIsReleased = true;
             if (isMouseOn(mousePos)) {
                 setButtonState(BTN_HOVER);
             }
@@ -65,18 +79,6 @@ bool Button::handleEvent(const sf::Event& event) {
             else {
                 setButtonState(BTN_IDLE);
             }
-        }
-    }
-    else if (event.type == sf::Event::MouseLeft) {
-        setButtonState(BTN_IDLE);
-    }
-    else if (event.type == sf::Event::MouseEntered) {
-        Point mousePos = Point(event.mouseMove.x, event.mouseMove.y);
-        if (isMouseOn(mousePos)) {
-            setButtonState(BTN_HOVER);
-        }
-        else {
-            setButtonState(BTN_IDLE);
         }
     }
     else {

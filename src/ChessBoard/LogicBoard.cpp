@@ -56,6 +56,24 @@ void LogicBoard::Reset() {
     mIsMovesGeneratorInCache = false;
 }
 
+// Move Validation
+
+bool LogicBoard::isBoardValidByCustom() {
+    for(int curIsWhite = 0; curIsWhite < 2; curIsWhite++) {
+        int kingSquare = getKingSquareIndex(curIsWhite);
+        int kingPiece = PIECE::King + PIECE::boolToColor(curIsWhite);
+        if (kingSquare == -1) {
+            return false;
+        }
+        for(int piece : pieces) {
+            if (piece == kingPiece && piece != kingSquare) {
+                return false;
+            }
+        }
+    }
+    return isBoardLegal();
+}
+
 bool LogicBoard::isNextMoveImpossible() {
     GenerateMovesCache();
     return movesGeneratorCache.empty();

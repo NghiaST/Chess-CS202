@@ -13,6 +13,7 @@ enum class ScreenType {
     OptionScreen,
     SettingScreen,
     StatisticsScreen,
+    CustomScreen,
     None
 };
 

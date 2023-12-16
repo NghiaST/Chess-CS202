@@ -28,6 +28,9 @@ public:
     // Constructors and Destructor
     virtual ~Board();
 
+    // Editor
+    void setPiece(int square, int piece);
+
     // Accessors
     int getPiece(int rank, int file) const;
     int getPiece(int square) const;
@@ -60,6 +63,7 @@ public:
 
 public: //--- logic functions, so all are pure virtual
     // Move Validation
+    virtual bool isBoardValidByCustom() = 0;
     virtual bool isNextMoveImpossible() = 0;
     virtual bool isCheck() const = 0;
     virtual bool isCheckMate() = 0;

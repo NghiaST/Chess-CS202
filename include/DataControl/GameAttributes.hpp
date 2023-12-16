@@ -44,6 +44,7 @@ protected:
     int timeWhite, timeBlack;
     bool isBotHelp;
     bool isPlayerWhite;
+    int encodeSave; // 0: FEN, 1: UCI, 2: SAN
 
 private:
     const std::string variantsName[3] = {"standard", "kingofthehill", "atomic"};

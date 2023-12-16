@@ -11,6 +11,7 @@ GameAttributes::GameAttributes(bool isLoad) {
         this->timeBlack = 0;
         this->isBotHelp = false;
         this->isPlayerWhite = true;
+        this->encodeSave = 1;
         this->isCountDown = false;
     }
 }
@@ -23,6 +24,7 @@ GameAttributes::GameAttributes(int variants, int mode, int level, int timeTotalM
     this->timeExtraMode = timeExtraMode;
     this->isBotHelp = isBotHelp;
     this->isPlayerWhite = isPlayerWhite;
+    this->encodeSave = 1;
     this->isCountDown = false;
     this->timeWhite = (timeTotalMode == -1 ? -1 : TOTAL[timeTotalMode] * 1000);
     this->timeBlack = (timeTotalMode == -1 ? -1 : TOTAL[timeTotalMode] * 1000);

@@ -5,7 +5,7 @@ PiecePrint::PiecePrint()
     : ImageActive()
 {
     setIsPrint(false);
-    setIndex(0);
+    setIndex(56);
     setPiece(PIECE::None);
     setMouseStatus(MOUSE::STATUS::None);
 }

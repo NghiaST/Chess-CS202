@@ -12,7 +12,7 @@ SFMLINCDIR = $(LIBDIR)/SFML-2.5.1/include
 SFMLLIBDIR = $(LIBDIR)/SFML-2.5.1/lib
 ICON = $(OBJDIR)/Other/resource.res
 
-NAME = Chess
+NAME = LionChess
 CXX = g++
 CXXFLAGS = -Wall -std=c++17 -MMD -MP
 # -Wextra -Werror
@@ -22,18 +22,19 @@ LIBS_RELEASE = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lsfml-n
 LFLAGS = -L $(SFMLLIBDIR) $(LIBS)
 LFLAGS_RELEASE = -L $(SFMLLIBDIR) $(LIBS_RELEASE)
 
-SUBFOLDER = ChessBoard IngameScreen DataControl HomeScreen PuzzlesScreen SettingScreen StatisticsScreen OptionScreen Other Helpers
+SUBFOLDER = ChessBoard IngameScreen DataControl HomeScreen PuzzlesScreen SettingScreen StatisticsScreen OptionScreen Other Helpers CustomScreen
 
-FILE_ORIGIN = main Graphic Chess Screen
+FILE_ORIGIN = main Graphic Application Screen
 FILE_CHESSBOARD = Bitboard BitboardProcess Board Bot GameState Move MoveSearching LogicBoard LogicBoardStandard LogicBoardKingHill LogicBoardAtomic
 FILE_HELPERS = BoardHelpers Book Fen MoveUtility
 FILE_HOMESCREEN = HomeScreen
 FILE_INGAMESCREEN = BoardManager BoardPrint IngameScreen PiecePrint TimeButton PromotionManager NotificationEndGame
-FILE_DATACONTROL = Arrow Button ButtonOption Circle Color FileManager GameAttributes GameSettings Image Include Point RenderRect TextBox Theme
+FILE_DATACONTROL = Arrow Button ButtonOption Circle Color FileManager GameAttributes GameSettings Image Include Point RenderRect TextBox Theme ButtonPiece
 FILE_OPTIONSCREEN = OptionScreen
 FILE_PUZZLESSCREEN = PuzzlesScreen BoardPuzzlesManager
 FILE_SETTINGSCREEN = SettingScreen
 FILE_STATISTICSSCREEN = StatisticsScreen Table ProcessStatistics
+FILE_CUSTOMSCREEN = ButtonPieceGroup CustomScreen BoardCustomManager
 
 ifeq ($(OS),Windows_NT)
 	DIRECTORIES = $(OBJDIR) $(SUBFOLDER:%=$(OBJDIR)\\%)
@@ -41,7 +42,7 @@ else
 	DIRECTORIES = $(OBJDIR) $(SUBFOLDER:%=$(OBJDIR)/%)
 endif
 
-FILE = $(FILE_ORIGIN) $(FILE_CHESSBOARD:%=ChessBoard/%)  $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%) $(FILE_HOMESCREEN:%=HomeScreen/%) $(FILE_SETTINGSCREEN:%=SettingScreen/%) $(FILE_STATISTICSSCREEN:%=StatisticsScreen/%) $(FILE_OPTIONSCREEN:%=OptionScreen/%) $(FILE_HELPERS:%=Helpers/%) $(FILE_PUZZLESSCREEN:%=PuzzlesScreen/%)
+FILE = $(FILE_ORIGIN) $(FILE_CHESSBOARD:%=ChessBoard/%)  $(FILE_INGAMESCREEN:%=IngameScreen/%) $(FILE_DATACONTROL:%=DataControl/%) $(FILE_HOMESCREEN:%=HomeScreen/%) $(FILE_SETTINGSCREEN:%=SettingScreen/%) $(FILE_STATISTICSSCREEN:%=StatisticsScreen/%) $(FILE_OPTIONSCREEN:%=OptionScreen/%) $(FILE_HELPERS:%=Helpers/%) $(FILE_PUZZLESSCREEN:%=PuzzlesScreen/%) $(FILE_CUSTOMSCREEN:%=CustomScreen/%)
 
 FILE_O = $(FILE:%=%.o)
 FILE_CPP = $(FILE:%=%.cpp)

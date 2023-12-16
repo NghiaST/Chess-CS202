@@ -30,7 +30,6 @@ private:
     Point StatisticsButtonPosition;
     Point StatisticsButtonSize;
     
-
     Point ExitButtonPosition;
     Point ExitButtonSize;
 

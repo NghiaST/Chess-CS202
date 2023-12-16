@@ -7,8 +7,6 @@ Image::Image(const sf::Texture& texture, Point renderPosition, Point renderSize,
 {
     setTexture(texture);
     setRenderPositionSize(renderPosition, renderSize);
-    // setRenderSize(renderSize);
-    // setRenderPosition(renderPosition);
 }
 
 void Image::setTexture(const sf::Texture& texture) {
@@ -63,9 +61,10 @@ ImageActive::ImageActive(const sf::Texture& texture, Point renderPosition, Point
 
 void ImageActive::setMouseStatus(int mousestatus, Point mousePosition) {
     this->mouseStatus = (MOUSE::STATUS) mousestatus;
-    this->mousePosition = mousePosition;
+    if (!(mousePosition == Point(0, 0)))
+        this->mousePosition = mousePosition;
     if (mouseStatus == MOUSE::Hold) {
-        setRenderPosition(mousePosition - renderSize / 2);
+        setRenderPosition(this->mousePosition - renderSize / 2);
         setPriorityPrint(2);
     }
     else {
@@ -90,7 +89,7 @@ void ImageActive::setMousePosition(Point mousePosition) {
 
 bool ImageActive::handleEvent(const sf::Event &event) {
     if (event.type == sf::Event::MouseMoved) {
-        setMousePosition(Point(event.mouseButton.x, event.mouseButton.y));
+        setMousePosition(Point(event.mouseMove.x, event.mouseMove.y));
     }
     else if (event.type == sf::Event::MouseButtonPressed) {
         if (event.mouseButton.button == sf::Mouse::Left) {
@@ -102,7 +101,7 @@ bool ImageActive::handleEvent(const sf::Event &event) {
         }
     }
     else if (event.type == sf::Event::MouseButtonReleased) {
-        if (event.mouseButton.button == sf::Mouse::Left) {
+        if (mouseStatus != MOUSE::None && event.mouseButton.button == sf::Mouse::Left) {
             setMouseStatus(MOUSE::None);
             return true;
         }

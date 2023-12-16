@@ -24,6 +24,7 @@ private:
     Point ButtonSize;
     Point ButtonOptionSize;
 
+    Point CustomButtonPosition;
     Point ContinueButtonPosition;
     Point NewGameButtonPosition;
     Point BackButtonPosition;
@@ -37,6 +38,7 @@ private:
 
 private:
     Image Background;
+    Button* CustomButton;
     Button* ContinueButton;
     Button* NewGameButton;
     Button* BackButton;

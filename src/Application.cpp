@@ -1,15 +1,16 @@
-#include <Chess.hpp>
+#include <Application.hpp>
+#include <HomeScreen/HomeScreen.hpp>
+#include <IngameScreen/IngameScreen.hpp>
+#include <PuzzlesScreen/PuzzlesScreen.hpp>
+#include <SettingScreen/SettingScreen.hpp>
+#include <StatisticsScreen/StatisticsScreen.hpp>
+#include <OptionScreen/OptionScreen.hpp>
+#include <CustomScreen/CustomScreen.hpp>
 
-Chess::Chess() {
+Application::Application() {
     Theme::getInstance()->setThemeID(FileManager::LoadTheme());
 
-    homeScreen = new HomeScreen();
-    // settingScreen = new SettingScreen();
-    // ingameScreen = new IngameScreen();
-    // statisticsScreen = new StatisticsScreen();
-    // optionScreen = new OptionScreen();
-
-    mScreen = homeScreen;
+    mScreen = new HomeScreen();
     clock.restart();
 
     windowSize = INTERFACE::WindowSize;
@@ -17,17 +18,17 @@ Chess::Chess() {
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8.0;
-    mWindow.create(sf::VideoMode(windowSize.x, windowSize.y), "ChessLion", sf::Style::Close, settings);
+    mWindow.create(sf::VideoMode(windowSize.x, windowSize.y), "ApplicationLion", sf::Style::Close, settings);
     mWindow.setFramerateLimit(60);
     mWindow.setPosition(windowPosition.to2i());
 }
 
-Chess::~Chess() {
+Application::~Application() {
     delete mScreen;
     Theme::destroyInstance();
 }
 
-void Chess::run() {
+void Application::run() {
     while (mWindow.isOpen()) {
         processEvents();
         update();
@@ -35,7 +36,7 @@ void Chess::run() {
     }
 }
 
-void Chess::processEvents() {
+void Application::processEvents() {
     sf::Event sfEvent;
     while (mWindow.pollEvent(sfEvent)) {
         if (sfEvent.type == sf::Event::Closed) {
@@ -46,7 +47,7 @@ void Chess::processEvents() {
     }
 }
 
-void Chess::update() {
+void Application::update() {
     if (!mWindow.isOpen()) {
         return;
     }
@@ -58,7 +59,7 @@ void Chess::update() {
     mScreen->update(deltaTime);
 }
 
-void Chess::render() {
+void Application::render() {
     if (!mWindow.isOpen()) {
         return;
     }
@@ -67,7 +68,7 @@ void Chess::render() {
     mWindow.display();
 }
 
-void Chess::changeScreen(ScreenType screenType) {
+void Application::changeScreen(ScreenType screenType) {
     if (ScreenType::None == screenType) {
         mWindow.close();
         return;
@@ -76,34 +77,31 @@ void Chess::changeScreen(ScreenType screenType) {
     delete mScreen;
     switch (screenType) {
         case ScreenType::IngameScreen:
-            ingameScreen = new IngameScreen();
-            mScreen = ingameScreen;
+            mScreen = new IngameScreen();
             break;
         case ScreenType::HomeScreen:
-            homeScreen = new HomeScreen();
-            mScreen = homeScreen;
+            mScreen = new HomeScreen();
             break;
         case ScreenType::PuzzlesScreen:
-            puzzlesScreen = new PuzzlesScreen();
-            mScreen = puzzlesScreen;
+            mScreen = new PuzzlesScreen();
             break;
         case ScreenType::SettingScreen:
-            settingScreen = new SettingScreen();
-            mScreen = settingScreen;
+            mScreen = new SettingScreen();
             break;
         case ScreenType::StatisticsScreen:
-            statisticsScreen = new StatisticsScreen();
-            mScreen = statisticsScreen;
+            mScreen = new StatisticsScreen();
             break;
         case ScreenType::OptionScreen:
-            optionScreen = new OptionScreen();
-            mScreen = optionScreen;
+            mScreen = new OptionScreen();
+            break;
+        case ScreenType::CustomScreen:
+            mScreen = new CustomScreen();
             break;
         case ScreenType::None:
             mWindow.close();
             return;
         default:
-            printf("Bug at Chess::changeScreen\n");
+            printf("Bug at Application::changeScreen\n");
             exit(1);
     }
     mScreen->resetScreenChange();

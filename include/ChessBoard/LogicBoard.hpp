@@ -18,6 +18,7 @@ public:
     virtual void Reset();
 
     // Move Validation
+    bool isBoardValidByCustom();
     bool isNextMoveImpossible();
     bool isFiftyMove();
 

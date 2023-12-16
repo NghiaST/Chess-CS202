@@ -34,6 +34,18 @@ int BoardPrint::getStateCell(int index)
     return this->stateBoard[index];
 }
 
+int BoardPrint::getMouseIndex(Point mousePosition, bool isGetRotate) {
+    sf::Vector2i coordChess;
+    coordChess.x = 7 - (int) (mousePosition.y - renderPosition.y) / (int) (renderSize.y / 8);
+    coordChess.y = (int) (mousePosition.x - renderPosition.x) / (int) (renderSize.x / 8);
+    if (mIsBoardRotate && isGetRotate) {
+        coordChess.x = 7 - coordChess.x;
+        coordChess.y = 7 - coordChess.y;
+    }
+    int squareIndex = coordChess.x * 8 + coordChess.y;
+    return squareIndex;
+}
+
 void BoardPrint::update() {
     Point cellSize = renderSize / 8;
     spriteBoardList.clear();

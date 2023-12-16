@@ -35,7 +35,12 @@ Board::~Board() {}
 
 // Accessors
 
-int Board::getPiece(int rank, int file) const {
+void Board::setPiece(int square, int piece) {
+    pieces[square] = piece;
+}
+
+int Board::getPiece(int rank, int file) const
+{
     return pieces[rank * 8 + file];
 }
 
@@ -133,6 +138,9 @@ Board *FactoryBoard::CreateBoard(std::string boardType) {
     }
     else if (boardType == "atomic") {
         return new LogicBoardAtomic();
+    }
+    else {
+        return new LogicBoardStandard();  
     }
 }
 

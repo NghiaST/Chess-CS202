@@ -511,10 +511,10 @@ std::string BoardManager::update(sf::Time deltaTime) {
                 mIsBotRunning = true;
                 bot->setTimeThinkingMs(2500);
                 if (mIsWhiteTurn) {
-                    bot->setSearchDepth(3);
+                    bot->setSearchDepth(this->level + 1);
                 }
                 else {
-                    bot->setSearchDepth(3);
+                    bot->setSearchDepth(this->level + 1);
                 }
                 bot->LoadBoard(*board);
             }

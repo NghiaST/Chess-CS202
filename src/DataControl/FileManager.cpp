@@ -120,11 +120,10 @@ void FileManager::ExtractGame(const std::vector<Move>& movesHistory) {
 
 void FileManager::SaveGame(const Board& board, const GameAttributes& gameAttributes) {
     std::vector<Move> movesHistory = board.getMovesHistory();
-    int cntMoves = board.getMoveCount();
-    if (cntMoves == (int) movesHistory.size()) {
+    if (gameAttributes.encodeSave == 1) {
         SaveGameMoves(movesHistory, gameAttributes);
     }
-    else {
+    else if (gameAttributes.encodeSave == 0) {
         SaveGameFEN(board, gameAttributes);
     }
 }
@@ -142,7 +141,7 @@ void FileManager::SaveGameMoves(const std::vector<Move>& movesHistory, const Gam
 
 void FileManager::SaveGameFEN(const Board& board, const GameAttributes& gameAttributes) {
     std::ofstream file(datSave);
-    file << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.timeWhite << " " << gameAttributes.timeBlack << "\n";
+    file << gameAttributes.variants << " " << gameAttributes.mode << " " << gameAttributes.level << " " << gameAttributes.timeWhite << " " << gameAttributes.timeBlack << "\n";
     file << "FEN\n";
     std::string FEN = Fen::PositionToFen(PositionInfo::BoardToPosition(board));
     file << FEN;
@@ -179,6 +178,7 @@ bool FileManager::LoadGame(Board &board, GameAttributes &gameAttributes) {
     std::string line;
     getline(file, line);
     if (line == "UCI") {
+        gameAttributes.encodeSave = 1;
         board.LoadBasicPosition();
         while (file >> line) {
             Move move = MoveUtility::GetMoveFromNameUCI(line, board);
@@ -187,10 +187,16 @@ bool FileManager::LoadGame(Board &board, GameAttributes &gameAttributes) {
         return true;
     }
     else if (line == "FEN") {
+        gameAttributes.encodeSave = 0;
         std::string FEN;
         getline(file, FEN);
+        if (FEN == Fen::StartPosition)
+            gameAttributes.encodeSave = 1;
         board.LoadPosition(Fen::FenToPosition(FEN));
         return true;
+    }
+    else {
+        gameAttributes.encodeSave = 1;
     }
     return false;
 }
@@ -300,7 +306,7 @@ void FileManager::CheckConfigAndSave() {
     }
     if (!std::filesystem::exists(datSave)) {
         std::ofstream file(datSave);
-        file << "0 0 0 0 0\n0 0 0 0 0 0";
+        file << "0 0 0 0 0\nFEN\n" << Fen::StartPosition << "\n";
         file.close();
     }
 

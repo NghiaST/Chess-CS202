@@ -16,12 +16,14 @@ OptionScreen::OptionScreen() : Screen() {
     TimeExtraOptionPosition  = Point(middle, 80 * 5);
     BotHelpOptionPosition    = Point(middle, 80 * 6);
 
-    ContinueButtonPosition = Point(middle - 1.2 * ButtonSize.x, 600);
-    NewGameButtonPosition  = Point(middle - 0.0 * ButtonSize.x, 600);
-    BackButtonPosition     = Point(middle + 1.2 * ButtonSize.x, 600);
+    CustomButtonPosition   = Point(middle - 1.8 * ButtonSize.x, 600);
+    ContinueButtonPosition = Point(middle - 0.6 * ButtonSize.x, 600);
+    NewGameButtonPosition  = Point(middle + 0.6 * ButtonSize.x, 600);
+    BackButtonPosition     = Point(middle + 1.8 * ButtonSize.x, 600);
 
     Background = Image(theme->getBackgroundTexture(), Point(0, 0), INTERFACE::WindowSize, true, 0);
 
+    CustomButton   = new Button(0, CustomButtonPosition, ButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "Custom");
     ContinueButton = new Button(1, ContinueButtonPosition, ButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "Continue");
     NewGameButton  = new Button(2, NewGameButtonPosition, ButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "New Game");
     BackButton     = new Button(3, BackButtonPosition, ButtonSize, true, true, &theme->getFont(), theme->getColorDefault(), 20, "Back");
@@ -44,6 +46,7 @@ OptionScreen::OptionScreen() : Screen() {
 }
 
 OptionScreen::~OptionScreen() {
+    delete CustomButton;
     delete ContinueButton;
     delete NewGameButton;
     delete BackButton;
@@ -84,6 +87,10 @@ void OptionScreen::handleEvent(const sf::Event& event) {
         GameAttributes gameAttributes(VariantsOption->getCurrentSelection(), ModeOption->getCurrentSelection(), DifficultyOption->getCurrentSelection(), TimeTotalOption->getCurrentSelection(), TimeExtraOption->getCurrentSelection(), (bool) BotHelpOption->getCurrentSelection());
         FileManager::SaveThemeConfig(theme->getThemeIndex(), gameAttributes);
     }
+    if (CustomButton->handleEvent(event)) {
+        isScreenChange = true;
+        nextScreen = ScreenType::CustomScreen;
+    }
     if (ContinueButton->handleEvent(event)) {
         isScreenChange = true;
         nextScreen = ScreenType::IngameScreen;
@@ -104,6 +111,7 @@ void OptionScreen::update(sf::Time deltaTime) {
 
 void OptionScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
     Background.draw(target);
+    target.draw(*CustomButton);
     target.draw(*ContinueButton);
     target.draw(*NewGameButton);
     target.draw(*BackButton);
@@ -117,6 +125,7 @@ void OptionScreen::render(sf::RenderTarget& target, sf::RenderStates states) {
 
 void OptionScreen::formatTheme() {
     Background.setTexture(theme->getBackgroundTexture());
+    CustomButton->setColorBM(theme->getColorDefault());
     ContinueButton->setColorBM(theme->getColorDefault());
     NewGameButton->setColorBM(theme->getColorDefault());
     BackButton->setColorBM(theme->getColorDefault());

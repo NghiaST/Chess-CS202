@@ -1,9 +1,9 @@
 #include <main.hpp>
-#include <Chess.hpp>
+#include <Application.hpp>
 
 int main()
 {
-    Chess* chess = new Chess();
+    Application* chess = new Application();
     chess->run();
     delete chess;
     return 0;
