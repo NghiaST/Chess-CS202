@@ -301,7 +301,7 @@ void FileManager::LoadPuzzles(Board &board, std::vector<Move>& movesSolution, st
 void FileManager::CheckConfigAndSave() {
     if (!std::filesystem::exists(datConfig)) {
         std::ofstream file(datConfig);
-        file << "0 0 0 0 0\n0 0 0 0 0 0";
+        file << "0 0 0 0 0\n0 0 0 0 0 0 0";
         file.close();
     }
     if (!std::filesystem::exists(datSave)) {
@@ -322,7 +322,7 @@ void FileManager::CheckConfigAndSave() {
     file2 >> gameAttributes2.variants >> gameAttributes2.mode >> gameAttributes2.level >> gameAttributes2.timeWhite >> gameAttributes2.timeBlack;
     file2.close();
 
-    if (gameAttributes.variants != gameAttributes2.variants) {
+    if (gameAttributes.variants != gameAttributes2.variants || (gameAttributes2.timeWhite == 0 && gameAttributes2.timeBlack == 0)) {
         RemoveSaveGame();
     }
 }
